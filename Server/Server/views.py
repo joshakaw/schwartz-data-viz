@@ -4,8 +4,9 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from flask import jsonify, render_template
+import pandas as pd
 from Server import app
-
+from json import loads, dumps
 
 """
 Test endpoint for React app
@@ -13,6 +14,8 @@ to display
 
 GET /dataTest
 """
+
+
 @app.route("/dataTest")
 def dataTest():
     teamMembers = [
@@ -21,7 +24,12 @@ def dataTest():
         {"name": "tyler"},
         {"name": "tarik"},
     ]
-    response = jsonify(teamMembers)
+
+    pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
+
+    capitalized = pdTeamMembers["name"].str.capitalize() # Now all names should be capitalized
+
+    response = jsonify(loads(capitalized.to_json(orient="records")))
     return response
 
 

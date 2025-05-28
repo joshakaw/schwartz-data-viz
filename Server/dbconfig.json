@@ -1,0 +1,7 @@
+{
+  "endpoint": "tutor.mysql.database.azure.com",
+  "port": "3306",
+  "username": "dbadmin",
+  "password": "password!1",
+  "ssl_required": false
+}

@@ -4,12 +4,8 @@
 import { useState, useEffect } from 'react';
 import "./testlist.css";
 
-interface TeamMember {
-    name: string;
-}
-
 function TestList() {
-    const [data, setData] = useState<TeamMember[] | null>(null);
+    const [data, setData] = useState<[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +43,7 @@ function TestList() {
         <div className="testlist">
             {
                 data ? data.map(item =>
-                    (<p>Name: {item.name} </p>)
+                    (<p>Name: {item} </p>)
                 ) : (<p>No Data Found</p>)
             }
 

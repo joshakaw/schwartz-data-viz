@@ -36,7 +36,7 @@ function App() {
 
           <TestList />
           <BarChart />
-          <AccountDataTable data={[{ ssid: 1, first_name: "John", last_name: "Doe", email: "exampl.gmail.com", phone: 1234567890, school: "Example School", account_type: "Student", creation_date: "2023-01-01", sessions: 5, recent_session: "2023-10-01", recent_subject: "Math", recent_tutor: "Jane Smith" }]} />
+          <AccountDataTable />
     </>
   )
 }

@@ -1,0 +1,23 @@
+table {
+    width: 100%;
+    background-color: aliceblue;
+    border-color: lightgray;
+    border-radius: 8px;
+}
+
+.colName {
+    text-align: left;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    color: darkgray;
+}
+
+td {
+    color: black;
+}

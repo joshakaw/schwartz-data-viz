@@ -32,6 +32,15 @@ def dataTest():
     response = jsonify(loads(capitalized.to_json(orient="records")))
     return response
 
+@app.route("/signupDashboard/signupsByCategory")
+def signupsByCategory():
+
+    return "Not implemented"
+
+@app.route("/mailchimpDashboard/users")
+def mailchimpUsers():
+    return "Not implemented"
+
 
 @app.route("/")
 @app.route("/home")

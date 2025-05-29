@@ -1,8 +1,10 @@
 table {
     width: 100%;
     background-color: aliceblue;
-    border-color: lightgray;
+    border-collapse: collapse; /* Ensures clean single borders */
     border-radius: 8px;
+    border: 1px solid lightgray; /* Added this to apply border color */
+    overflow: hidden; /* Ensures border radius clips table content */
 }
 
 .colName {
@@ -12,12 +14,41 @@ table {
 th, td {
     padding: 8px;
     text-align: center;
+    border-bottom: 1px solid #ccc; /* Gray line between rows */
 }
 
 th {
-    color: darkgray;
+    color: black;
+    background-color: #e0e0e0; /* Optional: slightly gray header */
 }
 
 td {
     color: black;
+}
+
+/* Alternating row background */
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light gray */
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.pagination-controls button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

@@ -1,7 +1,6 @@
 import { BrowserRouter, createBrowserRouter, Route, Routes } from "react-router";
 
 import './index.css'
-import App from './App.tsx'
 import ReactDOM from "react-dom/client";
 import RootComponent from "./components/pages/RootComponent/RootComponent.tsx";
 import RouterHomeComponent from "./components/pages/RouterHomeComponent/RouterHomeComponent.tsx";

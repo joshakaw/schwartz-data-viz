@@ -1,35 +1,37 @@
+'use client'; // This directive must be at the very top
+
 import { Bar } from 'react-chartjs-2';
 import { rawSignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 
 Chart.register(CategoryScale);
 
-// Disables legend
-const options = {
-    plugins: {
-        legend: {
-            display: false
-        }
-    }
-}
-
-// Turns rawSignupData into something readable for a bar chart in chartjs
-const data = {
-    labels: rawSignupData.map(item => item.category),
-    datasets: [
-        {
-            label: 'Signups Per Category',
-            data: rawSignupData.map(item => item.signups),
-            backgroundColor: [
-                'blue', 'red', 'green', 'purple', 'yellow'
-            ],
-            borderWidth: 1
-        }
-    ]
-}
-
 // Just sends the bar when called.
 const BarChart = () => {
+    // Disables legend
+    const options = {
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+
+    // Turns rawSignupData into something readable for a bar chart in chartjs
+    const data = {
+        labels: rawSignupData.map(item => item.category),
+        datasets: [
+            {
+                label: 'Signups Per Category',
+                data: rawSignupData.map(item => item.signups),
+                backgroundColor: [
+                    '#dd4726', '#dd4726', '#dd4726', '#dd4726', '#dd4726'
+                ],
+                borderWidth: 1
+            }
+        ]
+    }
+
     return (
         <div>
             <Bar data={data} options={options} />

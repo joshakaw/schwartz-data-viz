@@ -14,7 +14,7 @@ interface RootComponentProps { }
 const RootComponent: FC<RootComponentProps> = () => (
     <div className="RootComponent" style={{ display: 'flex', flexDirection: 'column', height: "100vh", overflow: 'hidden' }}>
         <NavbarComponent />
-        <div className="outlet" style={{ flex:1, overflowY: 'auto', width:"100%", maxWidth:"800px", margin: "auto", paddingTop: "20px", paddingLeft: "10px", paddingRight: "10px"}}>
+        <div className="outlet" style={{ flex:1, overflowY: 'auto', width:"100%", maxWidth:"1400px", margin: "auto", paddingTop: "20px", paddingLeft: "10px", paddingRight: "10px"}}>
             <Outlet />
         </div>
     </div>

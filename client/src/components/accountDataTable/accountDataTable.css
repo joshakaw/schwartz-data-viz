@@ -9,22 +9,17 @@
     Text Color: #46536e
 */
 
-
-table {
+.table-wrapper {
     width: 100%;
-    background-color: white;
-    table-layout: fixed;
+    overflow-x: auto; /* keep this in case content overflows */
+}
 
-    /* Ensures clean single borders */
+.account-data-table {
+    width: max-content;
+    table-layout: auto; /* Important: forces columns to fit */
     border-collapse: collapse;
-
-    border-radius: 8px;
-
-    /* Adds add a dark gray boarder arround the entire table */
-    border: 1px solid #8b8b8b;
-
-    /* Ensures border radius clips table content */
-    overflow: hidden;
+    min-width: 100%;
+    word-wrap: break-word;
 }
 
 .colName {
@@ -32,28 +27,24 @@ table {
 }
 
 
-th, td {
-    padding: 8px;
-    text-align: left;
-    margin-left: 10px;
-    vertical-align:middle;
-    white-space: normal;
-    word-wrap: break-word;
+.account-data-table th,
+.account-data-table td {
     overflow-wrap: break-word;
-    max-width: 150px;
-    /* Gray lines between the different rows*/
-    border-bottom: 1px solid #8b8b8b;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: nowrap;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-left: 10px;
 }
 
 th {
     color: black;
     background-color: #eff0f6; /* Optional: slightly gray header */
-    height: 40px;
 }
 
 td {
     color: black;
-    height: 60px;
 }
 
 /* Alternating row background color */

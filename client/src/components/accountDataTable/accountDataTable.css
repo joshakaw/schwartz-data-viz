@@ -1,23 +1,84 @@
+/*
+    Color Themes:
+
+    Shwartz-Orange: #dd4726
+    White: #ffffff
+    Light Gray: #f9f9f9
+    Dark Gray: #8b8b8b
+    Background Gray: #eff0f6
+    Text Color: #46536e
+*/
+
+
 table {
     width: 100%;
-    background-color: aliceblue;
-    border-color: lightgray;
+    background-color: white;
+    table-layout: fixed;
+
+    /* Ensures clean single borders */
+    border-collapse: collapse;
+
     border-radius: 8px;
+
+    /* Adds add a dark gray boarder arround the entire table */
+    border: 1px solid #8b8b8b;
+
+    /* Ensures border radius clips table content */
+    overflow: hidden;
 }
 
 .colName {
     text-align: left;
 }
 
+
 th, td {
     padding: 8px;
-    text-align: center;
+    text-align: left;
+    margin-left: 10px;
+    vertical-align:middle;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 150px;
+    /* Gray lines between the different rows*/
+    border-bottom: 1px solid #8b8b8b;
 }
 
 th {
-    color: darkgray;
+    color: black;
+    background-color: #eff0f6; /* Optional: slightly gray header */
+    height: 40px;
 }
 
 td {
     color: black;
+    height: 60px;
+}
+
+/* Alternating row background color */
+tbody tr:nth-child(even) {
+    background-color: #eff0f6;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.pagination-controls button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: #eff0f6;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

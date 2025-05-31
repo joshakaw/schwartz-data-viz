@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Server\" />
+    <Folder Include="Server\util\" />
     <Folder Include="Server\static\" />
     <Folder Include="Server\static\content\" />
     <Folder Include="Server\static\fonts\" />
@@ -76,6 +77,9 @@
     <Content Include="Server\templates\contact.html" />
     <Content Include="Server\templates\index.html" />
     <Content Include="Server\templates\layout.html" />
+    <Content Include="Server\util\mailchimpUsers.json">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

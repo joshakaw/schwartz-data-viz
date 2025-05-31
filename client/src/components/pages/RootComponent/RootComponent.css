@@ -1,0 +1,38 @@
+.RootComponent {}
+
+.outlet {
+    view-transition-name: vt-outlet;
+}
+
+@keyframes grow-x {
+    from {
+        transform: scaleX(0.98);
+        opacity: 0;
+    }
+
+    to {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shrink-x {
+    from {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scaleX(0.98);
+        opacity: 0;
+    }
+}
+
+::view-transition-old(vt-outlet) {
+    animation: 0.25s linear both shrink-x;
+}
+
+::view-transition-new(vt-outlet) {
+    animation: 0.25s linear both grow-x;
+}
+

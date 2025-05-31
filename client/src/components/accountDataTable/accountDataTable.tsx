@@ -16,42 +16,43 @@ const AccountDataTable = () => {
 
     return (
         <>
-            <table className="account-data-table">
-                <thead>
-                    <tr className="colName">
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>School</th>
-                        <th>Account Type</th>
-                        <th>Creation Date</th>
-                        <th>Sessions</th>
-                        <th>Recent Session</th>
-                        <th>Recent Subject</th>
-                        <th>Recent Tutor</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {currentEntries.map((account) => (
-                        <tr key={account.ssid}>
-                            <td>{account.first_name}</td>
-                            <td>{account.last_name}</td>
-                            <td>{account.email}</td>
-                            <td>{account.phone}</td>
-                            <td>{account.school}</td>
-                            <td>{account.account_type}</td>
-                            <td>{account.creation_date}</td>
-                            <td>{account.sessions}</td>
-                            <td>{account.recent_session}</td>
-                            <td>{account.recent_subject}</td>
-                            <td>{account.recent_tutor}</td>
+            <div className="table-wrapper">
+                <table className="account-data-table">
+                    <thead>
+                        <tr className="colName">
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>School</th>
+                            <th>Account Type</th>
+                            <th>Creation Date</th>
+                            <th>Sessions</th>
+                            <th>Recent Session</th>
+                            <th>Recent Subject</th>
+                            <th>Recent Tutor</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
 
+                    <tbody>
+                        {currentEntries.map((account) => (
+                            <tr key={account.ssid}>
+                                <td>{account.first_name}</td>
+                                <td>{account.last_name}</td>
+                                <td>{account.email}</td>
+                                <td>{account.phone}</td>
+                                <td>{account.school}</td>
+                                <td>{account.account_type}</td>
+                                <td>{account.creation_date}</td>
+                                <td>{account.sessions}</td>
+                                <td>{account.recent_session}</td>
+                                <td>{account.recent_subject}</td>
+                                <td>{account.recent_tutor}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             <div className="pagination-controls">
                 <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

@@ -5,6 +5,7 @@
 // Both this and SignupData will be cobbled together via server call. A list of signups will need to be created for a given timeframe which will then be funneled into this.
 // BarChart.tsx will not change. only thing changing is the data on it. which is currently supplied here
 
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 export interface SignupData {

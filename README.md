@@ -6,8 +6,9 @@ Our team will develop a website for Schwartz Tutoring to visualize company data 
 
 ## **Technologies Used**
 
-* **Backend:** Python 3.11 with Flask
-* **Frontend:** React.js
+* **Database:** MySQL, hosted on Microsoft Azure
+* **Backend:** Python 3.11 with Flask, Pandas, mysqlclient
+* **Frontend:** React.js, Axios
 * **Development Environment:** Visual Studio Community IDE
 
 ---
@@ -55,27 +56,21 @@ If you don't have Visual Studio Community installed:
 ### **4. Understand the Solution Structure**
 
 * In the Solution Explorer (usually on the right side of Visual Studio), you will see two main projects:
-    * **`Server` (Python Flask Backend):** This project contains the Python code that runs on the server. Flask is a lightweight web framework that handles requests from the frontend, processes data, and provides APIs. It's the "brain" that serves data.
+    * **`Server` (Python Flask Backend):** This project contains the Python code that runs on the server. Flask is a lightweight web framework that handles requests from the frontend, processes data, and provides APIs.
     * **`Client` (React Frontend):** This project contains the JavaScript code that runs in your web browser. React is a library for building user interfaces. It's responsible for what you see and interact with, and it communicates with the Flask backend to get and send data.
 * These two parts work together: the `Client` (what the user sees) makes requests to the `Server` (where the data and logic reside) to perform actions and retrieve information.
 
 ---
 
-## **Project Structure Explained**
+## Project Structure Overview
 
-For those new to full-stack development, here's a brief overview:
+This document provides a concise overview of the project's architecture, ideal for those new to full-stack development.
 
-* **`Server/` (Python Flask Backend):**
-    * This directory contains all the code that runs on the server.
-    * **Flask** is a web framework that acts as the "brain" of the application. It receives requests from the frontend (e.g., "give me user data," "save this new item"), processes them, potentially interacts with a database, and sends back responses.
-    * It exposes **API (Application Programming Interface) endpoints**, which are specific URLs that the frontend can call to perform actions or get data.
-    * Think of it as the kitchen in a restaurant: it prepares the food (data) based on orders (requests) from the dining area (frontend).
-* **`Client/` (React Frontend):**
-    * This directory contains all the code that runs in your web browser.
-    * **React** is a JavaScript library used to build the user interface (UI). It's responsible for how the website looks and feels, and how users interact with it.
-    * It makes **API calls** to the Flask backend to fetch data to display or send data that the user inputs.
-    * Think of it as the dining area and the waiter in a restaurant: it presents the menu (UI), takes your order (user input), sends it to the kitchen (backend), and displays the food (data) when it arrives.
+### **`Server/` (Python Flask Backend)**
+This directory holds all the code that runs on the server. **Flask**, a Python web framework, acts as the core of the application. It handles incoming requests from the frontend, processes data—which often involves interacting with a database—and sends back responses. The backend exposes **API (Application Programming Interface) endpoints**, which are specific URLs that the frontend uses to request data or trigger actions.
 
+### **`Client/` (React Frontend)**
+This directory contains all the code that runs in your web browser. **React**, a JavaScript library, is used to build the user interface (UI). It's responsible for the website's look, feel, and how users interact with it. The frontend makes **API calls** to the Flask backend to fetch data for display or to send user-entered data.
 The two parts communicate over HTTP, with the React frontend making requests to the Flask backend's API endpoints.
 
 ---

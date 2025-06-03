@@ -1,5 +1,5 @@
 """
-Routes and views for 
+Routes and views for
 the Flask application.
 """
 
@@ -11,9 +11,11 @@ import os
 from json import loads
 
 from Server.queries.sql_helper import read_sql_from_queries
+from Server.queries.sql_templates import qSignupsByCategory
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
+
 
 @main_api.route("/sql")
 def sqlTest():
@@ -21,33 +23,27 @@ def sqlTest():
     TEST
     """
     c = db.get_db_cursor()
-    query =  read_sql_from_queries("signupsByCategory")
+    query = read_sql_from_queries("signupsByCategory")
 
     print(query)
     c.execute(query)
 
     return str(c.fetchall())
 
+
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
     c = db.get_db_cursor()
-    query =  read_sql_from_queries("signupsByCategory")
+    query = qSignupsByCategory(
+        "2021-10-01", "2022-01-01", ["Physical Advertising", "Friend Referral"]
+    )
+    # query = qSignupsByCategory()
 
     c.execute(query)
-    data = c.fetchall() # Returns 2d tuple
-    pdData = pd.DataFrame(data, columns=['category', 'signups'])
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=["category", "signups"])
 
-    # pdSignupData = pd.DataFrame(
-    #     {
-    #         "category": [
-    #             "Social Media",
-    #             "Physical Ads",
-    #             "Friend Referral",
-    #             "Email Campaign",
-    #         ],
-    #         "signups": [15, 10, 8, 12],
-    #     }
-    # )
+    # https://docs.python.org/2/library/stdtypes.html#string-formatting
 
     return jsonify(loads(pdData.to_json(orient="records")))
 

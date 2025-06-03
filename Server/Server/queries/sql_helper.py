@@ -28,3 +28,34 @@ def read_sql_from_queries(fileName: str) -> str:
         raise Exception("Only one SQL statement allowed.")
 
     return sql
+
+
+def array_to_sql_in_clause(arr):
+    """
+    Converts a Python array (list or tuple) to a string suitable for a SQL IN clause.
+
+    Args:
+        arr: The input array (list or tuple) of numbers or strings.
+
+    Returns:
+        A string representing the SQL IN clause content.
+        - For numbers: "1,2,3"
+        - For strings: "('A', 'N')"
+        - For an empty array: "" (or can be made to return an empty string if preferred)
+    """
+    if not arr:
+        return ""
+
+    # Check the type of the first element to determine formatting
+    # This assumes a homogeneous array (all elements are of the same type)
+    if isinstance(arr[0], (int, float)):
+        # For numbers, just join them directly
+        return ",".join(map(str, arr))
+    elif isinstance(arr[0], str):
+        # For strings, quote each element and join them
+        # We also need to handle potential single quotes within the strings by doubling them
+        quoted_elements = ["'" + str(item).replace("'", "''") + "'" for item in arr]
+        return "(" + ",".join(quoted_elements) + ")"
+    else:
+        # Handle other types if necessary, or raise an error
+        raise ValueError("Unsupported data type in array. Only numbers and strings are supported.")

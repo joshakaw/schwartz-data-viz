@@ -1,0 +1,45 @@
+import unittest
+
+from Server.queries.sql_templates import qSignupsByCategory
+
+class Test_test_sql_templates(unittest.TestCase):
+    def test_signupsByCategory_full(self):
+        string = qSignupsByCategory('2002-01-01', '2004-01-01', ['A', 'B'])
+        self.maxDiff = None
+        self.assertEqual(\
+"""
+select 
+    user.hearAboutUsDropdown  as 'category',
+    count(*) as 'signups' from `user`
+where
+    user.hearAboutUsDropdown is not null 
+    and `user`.createdAt > '2002-01-01'
+    and `user`.createdAt < '2004-01-01'
+    and `user`.hearAboutUsDropdown in ('A','B')
+group by 
+    user.hearAboutUsDropdown
+order by 
+    count(*) desc
+""".replace("\n", " "), string)
+
+    def test_signupsByCategory_empty(self):
+        string = qSignupsByCategory(None, None, None)
+        self.maxDiff = None
+        self.assertEqual(\
+"""
+select 
+    user.hearAboutUsDropdown  as 'category',
+    count(*) as 'signups' from `user`
+where
+    user.hearAboutUsDropdown is not null 
+    
+    
+    
+group by 
+    user.hearAboutUsDropdown
+order by 
+    count(*) desc
+""".replace("\n", " "), string)
+
+if __name__ == '__main__':
+    unittest.main()

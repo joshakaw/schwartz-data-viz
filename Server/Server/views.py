@@ -33,19 +33,23 @@ def signupsByCategory():
     c = db.get_db_cursor()
     query =  read_sql_from_queries("signupsByCategory")
 
-    pdSignupData = pd.DataFrame(
-        {
-            "category": [
-                "Social Media",
-                "Physical Ads",
-                "Friend Referral",
-                "Email Campaign",
-            ],
-            "signups": [15, 10, 8, 12],
-        }
-    )
+    c.execute(query)
+    data = c.fetchall() # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=['category', 'signups'])
 
-    return jsonify(loads(pdSignupData.to_json(orient="records")))
+    # pdSignupData = pd.DataFrame(
+    #     {
+    #         "category": [
+    #             "Social Media",
+    #             "Physical Ads",
+    #             "Friend Referral",
+    #             "Email Campaign",
+    #         ],
+    #         "signups": [15, 10, 8, 12],
+    #     }
+    # )
+
+    return jsonify(loads(pdData.to_json(orient="records")))
 
 
 @main_api.route("/mailchimpDashboard/users")

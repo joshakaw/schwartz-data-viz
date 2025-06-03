@@ -20,6 +20,9 @@
     <RootNamespace>Server</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>./Server/tests</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,11 +40,18 @@
     <Compile Include="Server\queries\sql_helper.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Server\tests\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\tests\test_sql_helper.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server\__init__.py" />
     <Compile Include="Server\views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Server\" />
+    <Folder Include="Server\tests\" />
     <Folder Include="Server\queries\" />
     <Folder Include="Server\util\" />
     <Folder Include="Server\static\" />
@@ -54,6 +64,7 @@
     <Content Include=".gitignore">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Server\queries\test_query.sql" />
     <Content Include="Server\queries\signupsByCategory.sql">
       <SubType>Code</SubType>
     </Content>

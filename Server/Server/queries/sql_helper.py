@@ -3,13 +3,22 @@ Helper functions to deal with
 SQL strings
 """
 
+import os
+
+from flask import current_app
+
+#def init_sql_helper():
+    
+
 def read_sql_from_queries(fileName: str) -> str:
     """
     Returns SQL string from file in queries folder.
     File contents are turned into a single line string.
     fileName: File name in queries folder
     """
-    filePath = "./Server/queries/" + fileName + ".sql"
+    filePath = os.path.join(current_app.root_path, "queries", fileName + ".sql")
+    print(filePath)
+    # filePath = "./Server/queries/" + fileName + ".sql"
 
     sql = open(filePath).read().replace("\n", " ")
 

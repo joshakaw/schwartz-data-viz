@@ -1,4 +1,3 @@
 select user.hearAboutUsDropdown  as 'category' , count(*) as 'signups' from `user`
-where user.hearAboutUsDropdown is not null
-group by user.hearAboutUsDropdown 
+group by user.hearAboutUsDropdown
 order by count(*) desc

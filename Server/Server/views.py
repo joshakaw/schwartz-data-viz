@@ -1,44 +1,37 @@
 """
-Routes and views for the flask application.
+Routes and views for 
+the Flask application.
 """
 
-from datetime import datetime
-from flask import jsonify, render_template
+from flask import Blueprint, jsonify
 import pandas as pd
-from Server import app
+from Server import db
 import os
 
-from json import loads, dumps
+from json import loads
 
-"""
-Test endpoint for React app
-to display
+from Server.queries.sql_helper import read_sql_from_queries
 
-GET /dataTest
-"""
+# Defines the API blueprint to be applied to the app
+main_api = Blueprint("main", __name__)
 
+@main_api.route("/sql")
+def sqlTest():
+    """
+    TEST
+    """
+    c = db.get_db_cursor()
+    query =  read_sql_from_queries("signupsByCategory")
 
-@app.route("/dataTest")
-def dataTest():
-    teamMembers = [
-        {"name": "josh"},
-        {"name": "owen"},
-        {"name": "tyler"},
-        {"name": "tarik"},
-    ]
+    print(query)
+    c.execute(query)
 
-    pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
+    return str(c.fetchall())
 
-    capitalized = pdTeamMembers[
-        "name"
-    ].str.capitalize()  # Now all names should be capitalized
-
-    response = jsonify(loads(capitalized.to_json(orient="records")))
-    return response
-
-
-@app.route("/signupDashboard/signupsByCategory")
+@main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
+    c = db.get_db_cursor()
+    query =  read_sql_from_queries("signupsByCategory")
 
     pdSignupData = pd.DataFrame(
         {
@@ -55,7 +48,7 @@ def signupsByCategory():
     return jsonify(loads(pdSignupData.to_json(orient="records")))
 
 
-@app.route("/mailchimpDashboard/users")
+@main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
     current_dir = os.getcwd()
     print(current_dir)
@@ -68,34 +61,20 @@ def mailchimpUsers():
     return jsonify(loads(pdAccountData.to_json(orient="records")))
 
 
-@app.route("/")
-@app.route("/home")
-def home():
-    """Renders the home page."""
-    return render_template(
-        "index.html",
-        title="Home Page",
-        year=datetime.now().year,
-    )
+@main_api.route("/dataTest")
+def dataTest():
+    teamMembers = [
+        {"name": "josh"},
+        {"name": "owen"},
+        {"name": "tyler"},
+        {"name": "tarik"},
+    ]
 
+    pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
 
-@app.route("/contact")
-def contact():
-    """Renders the contact page."""
-    return render_template(
-        "contact.html",
-        title="Contact",
-        year=datetime.now().year,
-        message="Your contact page.",
-    )
+    capitalized = pdTeamMembers[
+        "name"
+    ].str.capitalize()  # Now all names should be capitalized
 
-
-@app.route("/about")
-def about():
-    """Renders the about page."""
-    return render_template(
-        "about.html",
-        title="About",
-        year=datetime.now().year,
-        message="Your application description page.",
-    )
+    response = jsonify(loads(capitalized.to_json(orient="records")))
+    return response

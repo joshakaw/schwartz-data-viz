@@ -11,7 +11,7 @@ import os
 from json import loads
 
 from Server.queries.sql_helper import read_sql_from_queries
-from Server.queries.sql_templates import qSignupsByCategory
+from Server.queries.sql_templates import qMailchimpUsers, qSignupsByCategory
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
@@ -45,6 +45,7 @@ def signupsByCategory():
     # query = qSignupsByCategory()
 
     c.execute(query)
+
     data = c.fetchall()  # Returns 2d tuple
     pdData = pd.DataFrame(data, columns=["category", "signups"])
 
@@ -55,15 +56,31 @@ def signupsByCategory():
 
 @main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
-    current_dir = os.getcwd()
-    print(current_dir)
+    # TODO: Implement filtering
+    query = qMailchimpUsers()
+    c = db.get_db_cursor()
+    c.execute(query)
 
-    jsonTextAccountData = open("./Server/util/mailchimpUsers.json").read()
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(
+        data,
+        columns=[
+            "studentId",
+            "firstName",
+            "lastName",
+            "email",
+            "phone",
+            "tutor",
+            "parentAccount",
+            "createdAt",
+            "school",
+            "numSessions",
+            "mostRecentSession",
+            "mostRecentSubject"
+        ],
+    )
 
-    jsonAccountData = loads(jsonTextAccountData)
-    pdAccountData = pd.json_normalize(jsonAccountData)
-
-    return jsonify(loads(pdAccountData.to_json(orient="records")))
+    return jsonify(loads(pdData.to_json(orient="records"))) # TODO: Is this expected format by client?
 
 
 @main_api.route("/dataTest")

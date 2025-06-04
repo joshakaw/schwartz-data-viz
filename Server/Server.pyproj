@@ -74,9 +74,6 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Server\queries\test_query.sql" />
-    <Content Include="Server\queries\signupsByCategory.sql">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="Server\util\dbconfig.json">
       <SubType>Code</SubType>
     </Content>

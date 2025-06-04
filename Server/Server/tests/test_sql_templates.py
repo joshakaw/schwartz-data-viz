@@ -10,7 +10,7 @@ class Test_test_sql_templates(unittest.TestCase):
 """
 select 
     user.hearAboutUsDropdown  as 'category',
-    count(*) as 'signups' from `user`
+    count(*) as 'signups' from `user_t` as user
 where
     user.hearAboutUsDropdown is not null 
     and `user`.createdAt > '2002-01-01'
@@ -29,7 +29,7 @@ order by
 """
 select 
     user.hearAboutUsDropdown  as 'category',
-    count(*) as 'signups' from `user`
+    count(*) as 'signups' from `user_t` as user
 where
     user.hearAboutUsDropdown is not null 
     

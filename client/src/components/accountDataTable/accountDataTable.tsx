@@ -1,25 +1,15 @@
-import { useState } from 'react';
 import { rawAccountData } from '../../utils/data';
-import './accountDataTable.css';
+import Table from 'react-bootstrap/Table';
 
 const AccountDataTable = () => {
     const data = rawAccountData;
-    const [currentPage, setCurrentPage] = useState(1);
-    const entriesPerPage = 5;
-
-    // Pagination logic
-    const indexOfLastEntry = currentPage * entriesPerPage;
-    const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-    const currentEntries = data.slice(indexOfFirstEntry, indexOfLastEntry);
-
-    const totalPages = Math.ceil(data.length / entriesPerPage);
 
     return (
-        <>
-            <div className="table-wrapper">
-                <table className="account-data-table">
+        <div className="table-outer-scroll">
+            <div className="table-inner-wrapper">
+                <Table striped bordered hover responsive>
                     <thead>
-                        <tr className="colName">
+                        <tr>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Email</th>
@@ -33,14 +23,13 @@ const AccountDataTable = () => {
                             <th>Recent Tutor</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {currentEntries.map((account) => (
+                        {data.map((account) => (
                             <tr key={account.ssid}>
                                 <td>{account.first_name}</td>
                                 <td>{account.last_name}</td>
                                 <td>{account.email}</td>
-                                <td>{account.phone}</td>
+                                <td>{`(${account.phone.substring(0, 3)})-${account.phone.substring(3, 6)}-${account.phone.substring(6)}`}</td>
                                 <td>{account.school}</td>
                                 <td>{account.account_type}</td>
                                 <td>{account.creation_date}</td>
@@ -51,26 +40,9 @@ const AccountDataTable = () => {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </Table>
             </div>
-            <div className="pagination-controls">
-                <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="prev-btn"
-                >
-                    Prev
-                </button>
-                <span> Page {currentPage} of {totalPages} </span>
-                <button
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="next-btn"
-                >
-                    Next
-                </button>
-            </div>
-        </>
+        </div>
     );
 };
 

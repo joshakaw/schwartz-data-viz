@@ -9,67 +9,11 @@
     Text Color: #46536e
 */
 
-.table-wrapper {
+.table-outer-scroll {
+    overflow-x: hidden; /* hides horizontal scrollbar */
+}
+
+.table-inner-wrapper {
     width: 100%;
-    overflow-x: auto; /* keep this in case content overflows */
 }
 
-.account-data-table {
-    width: max-content;
-    table-layout: auto; /* Important: forces columns to fit */
-    border-collapse: collapse;
-    min-width: 100%;
-    word-wrap: break-word;
-}
-
-.colName {
-    text-align: left;
-}
-
-
-.account-data-table th,
-.account-data-table td {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
-    white-space: nowrap;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin-left: 10px;
-}
-
-th {
-    color: black;
-    background-color: #eff0f6; /* Optional: slightly gray header */
-}
-
-td {
-    color: black;
-}
-
-/* Alternating row background color */
-tbody tr:nth-child(even) {
-    background-color: #eff0f6;
-}
-
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-    gap: 10px;
-}
-
-.pagination-controls button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    background-color: #eff0f6;
-    color: #333;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.pagination-controls button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}

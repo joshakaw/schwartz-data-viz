@@ -9,7 +9,7 @@ export interface AccountData {
     first_name: string;
     last_name: string;
     email: string;
-    phone: number;
+    phone: String;
     school: string;
     account_type: string;
     creation_date: string;
@@ -34,7 +34,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "John",
         last_name: "Doe",
         email: "john.doe@gmail.com",
-        phone: 1234567890,
+        phone: "1234567890",
         school: "Example High School",
         account_type: "Student",
         creation_date: "2023-01-01",
@@ -48,7 +48,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Alice",
         last_name: "Johnson",
         email: "alice.johnson@gmail.com",
-        phone: 9876543210,
+        phone: "9876543210",
         school: "Example High School",
         account_type: "Parent",
         creation_date: "2023-02-15",
@@ -62,7 +62,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Michael",
         last_name: "Lee",
         email: "michael.lee@gmail.com",
-        phone: 5551234567,
+        phone: "5551234567",
         school: "Riverdale Academy",
         account_type: "Student",
         creation_date: "2023-03-20",
@@ -76,7 +76,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Sophia",
         last_name: "Nguyen",
         email: "sophia.nguyen@gmail.com",
-        phone: 4449876543,
+        phone: "4449876543",
         school: "Riverdale Academy",
         account_type: "Parent",
         creation_date: "2023-04-10",
@@ -90,7 +90,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "David",
         last_name: "Martinez",
         email: "david.martinez@gmail.com",
-        phone: 3216549870,
+        phone: "3216549870",
         school: "Lincoln High",
         account_type: "Student",
         creation_date: "2023-05-05",
@@ -104,7 +104,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Emma",
         last_name: "Wilson",
         email: "emma.wilson@gmail.com",
-        phone: 2223334444,
+        phone: "2223334444",
         school: "Lincoln High",
         account_type: "Parent",
         creation_date: "2023-06-01",
@@ -118,7 +118,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Liam",
         last_name: "Brown",
         email: "liam.brown@gmail.com",
-        phone: 7778889999,
+        phone: "7778889999",
         school: "Evergreen Prep",
         account_type: "Student",
         creation_date: "2023-07-18",
@@ -132,7 +132,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Olivia",
         last_name: "Davis",
         email: "olivia.davis@gmail.com",
-        phone: 8887776666,
+        phone: "8887776666",
         school: "Evergreen Prep",
         account_type: "Parent",
         creation_date: "2023-08-12",
@@ -146,7 +146,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Noah",
         last_name: "Anderson",
         email: "noah.anderson@gmail.com",
-        phone: 1112223333,
+        phone: "1112223333",
         school: "Central High",
         account_type: "Student",
         creation_date: "2023-09-01",
@@ -160,7 +160,7 @@ export const rawAccountData: AccountData[] = [
         first_name: "Isabella",
         last_name: "Taylor",
         email: "isabella.taylor@gmail.com",
-        phone: 9990001111,
+        phone: "9990001111",
         school: "Central High",
         account_type: "Parent",
         creation_date: "2023-10-01",

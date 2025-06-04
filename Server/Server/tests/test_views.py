@@ -15,15 +15,33 @@ class Test_test_views(unittest.TestCase):
         cls._client = None
 
     def test_signupsByCategory(self):
+        # Does not test response/query validity
         response = self._client.get(
             "/signupDashboard/signupsByCategory",
             json={
                 "startDate": "2021-10-01",
                 "endDate": "2022-01-01",
-                "categories": ["Physical Advertising", "Friend Referral"],
+                "signupMethodCategories": ["Physical Advertising", "Friend Referral"],
             },
         )
-        self.assertGreaterEqual(len(str(response.get_json())), 2) # At minimum "[]"
+        self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
+        self.assertEqual(response.status_code, 200)  # OK
+
+    def test_mailchimpUsers(self):
+        # Does not test response/query validity
+        response = self._client.get(
+            "/mailchimpDashboard/users",
+            json={
+                "signupMethodCategories": ["Physical Advertising", "Friend Referral"],
+                "freeResponseSearchKeyword": None,
+                "startDate": "2021-10-01",
+                "endDate": "2022-01-01",
+                "accountType": ["Student", "Tutor", "Parent"],
+                "educationLevel": ["K-12"],
+            },
+        )
+
+        self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
 

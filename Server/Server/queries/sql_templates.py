@@ -10,8 +10,8 @@ select
     count(*) as 'signups' from `user_t` as user
 where
     user.hearAboutUsDropdown is not null 
-    {f"and `user`.createdAt > '{startDate}'" if startDate else ""}
-    {f"and `user`.createdAt < '{endDate}'" if endDate else ""}
+    {f"and `user`.createdAt >= '{startDate}'" if startDate else ""}
+    {f"and `user`.createdAt <= '{endDate}'" if endDate else ""}
     {f"and `user`.hearAboutUsDropdown in {sqlListOfCategories}" if sqlListOfCategories else ""}
 group by 
     user.hearAboutUsDropdown

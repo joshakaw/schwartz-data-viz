@@ -1,0 +1,13 @@
+import { RequestDTO } from "./RequestDTO";
+
+/**
+ * Request interface for getting a paginated response.
+ * Filter is an object that extends RequestDTO (e.g. MailchimpUsersRequestDTO)
+ * 
+ * NOT USED YET
+ */
+export interface ApiPaginatedRequest {
+    pageIndex: number;
+    pageSize: number;
+    filter: RequestDTO;
+}

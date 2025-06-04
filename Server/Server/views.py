@@ -38,10 +38,10 @@ def signupsByCategory():
     # print(str(json))
     # print(f"Start Date: {json['startDate']}")
     # print(f"End Date: {json['endDate']}")
-    # print(f"Categories: {str(json['categories'])}")
+    # print(f"Categories: {str(json['signupMethodCategories'])}")
 
     c = db.get_db_cursor()
-    query = qSignupsByCategory(json["startDate"], json["endDate"], json["categories"])
+    query = qSignupsByCategory(json["startDate"], json["endDate"], json["signupMethodCategories"])
     # query = qSignupsByCategory()
 
     c.execute(query)

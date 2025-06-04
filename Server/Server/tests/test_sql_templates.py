@@ -13,8 +13,8 @@ select
     count(*) as 'signups' from `user_t` as user
 where
     user.hearAboutUsDropdown is not null 
-    and `user`.createdAt > '2002-01-01'
-    and `user`.createdAt < '2004-01-01'
+    and `user`.createdAt >= '2002-01-01'
+    and `user`.createdAt <= '2004-01-01'
     and `user`.hearAboutUsDropdown in ('A','B')
 group by 
     user.hearAboutUsDropdown

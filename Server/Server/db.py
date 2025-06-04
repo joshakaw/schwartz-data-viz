@@ -15,7 +15,6 @@ def init_db(app):
     is called at the end of response handler.
     """
 
-    print("Initialized DB!")
     current_app.teardown_appcontext(close_db)
 
 def get_db_cursor():

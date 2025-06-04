@@ -3,7 +3,7 @@ Routes and views for
 the Flask application.
 """
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import pandas as pd
 from Server import db
 import os
@@ -33,10 +33,15 @@ def sqlTest():
 
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
+    # The json data of the request
+    json = request.get_json()
+    # print(str(json))
+    # print(f"Start Date: {json['startDate']}")
+    # print(f"End Date: {json['endDate']}")
+    # print(f"Categories: {str(json['categories'])}")
+
     c = db.get_db_cursor()
-    query = qSignupsByCategory(
-        "2021-10-01", "2022-01-01", ["Physical Advertising", "Friend Referral"]
-    )
+    query = qSignupsByCategory(json["startDate"], json["endDate"], json["categories"])
     # query = qSignupsByCategory()
 
     c.execute(query)

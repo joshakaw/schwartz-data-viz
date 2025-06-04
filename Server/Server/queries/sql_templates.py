@@ -18,3 +18,7 @@ group by
 order by 
     count(*) desc
 """.replace("\n", " ")
+
+def qMailchimpUsers():
+    # TODO: Implement Mailchimmp User SQL template
+    raise NotImplementedError("Not implemented")

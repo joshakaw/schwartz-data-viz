@@ -46,6 +46,9 @@
     <Compile Include="Server\tests\test_sql_templates.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Server\tests\test_views.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server\tests\__init__.py">
       <SubType>Code</SubType>
     </Compile>

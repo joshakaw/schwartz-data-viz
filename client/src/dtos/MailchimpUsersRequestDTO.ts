@@ -6,30 +6,23 @@ import { RequestDTO } from "./RequestDTO";
  */
 export interface MailchimpUsersRequestDTO extends RequestDTO {
     /**
-     * List of signup method categories to include in result. If null,
-     * then all categories will be returned. 
-     * 
-     * (e.g. ["Physical Advertising", "Friend Referral"])
+     * The keyword to search for in 
+     * CONCAT(First Name, " ", Last Name). If null,
+     * no filter is applied.
      */
-    signupMethodCategories: string[] | null;
+    studentNameSearchKeyword: string | null;
 
     /**
-     * The keyword to search in the 'how they heard about us' free response.
+     * Minimum number of a sessions a user attended.
+     * If null, no minimum is set.
      */
-    freeResponseSearchKeyword: string | null;
+    minNumberOfSessions: number | null;
 
     /**
-     * The start date (ISO 8601 format) for the query (inclusive).
-     * If no, no start date filter.
-     * . 
+     * Maxmimum number of a sessions a user attended.
+     * If null, no maximum is set.
      */
-    startDate: string | null;
-
-    /**
-     * The end date (ISO 8601 format) for the query (inclusive).
-     * If null, no end date filter.
-     */
-    endDate: string | null;
+    maxNumberOfSessions: number | null;
 
     /**
      * List of account types to include in result. If null,
@@ -39,10 +32,17 @@ export interface MailchimpUsersRequestDTO extends RequestDTO {
     accountType: string[] | null;
 
     /**
-     * List of education levels to include in result.
-     * If null, then all education levels will be returned.
-     * 
-     * (e.g. ["K-12", "University"])
+     * The start date (ISO 8601 format) filter for the
+     * most recent session attended (inclusive).
+     * If no, no filter is applied.
+     * . 
      */
-    educationLevel: string[] | null
+    startDate: string | null;
+
+    /**
+     * The end date (ISO 8601 format) filter for the 
+     * most recent sesison attended (inclusive).
+     * If null, no filter is applied.
+     */
+    endDate: string | null;
 }

@@ -65,7 +65,7 @@ def mailchimpUsers():
     print(dto.filter.startDate)  # Works!
 
     # Create query
-    query = qMailchimpUsers()
+    query = qMailchimpUsers(dto)
 
     # Execute query
     c = db.get_db_cursor()

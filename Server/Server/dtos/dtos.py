@@ -34,8 +34,8 @@ class MailchimpUsersRequestDTO(RequestDTO):
     minNumberOfSessions: Union[int, None]
     maxNumberOfSessions: Union[int, None]
     accountType: Union[List[str], None]
-    startDate: Union[int, None]
-    endDate: Union[int, None]
+    startDate: Union[str, None]
+    endDate: Union[str, None]
 
 
 class SignupsByCategoryRequestDTO(RequestDTO):

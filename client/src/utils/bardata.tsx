@@ -7,6 +7,13 @@
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
 
 export interface SignupData {
     category: string;
@@ -64,17 +71,31 @@ export const rawSignupData: SignupData[] = [
 // Hi tarik
 
 const Options = () => {
-    const [timeframe, setTimeframe] = useState("default");
+    const [timeframe, setTimeframe] = useState<Date[] | undefined>();
     const [userType, setUserType] = useState("default");
+    const [schoolType, setSchoolType] = useState("default");
+    const [signupType, setSignupType] = useState("default");
+
     // const [rawSignupData, setRawSignupData] = useState<SignupData[]>([]);
 
     const TimeframeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setTimeframe(event.target.value);
+        setTimeframe([new Date(event.target.value)]);
+        // Given how this uses a date range, may need special parsing before SQL call.
         // SQL Call with new timeframe and curr usertype
     };
 
     const UserTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setUserType(event.target.value);
+        // SQL Call with new usertype and curr usertype
+    };
+
+    const SchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSchoolType(event.target.value);
+        // SQL Call with new usertype and curr usertype
+    };
+
+    const SignupChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSignupType(event.target.value);
         // SQL Call with new usertype and curr usertype
     };
 
@@ -102,26 +123,50 @@ const Options = () => {
     //    console.log("Chart Data:", rawSignupData);
     //}, [timeframe, userType]);
 
-
+    // Not putting this with the other ones since this isn't related to data stuff.
+    const [isOpen, setOpen] = useState(false);
 
     return (
-        <div>
-            <label>Timeframe: </label>
-            <select name="timeframe" onChange={TimeframeChange}>
-                <option value="default">Overall</option>
-                <option value="7">Last 7 Days</option>
-                <option value="14">Last 14 Days</option>
-                <option value="30">Last 30 Days</option>
-            </select>
-            <br></br>
-            <label>User types: </label>
-            <select name="userType" onChange={UserTypeChange}>
-                <option value="default">All users</option>
-                <option value="Students">Students</option>
-                <option value="Parents">Parents</option>
-                <option value="Tutors">Tutors</option>
-            </select>
-        </div>
+        <Container fluid>
+            <h1>Filters</h1>
+            <Row>
+                <Form>
+                    <Form.Group controlId="filters">
+                        <Col>
+                            <Form.Label>Signup Method:</Form.Label>
+                            <Form.Select value="signupMethod" onChange={SignupChange}>
+                                <option value="default">All methods</option>
+                                <option value="default">Social Media</option>
+                                <option value="default">Physical Advertising</option>
+                                <option value="default">Friend Referral</option>
+                                <option value="default">Email Campaign</option>
+                            </Form.Select>
+                        </Col>
+                        <Col>
+                            <Form.Label>Account Type:</Form.Label>
+                            <Form.Select value="userType" onChange={UserTypeChange}>
+                                <option value="default">All users</option>
+                                <option value="Students">Students</option>
+                                <option value="Parents">Parents</option>
+                                <option value="Tutors">Tutors</option>
+                            </Form.Select>
+                        </Col>
+                        <Col>
+                            <Form.Label>School type: </Form.Label>
+                            <Form.Select value="schoolType" onChange={SchoolChange}>
+                                <option value="default">Both University & K-12</option>
+                                <option value="University">University</option>
+                                <option value="K12">K-12</option>
+                            </Form.Select>
+                        </Col>
+                        <Col>
+                            <Button>Select Date Range</Button>
+                            <DayPicker animate mode="range"></DayPicker>
+                        </Col>
+                    </Form.Group>
+                </Form>
+            </Row>
+        </Container>
     );
 }
 

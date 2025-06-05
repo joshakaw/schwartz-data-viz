@@ -37,6 +37,15 @@
     <Compile Include="Server\db.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Server\dtos\dtos.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\dtos\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\queries\json_request_helper.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server\queries\sql_helper.py">
       <SubType>Code</SubType>
     </Compile>
@@ -60,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Server\" />
+    <Folder Include="Server\dtos\" />
     <Folder Include="Server\tests\" />
     <Folder Include="Server\queries\" />
     <Folder Include="Server\util\" />
@@ -71,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="mypy.ini">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Server\queries\test_query.sql" />

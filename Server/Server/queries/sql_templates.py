@@ -1,4 +1,4 @@
-from . import sql_helper
+from Server.queries import sql_helper
 
 def qSignupsByCategory(startDate, endDate, categories):
     sqlListOfCategories = sql_helper.array_to_sql_in_clause(categories)

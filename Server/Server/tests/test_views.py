@@ -32,12 +32,19 @@ class Test_test_views(unittest.TestCase):
         response = self._client.get(
             "/mailchimpDashboard/users",
             json={
-                "signupMethodCategories": ["Physical Advertising", "Friend Referral"],
-                "freeResponseSearchKeyword": None,
-                "startDate": "2021-10-01",
-                "endDate": "2022-01-01",
-                "accountType": ["Student", "Tutor", "Parent"],
-                "educationLevel": ["K-12"],
+                "pageIndex": 0,
+                "pageSize": 10,
+                "filter": {
+                    "signupMethodCategories": [
+                        "Physical Advertising",
+                        "Friend Referral",
+                    ],
+                    "freeResponseSearchKeyword": None,
+                    "startDate": "2021-10-01",
+                    "endDate": "2022-01-01",
+                    "accountType": ["Student", "Tutor", "Parent"],
+                    "educationLevel": ["K-12"],
+                },
             },
         )
 

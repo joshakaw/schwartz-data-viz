@@ -3,10 +3,14 @@ Routes and views for
 the Flask application.
 """
 
+from Server.dtos.dtos import (
+    ApiPaginatedRequest,
+    MailchimpUsersRequestDTO,
+    SignupsByCategoryRequestDTO,
+)
 from flask import Blueprint, jsonify, request
 import pandas as pd
 from Server import db
-import os
 
 from json import loads
 
@@ -33,23 +37,19 @@ def sqlTest():
 
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
-    # The json data of the request
-    json = request.get_json()
-    # print(str(json))
-    # print(f"Start Date: {json['startDate']}")
-    # print(f"End Date: {json['endDate']}")
-    # print(f"Categories: {str(json['signupMethodCategories'])}")
+    # Get request
+    dto = SignupsByCategoryRequestDTO(**request.get_json())
 
+    # Create query
+    query = qSignupsByCategory(dto.startDate, dto.endDate, dto.signupMethodCategories)
+
+    # Execute query
     c = db.get_db_cursor()
-    query = qSignupsByCategory(json["startDate"], json["endDate"], json["signupMethodCategories"])
-    # query = qSignupsByCategory()
-
     c.execute(query)
 
+    # Transform
     data = c.fetchall()  # Returns 2d tuple
     pdData = pd.DataFrame(data, columns=["category", "signups"])
-
-    # https://docs.python.org/2/library/stdtypes.html#string-formatting
 
     return jsonify(loads(pdData.to_json(orient="records")))
 
@@ -57,10 +57,21 @@ def signupsByCategory():
 @main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
     # TODO: Implement filtering
+
+    # Get request
+    dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.get_json())
+
+    print(dto.pageIndex)
+    print(dto.filter.startDate)  # Works!
+
+    # Create query
     query = qMailchimpUsers()
+
+    # Execute query
     c = db.get_db_cursor()
     c.execute(query)
 
+    # Transform
     data = c.fetchall()  # Returns 2d tuple
     pdData = pd.DataFrame(
         data,
@@ -76,11 +87,13 @@ def mailchimpUsers():
             "school",
             "numSessions",
             "mostRecentSession",
-            "mostRecentSubject"
+            "mostRecentSubject",
         ],
     )
 
-    return jsonify(loads(pdData.to_json(orient="records"))) # TODO: Is this expected format by client?
+    return jsonify(
+        loads(pdData.to_json(orient="records"))
+    )  # TODO: Is this expected format by client?
 
 
 @main_api.route("/dataTest")

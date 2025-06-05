@@ -11,18 +11,18 @@ export interface SignupsByCategoryRequestDTO extends RequestDTO {
      * 
      * (e.g. ["Physical Advertising", "Friend Referral"])
      */
-    signupMethodCategories: string[];
+    signupMethodCategories: string[] | null;
 
     /**
      * The start date (ISO 8601 format) for the signups query (inclusive).
      * If no, no start date filter.
      * . 
      */
-    startDate: string;
+    startDate: string | null;
 
     /**
      * The end date (ISO 8601 format) for the signups query (inclusive).
      * If null, no end date filter.
      */
-    endDate: string;
+    endDate: string | null;
 }

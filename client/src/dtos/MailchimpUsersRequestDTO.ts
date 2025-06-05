@@ -11,32 +11,32 @@ export interface MailchimpUsersRequestDTO extends RequestDTO {
      * 
      * (e.g. ["Physical Advertising", "Friend Referral"])
      */
-    signupMethodCategories: string[];
+    signupMethodCategories: string[] | null;
 
     /**
      * The keyword to search in the 'how they heard about us' free response.
      */
-    freeResponseSearchKeyword: string;
+    freeResponseSearchKeyword: string | null;
 
     /**
      * The start date (ISO 8601 format) for the query (inclusive).
      * If no, no start date filter.
      * . 
      */
-    startDate: string;
+    startDate: string | null;
 
     /**
      * The end date (ISO 8601 format) for the query (inclusive).
      * If null, no end date filter.
      */
-    endDate: string;
+    endDate: string | null;
 
     /**
      * List of account types to include in result. If null,
      * then all categories will be returned.
      * (e.g. ["Student", "Tutor", "Parent"])
      */
-    accountType: string[];
+    accountType: string[] | null;
 
     /**
      * List of education levels to include in result.
@@ -44,5 +44,5 @@ export interface MailchimpUsersRequestDTO extends RequestDTO {
      * 
      * (e.g. ["K-12", "University"])
      */
-    educationLevel: string[]
+    educationLevel: string[] | null
 }

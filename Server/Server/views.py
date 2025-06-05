@@ -1,24 +1,102 @@
 """
-Routes and views for the flask application.
+Routes and views for
+the Flask application.
 """
 
-from datetime import datetime
-from flask import jsonify, render_template
+from Server.dtos.dtos import (
+    ApiPaginatedRequest,
+    MailchimpUsersRequestDTO,
+    SignupsByCategoryRequestDTO,
+)
+from flask import Blueprint, jsonify, request
 import pandas as pd
-from Server import app
-import os
+from Server import db
 
-from json import loads, dumps
+from json import loads
 
-"""
-Test endpoint for React app
-to display
+from Server.queries.sql_helper import read_sql_from_queries
+from Server.queries.sql_templates import qMailchimpUsers, qSignupsByCategory
 
-GET /dataTest
-"""
+# Defines the API blueprint to be applied to the app
+main_api = Blueprint("main", __name__)
 
 
-@app.route("/dataTest")
+@main_api.route("/sql")
+def sqlTest():
+    """
+    TEST
+    """
+    c = db.get_db_cursor()
+    query = read_sql_from_queries("signupsByCategory")
+
+    print(query)
+    c.execute(query)
+
+    return str(c.fetchall())
+
+
+@main_api.route("/signupDashboard/signupsByCategory")
+def signupsByCategory():
+    # Get request
+    dto = SignupsByCategoryRequestDTO(**request.get_json())
+
+    # Create query
+    query = qSignupsByCategory(dto.startDate, dto.endDate, dto.signupMethodCategories)
+
+    # Execute query
+    c = db.get_db_cursor()
+    c.execute(query)
+
+    # Transform
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=["category", "signups"])
+
+    return jsonify(loads(pdData.to_json(orient="records")))
+
+
+@main_api.route("/mailchimpDashboard/users")
+def mailchimpUsers():
+    # TODO: Implement filtering
+
+    # Get request
+    dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.get_json())
+
+    print(dto.pageIndex)
+    print(dto.filter.startDate)  # Works!
+
+    # Create query
+    query = qMailchimpUsers(dto)
+
+    # Execute query
+    c = db.get_db_cursor()
+    c.execute(query)
+
+    # Transform
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(
+        data,
+        columns=[
+            "studentId",
+            "firstName",
+            "lastName",
+            "email",
+            "phone",
+            "tutor",
+            "parentAccount",
+            "createdAt",
+            "school",
+            "numSessions",
+            "mostRecentSession",
+            "mostRecentSubject",
+        ],
+    )
+
+    return jsonify(
+        loads(pdData.to_json(orient="records"))
+    )  # TODO: Is this expected format by client?
+
+
+@main_api.route("/dataTest")
 def dataTest():
     teamMembers = [
         {"name": "josh"},
@@ -35,67 +113,3 @@ def dataTest():
 
     response = jsonify(loads(capitalized.to_json(orient="records")))
     return response
-
-
-@app.route("/signupDashboard/signupsByCategory")
-def signupsByCategory():
-
-    pdSignupData = pd.DataFrame(
-        {
-            "category": [
-                "Social Media",
-                "Physical Ads",
-                "Friend Referral",
-                "Email Campaign",
-            ],
-            "signups": [15, 10, 8, 12],
-        }
-    )
-
-    return jsonify(loads(pdSignupData.to_json(orient="records")))
-
-
-@app.route("/mailchimpDashboard/users")
-def mailchimpUsers():
-    current_dir = os.getcwd()
-    print(current_dir)
-
-    jsonTextAccountData = open("./Server/util/mailchimpUsers.json").read()
-
-    jsonAccountData = loads(jsonTextAccountData)
-    pdAccountData = pd.json_normalize(jsonAccountData)
-
-    return jsonify(loads(pdAccountData.to_json(orient="records")))
-
-
-@app.route("/")
-@app.route("/home")
-def home():
-    """Renders the home page."""
-    return render_template(
-        "index.html",
-        title="Home Page",
-        year=datetime.now().year,
-    )
-
-
-@app.route("/contact")
-def contact():
-    """Renders the contact page."""
-    return render_template(
-        "contact.html",
-        title="Contact",
-        year=datetime.now().year,
-        message="Your contact page.",
-    )
-
-
-@app.route("/about")
-def about():
-    """Renders the about page."""
-    return render_template(
-        "about.html",
-        title="About",
-        year=datetime.now().year,
-        message="Your application description page.",
-    )

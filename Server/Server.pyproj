@@ -20,6 +20,9 @@
     <RootNamespace>Server</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>./Server/tests</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,11 +34,44 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runserver.py" />
+    <Compile Include="Server\db.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\dtos\dtos.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\dtos\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\queries\json_request_helper.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\queries\sql_helper.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\queries\sql_templates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\tests\test_sql_templates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\tests\test_views.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\tests\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Server\tests\test_sql_helper.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server\__init__.py" />
     <Compile Include="Server\views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Server\" />
+    <Folder Include="Server\dtos\" />
+    <Folder Include="Server\tests\" />
+    <Folder Include="Server\queries\" />
     <Folder Include="Server\util\" />
     <Folder Include="Server\static\" />
     <Folder Include="Server\static\content\" />
@@ -47,7 +83,11 @@
     <Content Include=".gitignore">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="dbconfig.json">
+    <Content Include="mypy.ini">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Server\queries\test_query.sql" />
+    <Content Include="Server\util\dbconfig.json">
       <SubType>Code</SubType>
     </Content>
     <Content Include="requirements.txt" />

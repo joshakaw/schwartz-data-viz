@@ -1,0 +1,8 @@
+.NotImplementedWarning {
+    padding: 10px;
+    margin-bottom:10px;
+    border-radius: 6px;
+    border: 2px solid #d8d8d8;
+    background-color: #fafafa;
+    color: darkred;
+}

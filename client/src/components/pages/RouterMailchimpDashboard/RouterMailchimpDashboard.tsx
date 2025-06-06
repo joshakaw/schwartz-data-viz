@@ -33,6 +33,9 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
                         <Form.Control placeholder="Search" aria-label="Search" />
                     </InputGroup>
 
+                    {/*
+                        Changes value based on selected value.    
+                    */}
                     <Dropdown className="sessions">
                         <Dropdown.Toggle id="dropdown-basic">{selectedSession}</Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -42,6 +45,11 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
                         </Dropdown.Menu>
                     </Dropdown>
 
+                    {/*
+                        Allows multi-selection of values.
+                        The filter will take into account
+                        all of the selected options.
+                    */}
                     <div className="session-select">
                         <Select
                             options={sessionOptions}
@@ -51,11 +59,30 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
                         />
                     </div>
 
+                    {/*
+                        Reverts all filter options to their
+                        default state.
+                    */}
+                    <Button type="button" className="submit-button" variant="danger">
+                        Clear Filters
+                    </Button>
+
+                    {/*
+                        Applies all selected filter options
+                        to the table. If all filter options
+                        are left empty, the tabel will default
+                        to showing all data.
+                    */}
                     <Button type="submit" className="submit-button" variant="success">
                         Apply Filters
                     </Button>
                 </Form>
 
+                {/* 
+                    Takes the last submitted filter json
+                    data and converts it into a csv file
+                    for MailChimp compatibility.
+                */}
                 <Button className="export-button" variant="primary">Export CSV</Button>
             </div>
 

@@ -9,6 +9,7 @@ import RouterMailchimpDashboard from "./components/pages/RouterMailchimpDashboar
 
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
+import RouterDetailedSignupsDashboard from "./components/pages/RouterDetailedSignupsDashboard/RouterDetailedSignupsDashboard.tsx";
 
 //const router = createBrowserRouter([
 //    { path: "/", Component: App },
@@ -25,8 +26,9 @@ ReactDOM.createRoot(root).render(
         <Routes>
             <Route path="/" element={<RootComponent />}>
                 <Route index element={<RouterHomeComponent />} />
+                <Route path="/mailchimp" element={<RouterMailchimpDashboard />} />
                 <Route path="/signups" element={<RouterSignupsDashboard />} />
-                <Route path="/mailchimp" element={<RouterMailchimpDashboard /> } />
+                <Route path="/detailedsignups" element={<RouterDetailedSignupsDashboard />} />
             </Route>
         </Routes>
     </BrowserRouter>

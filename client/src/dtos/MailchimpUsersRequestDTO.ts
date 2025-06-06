@@ -1,10 +1,8 @@
-import { RequestDTO } from "./RequestDTO";
-
 /**
  * Request body DTO for filtering
  * GET /mailchimpDashboard/users
  */
-export interface MailchimpUsersRequestDTO extends RequestDTO {
+export interface MailchimpUsersRequestDTO {
     /**
      * The keyword to search for in 
      * CONCAT(First Name, " ", Last Name). If null,

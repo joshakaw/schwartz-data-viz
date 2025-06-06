@@ -1,10 +1,8 @@
-import { RequestDTO } from "./RequestDTO";
-
 /**
  * Request body DTO for filtering
  * GET ---------
  */
-export interface DetailedSignupRequestDTO extends RequestDTO {
+export interface DetailedSignupRequestDTO {
     /**
      * List of signup method categories to include in result. If null,
      * then all categories will be returned. 

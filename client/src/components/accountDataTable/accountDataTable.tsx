@@ -1,9 +1,11 @@
-import { rawAccountData } from '../../utils/data';
 import Table from 'react-bootstrap/Table';
+import { MailchimpUserResponseDTO } from '../../dtos/MailchimpUsersResponseDTO';
 
-const AccountDataTable = () => {
-    const data = rawAccountData;
+interface AccountDataTableProps {
+    data: MailchimpUserResponseDTO[];
+}
 
+const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
     return (
         <div className="table-outer-scroll">
             <div className="table-inner-wrapper">
@@ -25,18 +27,18 @@ const AccountDataTable = () => {
                     </thead>
                     <tbody>
                         {data.map((account) => (
-                            <tr key={account.ssid}>
-                                <td>{account.first_name}</td>
-                                <td>{account.last_name}</td>
+                            <tr key={account.studentId}>
+                                <td>{account.firstName}</td>
+                                <td>{account.lastName}</td>
                                 <td>{account.email}</td>
                                 <td>{`(${account.phone.substring(0, 3)})-${account.phone.substring(3, 6)}-${account.phone.substring(6)}`}</td>
                                 <td>{account.school}</td>
-                                <td>{account.account_type}</td>
-                                <td>{account.creation_date}</td>
-                                <td>{account.sessions}</td>
-                                <td>{account.recent_session}</td>
-                                <td>{account.recent_subject}</td>
-                                <td>{account.recent_tutor}</td>
+                                <td>{account.parentAccount}</td>
+                                <td>{account.createdAt}</td>
+                                <td>{account.numSession}</td>
+                                <td>{account.mostRecentSession}</td>
+                                <td>{account.mostRecentSubject}</td>
+                                <td>{account.tutor}</td>
                             </tr>
                         ))}
                     </tbody>

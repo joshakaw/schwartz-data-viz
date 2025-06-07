@@ -1,11 +1,22 @@
+// React and styling imports
 import { FC, useState } from 'react';
 import './RouterMailchimpDashboard.css';
-import AccountDataTable from '../../accountDataTable/accountDataTable';
 
+// Custom component imports
+import AccountDataTable from '../../accountDataTable/accountDataTable';
+import { ApiPaginatedRequest } from '../../../dtos/ApiPaginatedRequest.ts';
+
+// React component imports
 import Dropdown from 'react-bootstrap/Dropdown';
 import { InputGroup, Form, Button } from 'react-bootstrap';
 import Select from 'react-select';
+import CsvDownloadButton from 'react-json-to-csv';
 
+// Data Components
+import instance from "../../../utils/axios";
+//port { ApiPaginatedRequest } from "./ApiPaginatedRequest";
+import { MailchimpUsersRequestDTO } from "../../../dtos/MailchimpUsersRequestDTO";
+import { MailchimpUserResponseDTO } from '../../../dtos/MailchimpUsersResponseDTO.ts';
 interface RouterMailchimpDashboardProps { }
 
 const sessionOptions = [
@@ -16,6 +27,25 @@ const sessionOptions = [
 
 const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
+    const [resJson, setResJson] = useState<Array<MailchimpUserResponseDTO>>([]);
+
+    var reqData: ApiPaginatedRequest<MailchimpUsersRequestDTO> = {
+        pageIndex: 0,
+        pageSize: 10,
+        filter: {
+            accountType: ["Tutor"],
+            studentNameSearchKeyword: null,
+            minNumberOfSessions: null,
+            maxNumberOfSessions: null,
+            startDate: null,
+            endDate: null
+        }
+    }
+    instance.get("mailchimpDashboard/users", { data: reqData }).then((response) => {
+        setResJson(response.data);
+    }).catch((reason) => {
+        console.error(reason)
+    })
 
     return (
         <>
@@ -83,11 +113,12 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
                     data and converts it into a csv file
                     for MailChimp compatibility.
                 */}
-                <Button className="export-button" variant="primary">Export CSV</Button>
+                <CsvDownloadButton className="export-button" delimiter="," data={resJson} />
+                {/*<Button className="export-button" variant="primary">Export CSV</Button>*/}
             </div>
 
             <div className="account-table">
-                <AccountDataTable />
+                <AccountDataTable data={resJson} />
             </div>
         </>
     );

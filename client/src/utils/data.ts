@@ -1,4 +1,3 @@
-// utils/data.ts
 export interface SignupData {
     category: string;
     signups: number;

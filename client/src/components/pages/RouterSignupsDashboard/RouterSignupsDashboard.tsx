@@ -23,7 +23,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
             <Form>
                 <Form.Group className="mb-3">
                     <Form.Label>Signup methods:</Form.Label>
-                    <Select as={Form.Select}
+                    <Select
                         options={signupOptions}
                         className='inner-select'
                         isMulti

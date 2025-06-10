@@ -7,8 +7,8 @@ from Server.dtos.dtos import (
     ApiPaginatedRequest,
     MailchimpUsersRequestDTO,
     SignupsByCategoryRequestDTO,
-    FlatMailchimpPaginated,
-    FlatSignups,
+    MailchimpUsersRequestDTO,
+    SignupsByCategoryRequestDTO,
 )
 from flask import Blueprint, jsonify, request
 import pandas as pd
@@ -40,7 +40,7 @@ def sqlTest():
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
     # Get request
-    dto = FlatSignups(**request.args.to_dict(flat=False))
+    dto = SignupsByCategoryRequestDTO(**request.args.to_dict(flat=False))
     # dto = SignupsByCategoryRequestDTO(**request.get_json())
 
     # Create query
@@ -63,7 +63,7 @@ def mailchimpUsers():
     print(f"Request JSON is: 999{request.data}999")
 
     # Get request
-    dto = FlatMailchimpPaginated(**request.args.to_dict(flat=False))
+    dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
     # dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.json)
 
     print(dto.pageIndex)

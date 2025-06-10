@@ -1,4 +1,4 @@
-from Server.dtos.dtos import ApiPaginatedRequest, MailchimpUsersRequestDTO, FlatMailchimpPaginated
+from Server.dtos.dtos import ApiPaginatedRequest, MailchimpUsersRequestDTO, MailchimpUsersRequestDTO
 from Server.queries import sql_helper
 
 def qSignupsByCategory(startDate, endDate, categories):
@@ -20,7 +20,7 @@ order by
     count(*) desc
 """.replace("\n", " ")
 
-def qMailchimpUsers(dto: FlatMailchimpPaginated):
+def qMailchimpUsers(dto: MailchimpUsersRequestDTO):
     # TODO: Implement Mailchimmp User SQL template
     # raise NotImplementedError("Not implemented")
 

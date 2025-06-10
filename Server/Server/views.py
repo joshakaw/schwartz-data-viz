@@ -3,8 +3,9 @@ Routes and views for
 the Flask application.
 """
 
+from typing import Any, List
+from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
-    ApiPaginatedRequest,
     MailchimpUsersRequestDTO,
     SignupsByCategoryRequestDTO,
     MailchimpUsersRequestDTO,
@@ -44,7 +45,9 @@ def signupsByCategory():
     # dto = SignupsByCategoryRequestDTO(**request.get_json())
 
     # Create query
-    query = qSignupsByCategory(dto.startDate[0], dto.endDate[0], dto.signupMethodCategories[0])
+    query = qSignupsByCategory(
+        dto.startDate[0], dto.endDate[0], dto.signupMethodCategories[0]
+    )
 
     # Execute query
     c = db.get_db_cursor()
@@ -99,6 +102,25 @@ def mailchimpUsers():
     return jsonify(
         loads(pdData.to_json(orient="records"))
     )  # TODO: Is this expected format by client?
+
+
+# @main_api.route("/params")
+# def paramsTest():
+#     # Create query
+#     prefilledQuery = (
+#         "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
+#     )
+#     query = "select * from user_t where firstName like %s and id > %s limit 10;"
+#     params: List[Any] = ["Ro%", 300]
+    
+#     # Execute query
+#     c = db.get_db_cursor()
+#     c.execute(query, params)
+#     # Transform
+#     data = c.fetchall()
+#     pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+
+#     return jsonify(loads(pdData.to_json(orient="records")))
 
 
 @main_api.route("/dataTest")

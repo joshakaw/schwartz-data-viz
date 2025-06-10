@@ -1,4 +1,5 @@
-from Server.dtos.dtos import ApiPaginatedRequest, MailchimpUsersRequestDTO, MailchimpUsersRequestDTO
+from typing import List, Tuple
+from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO, MailchimpUsersRequestDTO
 from Server.queries import sql_helper
 
 def qSignupsByCategory(startDate, endDate, categories):
@@ -21,8 +22,7 @@ order by
 """.replace("\n", " ")
 
 def qMailchimpUsers(dto: MailchimpUsersRequestDTO):
-    # TODO: Implement Mailchimmp User SQL template
-    # raise NotImplementedError("Not implemented")
+	# TODO: Important! Account type not implemented!
 
     return\
 f"""
@@ -77,12 +77,25 @@ left join
 	user.parentId = parent.id
 where 
 	1=1
-	{f"and CONCAT(user.firstName, ' ', user.lastName) like '{dto.studentNameSearchKeyword[0]}'" if dto.studentNameSearchKeyword[0] else ""}
-	{f"and latest_sessions.numbersessions > '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions[0] else ""}
-	{f"and latest_sessions.numbersessions < '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions[0] else ""}
-	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate[0] else ""}
-    {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate[0] else ""}
+	{f"and CONCAT(user.firstName, ' ', user.lastName) like '{dto.studentNameSearchKeyword[0]}'" if dto.studentNameSearchKeyword else ""}
+	{f"and latest_sessions.numbersessions > '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions else ""}
+	{f"and latest_sessions.numbersessions < '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions else ""}
+	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate else ""}
+    {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate else ""}
 order by
 	mostrecentsession desc
 limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
 """
+
+def qDetailedSignups(dto: DetailedSignupRequestDTO) -> Tuple[str, List[str]]:
+	pass
+	# This query will use parameters, so the db.execute() can 
+	# escape anything that could lead to SQL Injection
+
+	# Content of the Where clause
+	whereContent = ""
+
+	# Parameters
+	params: List[str]
+
+	# Create SQL string

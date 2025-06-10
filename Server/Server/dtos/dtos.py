@@ -26,7 +26,7 @@ class SignupsByCategoryRequestDTO(BaseModel):
 
 
 class DetailedSignupRequestDTO(BaseModel):
-    signupMethodCategories: Union[List[str], None]
+    signupMethodCategories: Union[List[str], None] # TODO: Does the Flask parser turn nulls/Nones from client into an empty list?
     freeResponseSearchKeyword: Union[SingleItemList[str], None]
     startDate: Union[SingleItemList[str], None]
     endDate: Union[SingleItemList[str], None]

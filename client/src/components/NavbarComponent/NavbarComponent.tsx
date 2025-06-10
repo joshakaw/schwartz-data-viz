@@ -48,7 +48,7 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto" activeKey={activeKey} onSelect={handleSelect}>
+                    <Nav className="me-auto links" activeKey={activeKey} onSelect={handleSelect}>
                         <Nav.Link onClick={(e) => handleNavigation(e, "/")} eventKey="home">Home</Nav.Link>
                         <Nav.Link onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="mailchimp">Mailchimp</Nav.Link>
                         <Nav.Link onClick={(e) => handleNavigation(e, "/signups")} eventKey="signups">Signups</Nav.Link>

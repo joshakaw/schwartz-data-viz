@@ -1,4 +1,3 @@
-import { RequestDTO } from "./RequestDTO";
 
 /**
  * Request interface for getting a paginated response.
@@ -6,10 +5,9 @@ import { RequestDTO } from "./RequestDTO";
  * 
  * NOT USED YET
  */
-export interface ApiPaginatedRequest<T> {
+export interface ApiPaginatedRequest {
     /** The starting page index */
     pageIndex: number;
     /** Size of pages */
     pageSize: number;
-    filter: T;
 }

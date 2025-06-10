@@ -1,8 +1,10 @@
+import { ApiPaginatedRequest } from "./ApiPaginatedRequest";
+
 /**
  * Request body DTO for filtering
  * GET /mailchimpDashboard/users
  */
-export interface MailchimpUsersRequestDTO {
+export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
     /**
      * The keyword to search for in 
      * CONCAT(First Name, " ", Last Name). If null,

@@ -1,4 +1,4 @@
-from Server.dtos.dtos import ApiPaginatedRequest, MailchimpUsersRequestDTO
+from Server.dtos.dtos import ApiPaginatedRequest, MailchimpUsersRequestDTO, TempMailchimpPaginated
 from Server.queries import sql_helper
 
 def qSignupsByCategory(startDate, endDate, categories):
@@ -20,7 +20,7 @@ order by
     count(*) desc
 """.replace("\n", " ")
 
-def qMailchimpUsers(dto: ApiPaginatedRequest[MailchimpUsersRequestDTO]):
+def qMailchimpUsers(dto: TempMailchimpPaginated):
     # TODO: Implement Mailchimmp User SQL template
     # raise NotImplementedError("Not implemented")
 
@@ -77,12 +77,12 @@ left join
 	user.parentId = parent.id
 where 
 	1=1
-	{f"and CONCAT(user.firstName, ' ', user.lastName) like '{dto.filter.studentNameSearchKeyword}'" if dto.filter.studentNameSearchKeyword else ""}
-	{f"and latest_sessions.numbersessions > '{dto.filter.minNumberOfSessions}'" if dto.filter.minNumberOfSessions else ""}
-	{f"and latest_sessions.numbersessions < '{dto.filter.maxNumberOfSessions}'" if dto.filter.maxNumberOfSessions else ""}
-	{f"and tutoringsession.date >= '{dto.filter.startDate}'" if dto.filter.startDate else ""}
-    {f"and tutoringsession.date <= '{dto.filter.endDate}'" if dto.filter.endDate else ""}
+	{f"and CONCAT(user.firstName, ' ', user.lastName) like '{dto.studentNameSearchKeyword[0]}'" if dto.studentNameSearchKeyword[0] else ""}
+	{f"and latest_sessions.numbersessions > '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions[0] else ""}
+	{f"and latest_sessions.numbersessions < '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions[0] else ""}
+	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate[0] else ""}
+    {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate[0] else ""}
 order by
 	mostrecentsession desc
-limit {dto.pageSize} offset {dto.pageIndex};
+limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
 """

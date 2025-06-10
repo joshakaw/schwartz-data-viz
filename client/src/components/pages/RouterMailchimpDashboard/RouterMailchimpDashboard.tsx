@@ -29,19 +29,17 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [resJson, setResJson] = useState<Array<MailchimpUserResponseDTO>>([]);
 
-    var reqData: ApiPaginatedRequest<MailchimpUsersRequestDTO> = {
+    var reqData: MailchimpUsersRequestDTO = {
+        accountType: ["Tutor"],
+        studentNameSearchKeyword: null,
+        minNumberOfSessions: null,
+        maxNumberOfSessions: null,
+        startDate: null,
+        endDate: null,
         pageIndex: 0,
-        pageSize: 10,
-        filter: {
-            accountType: ["Tutor"],
-            studentNameSearchKeyword: null,
-            minNumberOfSessions: null,
-            maxNumberOfSessions: null,
-            startDate: null,
-            endDate: null
-        }
+        pageSize: 10
     }
-    instance.get("mailchimpDashboard/users", { data: reqData }).then((response) => {
+    instance.get("mailchimpDashboard/users", { params: reqData }).then((response) => {
         setResJson(response.data);
     }).catch((reason) => {
         console.error(reason)

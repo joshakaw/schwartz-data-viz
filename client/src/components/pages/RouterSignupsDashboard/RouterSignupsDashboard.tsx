@@ -1,7 +1,7 @@
 import { FC, useRef, useState } from 'react';
 import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
-import { Button, Form, Overlay } from 'react-bootstrap';
+import { Button, Col, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { MultiValue, SingleValue } from 'react-select';
 import { signupOptions, userOptions, OptionType } from '../../../utils/input-fields';
@@ -31,7 +31,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
         console.log(reqJson);
 
-        instance.get("/signupDashboard/signupsByCategory", { data: reqJson }).then((response) => {
+        instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
             console.log(response.data);
             setData(response.data);
         })
@@ -103,10 +103,20 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     </Overlay>
                 </Form.Group>
             </Form>
-
         </div>
         <BarChart />
-        <NotImplementedWarning message="Summary box not completed." />
+        <div>
+            <Row style={{ backgroundColor: '#E0DFDE' }} className="rounded">
+                <Col>
+                    <p className="text-center">Total signups last week:</p>
+                    <h1 className="text-center">1</h1>
+                </Col>
+                <Col>
+                    <p className="text-center">Total signups this week:</p>
+                    <h1 className="text-center">2</h1>
+                </Col>
+            </Row>
+        </div>
         <NotImplementedWarning message="Trend line chart not completed." />
     </div>
 };

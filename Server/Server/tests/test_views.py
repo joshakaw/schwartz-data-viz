@@ -16,12 +16,12 @@ class Test_test_views(unittest.TestCase):
     def test_signupsByCategory(self):
         # Does not test response/query validity
         response = self._client.get(
-            "/signupDashboard/signupsByCategory",
-            json={
-                "startDate": "2021-10-01",
-                "endDate": "2022-01-01",
-                "signupMethodCategories": ["Physical Advertising", "Friend Referral"],
-            },
+            "/signupDashboard/signupsByCategory?startDate=2021-10-01&endDate=2022-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral",
+            # json={
+            #     "startDate": "2021-10-01",
+            #     "endDate": "2022-01-01",
+            #     "signupMethodCategories": ["Physical Advertising", "Friend Referral"],
+            # },
         )
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK

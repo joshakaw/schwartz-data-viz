@@ -63,12 +63,17 @@ class ApiPaginatedRequest(BaseModel, Generic[T]):
     filter: T  # Request DTO
 
 
-class TempMailchimpPaginated(BaseModel):
+class FlatMailchimpPaginated(BaseModel):
     pageIndex: List[int]
     pageSize: List[int]
     studentNameSearchKeyword: Union[List[str], None]
     minNumberOfSessions: Union[List[str], None]
     maxNumberOfSessions: Union[List[str], None]
     accountType: Union[List[str], None]
+    startDate: Union[List[str], None]
+    endDate: Union[List[str], None]
+
+class FlatSignups(BaseModel):
+    signupMethodCategories: Union[List[str], None]
     startDate: Union[List[str], None]
     endDate: Union[List[str], None]

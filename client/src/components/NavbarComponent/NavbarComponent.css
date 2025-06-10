@@ -1,5 +1,10 @@
-.NavbarComponent {}
+.NavbarComponent {
+    color: white;
+}
 
 .app-navbar-schwartz-bg {
     background-image: linear-gradient(to right, #dd4726, #D99439);
+}
+#basic-nav-dropdown {
+    color: #FFFFFF;
 }

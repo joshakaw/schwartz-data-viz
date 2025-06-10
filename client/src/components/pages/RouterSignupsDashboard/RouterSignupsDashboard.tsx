@@ -3,14 +3,18 @@ import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
 import { Button, Form, Overlay } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
-import Select from 'react-select';
-import { signupOptions, userOptions } from '../../../utils/input-fields';
+import Select, { MultiValue, SingleValue } from 'react-select';
+import { signupOptions, userOptions, OptionType } from '../../../utils/input-fields';
 import NotImplementedWarning from '../../NotImplementedWarning/NotImplementedWarning';
+import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
+import instance from '../../../utils/axios';
 
 interface RouterSignupsDashboardProps { }
 
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
-
+    const [data, setData] = useState();
+    const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
+    const [user, setUser] = useState<SingleValue<{ value: string, label: string }>>();
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: undefined,
@@ -18,15 +22,46 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     });
     const datePickerTarget = useRef(null);
 
+    function getData() {
+        var reqJson: SignupsByCategoryRequestDTO = {
+            signupMethodCategories: signupMethods.map(opt => opt.value), // real value of select
+            startDate: dateRange?.from ? dateRange.from.toISOString() : null,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : null
+        }
+
+        console.log(reqJson);
+
+        instance.get("/signupDashboard/signupsByCategory", { data: reqJson }).then((response) => {
+            console.log(response.data);
+            setData(response.data);
+        })
+    }
+
+    const changeSignupMethods = (selected: MultiValue<{ value: string, label: string}>) => {
+        setSignupMethods(selected);
+        getData();
+    }
+
+    const changeUser = (selected: SingleValue<{ value: string, label: string }>) => {
+        setUser(selected);
+        getData();
+    }
+
+    const changeDates = (selected: DateRange | undefined) => {
+        setDateRange(selected);
+        getData();
+    }
+
     return <div className="RouterSignupsDashboard">
         <div>
             <Form>
                 <Form.Group className="mb-3">
                     <Form.Label>Signup methods:</Form.Label>
-                    <Select as={Form.Select}
+                    <Select
                         options={signupOptions}
                         className='inner-select'
                         isMulti
+                        onChange={(newValue, actionMeta) => changeSignupMethods(newValue)}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -34,7 +69,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     <Select
                         options={userOptions}
                         className='inner-select'
-                        isMulti={false}
+                        onChange={(newValue) => changeUser(newValue)}
                     />
                 </Form.Group>
                 <Form.Group>
@@ -62,7 +97,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                                     ...props.style,
                                 }}
                             >
-                                <DayPicker animate mode="range" onSelect={(range) => setDateRange(range)} selected={dateRange}></DayPicker>
+                                <DayPicker animate mode="range" onSelect={(range) => changeDates(range)} selected={dateRange}></DayPicker>
                             </div>
                         )}
                     </Overlay>

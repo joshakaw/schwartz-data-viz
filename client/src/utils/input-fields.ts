@@ -4,6 +4,11 @@
 
 import { Options, OptionsOrGroups } from "react-select";
 
+export type OptionType = {
+    value: string;
+    label: string;
+}
+
 export const signupOptions: Options<{value: string, label: string}> = [
     { value: 'Social Media', label: 'Social Media' },
     { value: 'Physical Advertising', label: 'Physical Advertising' },

@@ -2,7 +2,6 @@ import unittest
 
 from Server import create_app
 
-
 class Test_test_views(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -30,20 +29,18 @@ class Test_test_views(unittest.TestCase):
     def test_mailchimpUsers(self):
         # Does not test response/query validity
         response = self._client.get(
-            "/mailchimpDashboard/users",
-            json={
-                "pageIndex": 0,
-                "pageSize": 10,
-                "filter": {
-                    "studentNameSearchKeyword": "D",
-                    "minNumberOfSessions": 1,
-                    "maxNumberOfSessions": 10,
-                    "startDate": "2021-10-01",
-                    "endDate": "2022-01-01",
-                    "accountType": ["Student", "Tutor", "Parent"],
-                    "educationLevel": ["K-12"],
-                },
-            },
+            "/mailchimpDashboard/users?pageIndex=0&pageSize=10&studentNameSearchKeyword=D&minNumberOfSessions=1&maxNumberOfSessions=10&startDate=2021-10-01&endDate=2022-01-01&accountType=Student&accountType=Tutor&accountType=Parent&educationLevel=K-12",
+            # json={
+            #     "pageIndex": 0,
+            #     "pageSize": 10,
+            #     "studentNameSearchKeyword": "D",
+            #     "minNumberOfSessions": 1,
+            #     "maxNumberOfSessions": 10,
+            #     "startDate": "2021-10-01",
+            #     "endDate": "2022-01-01",
+            #     "accountType": ["Student", "Tutor", "Parent"],
+            #     "educationLevel": ["K-12"],
+            # },
         )
 
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"

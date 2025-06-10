@@ -30,15 +30,16 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [resJson, setResJson] = useState<Array<MailchimpUserResponseDTO>>([]);
 
     var reqData: MailchimpUsersRequestDTO = {
+        pageIndex: 0,
+        pageSize: 10,
         accountType: ["Tutor"],
         studentNameSearchKeyword: null,
         minNumberOfSessions: null,
         maxNumberOfSessions: null,
         startDate: null,
-        endDate: null,
-        pageIndex: 0,
-        pageSize: 10
+        endDate: null
     }
+
     instance.get("mailchimpDashboard/users", { params: reqData }).then((response) => {
         setResJson(response.data);
     }).catch((reason) => {

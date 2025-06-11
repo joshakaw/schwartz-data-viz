@@ -23,8 +23,10 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const datePickerTarget = useRef(null);
 
     function getData() {
+        var methodList = signupMethods.map(opt => opt.value);
+
         var reqJson: SignupsByCategoryRequestDTO = {
-            signupMethodCategories: signupMethods.map(opt => opt.value), // real value of select
+            signupMethodCategories: methodList.length > 0 ? methodList : null, // real value of select
             startDate: dateRange?.from ? dateRange.from.toISOString() : null,
             endDate: dateRange?.to ? dateRange.to.toISOString() : null
         }

@@ -1,10 +1,14 @@
 'use client'; // This directive must be at the very top
 
 import { Bar, Line } from 'react-chartjs-2';
-import { rawSignupData } from '../../utils/data';
+import { rawSignupData, SignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 
 Chart.register(CategoryScale);
+
+interface BarChartProps {
+    sData: SignupData[];
+};
 
 // Just sends the bar when called.
 const BarChart = () => {

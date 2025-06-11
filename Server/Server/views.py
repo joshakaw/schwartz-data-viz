@@ -9,7 +9,6 @@ from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupsByCategoryRequestDTO,
-    MailchimpUsersRequestDTO,
     SignupsByCategoryRequestDTO,
 )
 from flask import Blueprint, jsonify, request

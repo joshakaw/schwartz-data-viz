@@ -1,9 +1,7 @@
-from typing import (    Annotated, Any, Generic,    List,    Literal,    Optional,    TypeAlias,    TypeVar,    TypedDict,    Union,)
+from typing import (    Annotated, Any, List,    TypeAlias,    TypeVar,    Union,)
 from pydantic import BaseModel, BeforeValidator
 
-"""
-A list with a single item.
-"""
+# A list with a single item.
 SingleItemList: TypeAlias = List
 
 def unpack_single_list_item(v: Any) -> Any:
@@ -26,8 +24,8 @@ T = TypeVar("T")
 Single : TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
 
 class MailchimpUsersRequestDTO(BaseModel):
-    pageIndex: SingleItemList[int] = None
-    pageSize: SingleItemList[int] = None
+    pageIndex: SingleItemList[int]
+    pageSize: SingleItemList[int]
     studentNameSearchKeyword: Union[SingleItemList[str], None] = None
     minNumberOfSessions: Union[SingleItemList[str], None] = None
     maxNumberOfSessions: Union[SingleItemList[str], None] = None

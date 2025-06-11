@@ -22,7 +22,7 @@ def init_db(app):
 def get_db_cursor() -> Cursor:
     if "db" not in g:
 
-        dbSettingsJson = loads(open("./Server/util/dbconfig.json").read())
+        dbSettingsJson = loads(open("./Server/util/dbconfig.json", encoding="utf-8").read())
 
         g.db = MySQLdb.connect(
             host=dbSettingsJson["endpoint"],

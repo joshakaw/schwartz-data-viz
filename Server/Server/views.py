@@ -6,6 +6,7 @@ the Flask application.
 from typing import Any, List
 from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
+    DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupsByCategoryRequestDTO,
     MailchimpUsersRequestDTO,
@@ -18,7 +19,7 @@ from Server import db
 from json import loads
 
 from Server.queries.sql_helper import read_sql_from_queries
-from Server.queries.sql_templates import qMailchimpUsers, qSignupsByCategory
+from Server.queries.sql_templates import qDetailedSignups, qMailchimpUsers, qSignupsByCategory
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
@@ -37,6 +38,23 @@ def sqlTest():
 
     return str(c.fetchall())
 
+@main_api.route("/detailedSignupsDashboard/table")
+def detailedSignupsTable():
+    # Get request
+    dto = DetailedSignupRequestDTO(**request.args.to_dict(flat=False))
+
+    # Create query and params
+    (params, query) = qDetailedSignups(dto)
+
+    # Execute query
+    c = db.get_db_cursor()
+    c.execute(query, params)
+
+    # Transform
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+
+    return jsonify(loads(pdData.to_json(orient="records")))
 
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
@@ -63,7 +81,6 @@ def signupsByCategory():
 @main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
     # TODO: Implement filtering
-    print(f"Request JSON is: 999{request.data}999")
 
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
@@ -104,23 +121,24 @@ def mailchimpUsers():
     )  # TODO: Is this expected format by client?
 
 
-# @main_api.route("/params")
-# def paramsTest():
-#     # Create query
-#     prefilledQuery = (
-#         "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
-#     )
-#     query = "select * from user_t where firstName like %s and id > %s limit 10;"
-#     params: List[Any] = ["Ro%", 300]
+@main_api.route("/params")
+def paramsTest():
+    # Create query
+    prefilledQuery = (
+        "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
+    )
+    query = "select * from user_t where firstName like %s and id > %s limit 10;"
+    params: List[Any] = ["%Ar%", 100]
     
-#     # Execute query
-#     c = db.get_db_cursor()
-#     c.execute(query, params)
-#     # Transform
-#     data = c.fetchall()
-#     pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    # Execute query
+    c = db.get_db_cursor()
+    c.execute(query, params)
+    print(f"Query: {c.mogrify(query, params)}")
+    # Transform
+    data = c.fetchall()
+    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
 
-#     return jsonify(loads(pdData.to_json(orient="records")))
+    return jsonify(loads(pdData.to_json(orient="records")))
 
 
 @main_api.route("/dataTest")

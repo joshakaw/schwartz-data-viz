@@ -13,6 +13,14 @@ class Test_test_views(unittest.TestCase):
     def tearDownClass(cls):
         cls._client = None
 
+    def test_detailedSignupsTable(self):
+        response = self._client.get(
+            "/detailedSignupsDashboard/table?startDate=2021-10-01&endDate=2022-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral&accountType=Tutor"
+        )
+        print(response.get_json())
+        self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
+        self.assertEqual(response.status_code, 200)  # OK
+
     def test_signupsByCategory(self):
         # Does not test response/query validity
         response = self._client.get(

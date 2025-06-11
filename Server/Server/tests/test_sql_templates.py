@@ -1,6 +1,7 @@
 import unittest
 
-from Server.queries.sql_templates import qSignupsByCategory
+from Server.dtos.dtos import DetailedSignupRequestDTO
+from Server.queries.sql_templates import qDetailedSignups, qSignupsByCategory
 
 class Test_test_sql_templates(unittest.TestCase):
     def test_signupsByCategory_full(self):
@@ -40,6 +41,19 @@ group by
 order by 
     count(*) desc
 """.replace("\n", " "), string)
+
+    def test_qDetailedSignups(self):
+        dto = DetailedSignupRequestDTO(
+            signupMethodCategories=None,
+            freeResponseSearchKeyword="Royal",
+            startDate="2022-11-13",
+            endDate="2022-11-14",
+            accountType=["Student"],
+            educationLevel=["K-12"]
+        )
+        (params, query) = qDetailedSignups(dto)
+        print(params)
+        print(query)
 
 if __name__ == '__main__':
     unittest.main()

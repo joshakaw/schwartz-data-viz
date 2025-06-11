@@ -1,37 +1,55 @@
-from typing import (    Generic,    List,    Literal,    Optional,    TypeAlias,    TypeVar,    TypedDict,    Union,)
-from pydantic import BaseModel
+from typing import (    Annotated, Any, Generic,    List,    Literal,    Optional,    TypeAlias,    TypeVar,    TypedDict,    Union,)
+from pydantic import BaseModel, BeforeValidator
 
 """
 A list with a single item.
 """
 SingleItemList: TypeAlias = List
 
+def unpack_single_list_item(v: Any) -> Any:
+    """
+    Validator to unpack a list with a single item into the item itself,
+    or return None if the list is empty or None.
+    Otherwise, returns the value as is.
+    """
+    if isinstance(v, list):
+        if len(v) == 1:
+            return v[0]
+        elif len(v) == 0:
+            return None  # Or [] if you prefer empty list for empty input lists
+    return v
+
+# Since the data comes back as a List for all keys (via request.args.to_dict(flat=False)),
+# the Single type allows us to convert a class member to type rather than List[type]
+# so we don't have to do member[0] every time.
+T = TypeVar("T")
+Single : TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
 
 class MailchimpUsersRequestDTO(BaseModel):
-    pageIndex: SingleItemList[int]
-    pageSize: SingleItemList[int]
-    studentNameSearchKeyword: Union[SingleItemList[str], None]
-    minNumberOfSessions: Union[SingleItemList[str], None]
-    maxNumberOfSessions: Union[SingleItemList[str], None]
-    accountType: Union[List[str], None]
-    startDate: Union[SingleItemList[str], None]
-    endDate: Union[SingleItemList[str], None]
+    pageIndex: SingleItemList[int] = None
+    pageSize: SingleItemList[int] = None
+    studentNameSearchKeyword: Union[SingleItemList[str], None] = None
+    minNumberOfSessions: Union[SingleItemList[str], None] = None
+    maxNumberOfSessions: Union[SingleItemList[str], None] = None
+    accountType: Union[List[str], None] = None
+    startDate: Union[SingleItemList[str], None] = None
+    endDate: Union[SingleItemList[str], None] = None
 
 
 class SignupsByCategoryRequestDTO(BaseModel):
-    signupMethodCategories: Union[List[str], None]
-    accountType: Union[List[str], None]
-    startDate: Union[SingleItemList[str], None]
-    endDate: Union[SingleItemList[str], None]
+    signupMethodCategories: Union[List[str], None] = None
+    accountType: Union[List[str], None] = None
+    startDate: Union[SingleItemList[str], None] = None
+    endDate: Union[SingleItemList[str], None] = None
 
+# TODO: If array is empty, and expected list, convert to None; takes responsibility away from client
 
 class DetailedSignupRequestDTO(BaseModel):
-    signupMethodCategories: Union[List[str], None] # TODO: Does the Flask parser turn nulls/Nones from client into an empty list?
-    freeResponseSearchKeyword: Union[SingleItemList[str], None]
-    startDate: Union[SingleItemList[str], None]
-    endDate: Union[SingleItemList[str], None]
-    accountType: Union[List[str], None]
-    educationLevel: Union[List[str], None]
-
+    signupMethodCategories: Union[List[str], None] = None # TODO: Does the Flask parser turn nulls/Nones from client into an empty list?
+    freeResponseSearchKeyword: Union[Single[str], None] = None
+    startDate: Union[Single[str], None] = None # Single[str] stores first str value in array
+    endDate: Union[Single[str], None] = None
+    accountType: Union[List[str], None] = None
+    educationLevel: Union[List[str], None] = None
 
 # TODO: Markup lists that should only contain one element after query param interpretation

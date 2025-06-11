@@ -1,4 +1,6 @@
-from typing import List, Tuple
+from typing import Any, List, Tuple, TypeAlias
+
+from MySQLdb.cursors import BaseCursor
 from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO, MailchimpUsersRequestDTO
 from Server.queries import sql_helper
 
@@ -87,15 +89,66 @@ order by
 limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
 """
 
-def qDetailedSignups(dto: DetailedSignupRequestDTO) -> Tuple[str, List[str]]:
-	pass
+# Returns list of params, and str SQL query (with %s replacements)
+ParameterizedQueryReturn : TypeAlias = Tuple[List[Any], str]
+
+def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
 	# This query will use parameters, so the db.execute() can 
 	# escape anything that could lead to SQL Injection
 
 	# Content of the Where clause
-	whereContent = ""
+	whereContent = "1=1 "
+	params: List[Any] = []
 
-	# Parameters
-	params: List[str]
+	# Reusables
+	accountTypeCase = "(case when u.tutor is true then 'Tutor' else '<UNKNOWN>' end)"
+
+	if dto.signupMethodCategories:
+		whereContent += "and u.hearAboutUsDropdown in %s "
+		params.append(dto.signupMethodCategories)
+
+	if dto.freeResponseSearchKeyword:
+		whereContent += "and u.hearAboutUsFRQ like %s "
+		params.append(f"%{dto.freeResponseSearchKeyword}%")
+
+	if dto.startDate:
+		whereContent += "and u.createdAt >= %s "
+		params.append(dto.startDate)
+
+	if dto.endDate:
+		whereContent += "and u.createdAt <= %s "
+		params.append(dto.endDate)
+
+	if dto.accountType:
+		whereContent += f"and {accountTypeCase} in %s "
+		params.append(dto.accountType)
+
+	if dto.educationLevel:
+		educationLevelsList : List[str] = []
+		if "K-12" in dto.educationLevel:
+			educationLevelsList.append("elementary")
+			educationLevelsList.append("middle")
+			educationLevelsList.append("high")
+		if "College" in dto.educationLevel:
+			educationLevelsList.append("college")
+			educationLevelsList.append("graduate")
+			educationLevelsList.append("postgraduate")
+
+		whereContent += "and educationlevel in %s "
+		params.append(educationLevelsList)
 
 	# Create SQL string
+	return (params,
+f"""
+select
+	CONCAT(u.firstName, ' ', u.lastName) as name,
+	{accountTypeCase} as accountType,
+	u.hearAboutUsDropdown  as signupMethodCategory,
+	u.hearAboutUsFRQ as freeResponseText,
+	u.createdAt as dateOfSignup,
+	st.name as school,
+	null as numberOfSessions
+from user_t u
+inner join school_t st on schoolId = st.id
+where {whereContent};
+""")

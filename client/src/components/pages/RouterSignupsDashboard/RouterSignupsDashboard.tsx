@@ -4,7 +4,7 @@ import BarChart from '../../bar-chart/bar-chart';
 import { Button, Col, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { MultiValue, SingleValue } from 'react-select';
-import { signupOptions, userOptions, OptionType } from '../../../utils/input-fields';
+import { signupOptions, userOptions } from '../../../utils/input-fields';
 import NotImplementedWarning from '../../NotImplementedWarning/NotImplementedWarning';
 import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
 import instance from '../../../utils/axios';
@@ -117,7 +117,9 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                 </Col>
             </Row>
         </div>
-        <NotImplementedWarning message="Trend line chart not completed." />
+        <div>
+            
+        </div>
     </div>
 };
 

@@ -1,6 +1,6 @@
 'use client'; // This directive must be at the very top
 
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { rawSignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 
@@ -35,6 +35,7 @@ const BarChart = () => {
     return (
         <div>
             <Bar data={data} options={options} />
+            <Line data={data} options={options}></Line>
         </div>
     );
 }

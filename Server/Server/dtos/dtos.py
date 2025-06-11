@@ -1,79 +1,53 @@
-from typing import Generic, List, Literal, Optional, TypeVar, TypedDict, Union
-from pydantic import BaseModel
+from typing import (    Annotated, Any, List,    TypeAlias,    TypeVar,    Union,)
+from pydantic import BaseModel, BeforeValidator
 
+# A list with a single item.
+SingleItemList: TypeAlias = List
 
-class RequestDTO(BaseModel):
+def unpack_single_list_item(v: Any) -> Any:
     """
-    Base Request DTO.
+    Validator to unpack a list with a single item into the item itself,
+    or return None if the list is empty or None.
+    Otherwise, returns the value as is.
     """
+    if isinstance(v, list):
+        if len(v) == 1:
+            return v[0]
+        elif len(v) == 0:
+            return None  # Or [] if you prefer empty list for empty input lists
+    return v
 
-    pass
-
-
-class DetailedSignupRequestDTO(RequestDTO):
-    """
-    Request body DTO for filtering
-    GET ---------
-    """
-
-    signupMethodCategories: Union[List[str], None]
-    freeResponseSearchKeyword: Union[str, None]
-    startDate: Union[str, None]
-    endDate: Union[str, None]
-    accountType: Union[List[str], None]
-    educationLevel: Union[List[str], None]
-
-
-class MailchimpUsersRequestDTO(RequestDTO):
-    """
-    Request body DTO for filtering
-    GET /mailchimpDashboard/users
-    """
-
-    studentNameSearchKeyword: Union[str, None]
-    minNumberOfSessions: Union[int, None]
-    maxNumberOfSessions: Union[int, None]
-    accountType: Union[List[str], None]
-    startDate: Union[str, None]
-    endDate: Union[str, None]
-
-
-class SignupsByCategoryRequestDTO(RequestDTO):
-    """
-    Request body DTO for filtering
-    GET /signupDashboard/signupsByCategory
-    """
-
-    signupMethodCategories: Union[List[str], None]
-    startDate: Union[str, None]
-    endDate: Union[str, None]
-
-
+# Since the data comes back as a List for all keys (via request.args.to_dict(flat=False)),
+# the Single type allows us to convert a class member to type rather than List[type]
+# so we don't have to do member[0] every time.
 T = TypeVar("T")
+Single : TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
+
+class MailchimpUsersRequestDTO(BaseModel):
+    pageIndex: SingleItemList[int]
+    pageSize: SingleItemList[int]
+    studentNameSearchKeyword: Union[SingleItemList[str], None] = None
+    minNumberOfSessions: Union[SingleItemList[str], None] = None
+    maxNumberOfSessions: Union[SingleItemList[str], None] = None
+    accountType: Union[List[str], None] = None
+    startDate: Union[SingleItemList[str], None] = None
+    endDate: Union[SingleItemList[str], None] = None
 
 
-class ApiPaginatedRequest(BaseModel, Generic[T]):
-    """
-    Request interface for getting a paginated response.
-    Filter is an object that extends RequestDTO (e.g. MailchimpUsersRequestDTO)
-    """
+class SignupsByCategoryRequestDTO(BaseModel):
+    signupMethodCategories: Union[List[str], None] = None
+    accountType: Union[List[str], None] = None
+    startDate: Union[SingleItemList[str], None] = None
+    endDate: Union[SingleItemList[str], None] = None
 
-    pageIndex: int
-    pageSize: int
-    filter: T  # Request DTO
+# TODO: If array is empty, and expected list, convert to None; takes responsibility away from client
 
+class DetailedSignupRequestDTO(BaseModel):
+    signupMethodCategories: Union[List[str], None] = None # TODO: Does the Flask parser turn nulls/Nones from client into an empty list?
+    freeResponseSearchKeyword: Union[Single[str], None] = None
+    startDate: Union[Single[str], None] = None # Single[str] stores first str value in array
+    endDate: Union[Single[str], None] = None
+    accountType: Union[List[str], None] = None
+    educationLevel: Union[List[str], None] = None
 
-class FlatMailchimpPaginated(BaseModel):
-    pageIndex: List[int]
-    pageSize: List[int]
-    studentNameSearchKeyword: Union[List[str], None]
-    minNumberOfSessions: Union[List[str], None]
-    maxNumberOfSessions: Union[List[str], None]
-    accountType: Union[List[str], None]
-    startDate: Union[List[str], None]
-    endDate: Union[List[str], None]
-
-class FlatSignups(BaseModel):
-    signupMethodCategories: Union[List[str], None]
-    startDate: Union[List[str], None]
-    endDate: Union[List[str], None]
+# TODO: Markup lists that should only contain one element after query param interpretation

@@ -62,9 +62,7 @@ def signupsByCategory():
     # dto = SignupsByCategoryRequestDTO(**request.get_json())
 
     # Create query
-    query = qSignupsByCategory(
-        dto.startDate[0], dto.endDate[0], dto.signupMethodCategories[0]
-    )
+    query = qSignupsByCategory(dto.startDate[0], dto.endDate[0], dto.signupMethodCategories)
 
     # Execute query
     c = db.get_db_cursor()

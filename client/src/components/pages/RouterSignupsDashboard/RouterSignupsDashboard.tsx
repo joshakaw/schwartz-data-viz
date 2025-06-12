@@ -30,8 +30,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         var reqJson: SignupsByCategoryRequestDTO = {
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
             accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
-            startDate: dateRange?.from ? dateRange.from.toISOString() : null,
-            endDate: dateRange?.to ? dateRange.to.toISOString() : null
+            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
 
         console.log(reqJson);

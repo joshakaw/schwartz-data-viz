@@ -7,29 +7,29 @@ import { ApiPaginatedRequest } from "./ApiPaginatedRequest";
 export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
     /**
      * The keyword to search for in 
-     * CONCAT(First Name, " ", Last Name). If null,
+     * CONCAT(First Name, " ", Last Name). If undefined,
      * no filter is applied.
      */
-    studentNameSearchKeyword: string | null;
+    studentNameSearchKeyword?: string;
 
     /**
      * Minimum number of a sessions a user attended.
-     * If null, no minimum is set.
+     * If undefined, no minimum is set.
      */
-    minNumberOfSessions: number | null;
+    minNumberOfSessions?: number;
 
     /**
      * Maxmimum number of a sessions a user attended.
-     * If null, no maximum is set.
+     * If undefined, no maximum is set.
      */
-    maxNumberOfSessions: number | null;
+    maxNumberOfSessions?: number;
 
     /**
-     * List of account types to include in result. If null,
+     * List of account types to include in result. If undefined,
      * then all categories will be returned.
      * (e.g. ["Student", "Tutor", "Parent"])
      */
-    accountType: string[] | null;
+    accountType?: string[];
 
     /**
      * The start date (ISO 8601 format) filter for the
@@ -37,12 +37,12 @@ export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
      * If no, no filter is applied.
      * . 
      */
-    startDate: string | null;
+    startDate?: string;
 
     /**
      * The end date (ISO 8601 format) filter for the 
      * most recent sesison attended (inclusive).
-     * If null, no filter is applied.
+     * If undefined, no filter is applied.
      */
-    endDate: string | null;
+    endDate?: string;
 }

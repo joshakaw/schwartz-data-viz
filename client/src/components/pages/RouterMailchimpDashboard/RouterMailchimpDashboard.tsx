@@ -33,11 +33,11 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
         pageIndex: 0,
         pageSize: 10,
         accountType: ["Tutor"],
-        studentNameSearchKeyword: null,
-        minNumberOfSessions: null,
-        maxNumberOfSessions: null,
-        startDate: null,
-        endDate: null
+        studentNameSearchKeyword: undefined,
+        minNumberOfSessions: undefined,
+        maxNumberOfSessions: undefined,
+        startDate: undefined,
+        endDate: undefined
     }
 
     instance.get("mailchimpDashboard/users", { params: reqData }).then((response) => {

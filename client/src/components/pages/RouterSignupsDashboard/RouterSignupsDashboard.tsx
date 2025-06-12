@@ -1,18 +1,19 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
 import { Button, Col, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { MultiValue, SingleValue } from 'react-select';
 import { signupOptions, userOptions } from '../../../utils/input-fields';
-import NotImplementedWarning from '../../NotImplementedWarning/NotImplementedWarning';
 import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
 import instance from '../../../utils/axios';
+import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOptions/DetailedSignupsOptions';
+import { rawSignupData } from '../../../utils/data';
 
 interface RouterSignupsDashboardProps { }
 
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
-    const [data, setData] = useState();
+    const [data, setData] = useState<SignupData[]>([]);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [user, setUser] = useState<SingleValue<{ value: string, label: string }>>();
     const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -26,7 +27,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         var methodList = signupMethods.map(opt => opt.value);
 
         var reqJson: SignupsByCategoryRequestDTO = {
-            signupMethodCategories: methodList.length > 0 ? methodList : null, // real value of select
+            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
             startDate: dateRange?.from ? dateRange.from.toISOString() : null,
             endDate: dateRange?.to ? dateRange.to.toISOString() : null
         }
@@ -35,13 +36,15 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
         instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
             console.log(response.data);
-            setData(response.data);
+            setData(response.data as SignupData[]);
+            console.log(data);
         })
+
+        return data;
     }
 
-    const changeSignupMethods = (selected: MultiValue<{ value: string, label: string}>) => {
+    const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
         setSignupMethods(selected);
-        getData();
     }
 
     const changeUser = (selected: SingleValue<{ value: string, label: string }>) => {
@@ -53,6 +56,29 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         setDateRange(selected);
         getData();
     }
+
+    // Loads default filter. Also has handlers for filters to prevent getData() being called before respective changes
+    useEffect(() => {
+        getData();
+    }, [])
+
+    useEffect(() => {
+        if (signupMethods) {
+            getData();
+        }
+    }, [signupMethods])
+
+    useEffect(() => {
+        if (dateRange) {
+            getData();
+        }
+    }, [dateRange])
+
+    useEffect(() => {
+        if (user) {
+            getData();
+        }
+    }, [user])
 
     return <div className="RouterSignupsDashboard">
         <div>
@@ -106,7 +132,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                 </Form.Group>
             </Form>
         </div>
-        <BarChart />
+        <BarChart sData={data} />
         <div>
             <Row style={{ backgroundColor: '#E0DFDE' }} className="rounded">
                 <Col>

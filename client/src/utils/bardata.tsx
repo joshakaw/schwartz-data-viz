@@ -22,7 +22,6 @@ export interface SignupData {
     signups: number;
 }
 
-
 // Example raw data.
 export const rawSignupData: SignupData[] = [
     { category: 'Social Media', signups: 15 },

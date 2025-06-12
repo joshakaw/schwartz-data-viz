@@ -20,7 +20,7 @@ def read_sql_from_queries(fileName: str) -> str:
     print(filePath)
     # filePath = "./Server/queries/" + fileName + ".sql"
 
-    sql = open(filePath).read().replace("\n", " ")
+    sql = open(filePath, encoding="utf-8").read().replace("\n", " ")
 
     if(sql.__len__ == 0):
         raise Exception("File is empty.")

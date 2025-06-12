@@ -12,6 +12,13 @@ export interface SignupsByCategoryRequestDTO {
     signupMethodCategories: string[] | null;
 
     /**
+     * List of account types to include in result. If null,
+     * then all categories will be returned.
+     * (e.g. ["Student", "Tutor", "Parent"])
+     */
+    accountType: string[] | null;
+
+    /**
      * The start date (ISO 8601 format) for the signups query (inclusive).
      * If no, no start date filter.
      * . 

@@ -4,7 +4,6 @@ import './RouterMailchimpDashboard.css';
 
 // Custom component imports
 import AccountDataTable from '../../accountDataTable/accountDataTable';
-import { ApiPaginatedRequest } from '../../../dtos/ApiPaginatedRequest.ts';
 
 // React component imports
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -29,7 +28,7 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [resJson, setResJson] = useState<Array<MailchimpUserResponseDTO>>([]);
 
-    var reqData: MailchimpUsersRequestDTO = {
+    const reqData: MailchimpUsersRequestDTO = {
         pageIndex: 0,
         pageSize: 10,
         accountType: ["Tutor"],

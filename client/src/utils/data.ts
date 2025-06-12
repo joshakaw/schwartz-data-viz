@@ -8,7 +8,7 @@ export interface AccountData {
     first_name: string;
     last_name: string;
     email: string;
-    phone: String;
+    phone: string;
     school: string;
     account_type: string;
     creation_date: string;

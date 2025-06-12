@@ -3,12 +3,11 @@ import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
 import { Button, Col, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
-import Select, { MultiValue, SingleValue } from 'react-select';
+import Select, { MultiValue } from 'react-select';
 import { signupOptions, userOptions } from '../../../utils/input-fields';
 import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
 import instance from '../../../utils/axios';
 import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOptions/DetailedSignupsOptions';
-import { rawSignupData } from '../../../utils/data';
 
 interface RouterSignupsDashboardProps { }
 
@@ -24,14 +23,14 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const datePickerTarget = useRef(null);
 
     function getData() {
-        var methodList = signupMethods.map(opt => opt.value);
-        var userList = user.map(opt => opt.value);
+        const methodList = signupMethods.map(opt => opt.value);
+        const userList = user.map(opt => opt.value);
 
-        var reqJson: SignupsByCategoryRequestDTO = {
+        const reqJson: SignupsByCategoryRequestDTO = {
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
             accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
-            startDate: dateRange?.from ? dateRange.from.toISOString() : null,
-            endDate: dateRange?.to ? dateRange.to.toISOString() : null
+            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
 
         console.log(reqJson);
@@ -89,7 +88,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                         options={signupOptions}
                         className='inner-select'
                         isMulti
-                        onChange={(newValue, actionMeta) => changeSignupMethods(newValue)}
+                        onChange={(newValue) => changeSignupMethods(newValue)}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -98,7 +97,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                         options={userOptions}
                         className='inner-select'
                         isMulti
-                        onChange={(newValue, actionMeta) => changeUser(newValue)}
+                        onChange={(newValue) => changeUser(newValue)}
                     />
                 </Form.Group>
                 <Form.Group>

@@ -15,7 +15,7 @@ interface RouterSignupsDashboardProps { }
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const [data, setData] = useState<SignupData[]>([]);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
-    const [user, setUser] = useState<SingleValue<{ value: string, label: string }>>();
+    const [user, setUser] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: undefined,
@@ -25,9 +25,11 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
     function getData() {
         var methodList = signupMethods.map(opt => opt.value);
+        var userList = user.map(opt => opt.value);
 
         var reqJson: SignupsByCategoryRequestDTO = {
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
             startDate: dateRange?.from ? dateRange.from.toISOString() : null,
             endDate: dateRange?.to ? dateRange.to.toISOString() : null
         }
@@ -47,14 +49,12 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         setSignupMethods(selected);
     }
 
-    const changeUser = (selected: SingleValue<{ value: string, label: string }>) => {
+    const changeUser = (selected: MultiValue<{ value: string, label: string }>) => {
         setUser(selected);
-        getData();
     }
 
     const changeDates = (selected: DateRange | undefined) => {
         setDateRange(selected);
-        getData();
     }
 
     // Loads default filter. Also has handlers for filters to prevent getData() being called before respective changes
@@ -97,7 +97,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     <Select
                         options={userOptions}
                         className='inner-select'
-                        onChange={(newValue) => changeUser(newValue)}
+                        isMulti
+                        onChange={(newValue, actionMeta) => changeUser(newValue)}
                     />
                 </Form.Group>
                 <Form.Group>

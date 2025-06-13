@@ -22,6 +22,12 @@ export const userOptions: Options<{ value: string, label: string }> = [
     { value: 'Tutors', label: 'Tutors' }
 ];
 
+export const rangeOptions: Options<{ value: string, label: string }> = [
+    { value: '7', label: 'Last 7 days' },
+    { value: '14', label: 'Last 14 days' },
+    { value: '30', label: 'Last month' }
+];
+
 const School: Options<{ value: string, label: string }> = [
     { value: 'K-12', label: 'K-12' },
     { value: 'University', label: 'University' },

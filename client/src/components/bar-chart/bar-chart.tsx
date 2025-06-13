@@ -4,6 +4,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import { SignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 import { FC } from 'react';
+import { Row, Col, Container } from 'react-bootstrap';
 
 Chart.register(CategoryScale);
 
@@ -39,8 +40,16 @@ const BarChart: FC<BarChartProps> = ({ sData }) => {
 
     return (
         <div>
-            <Bar data={data} options={options} />
-            <Line data={data} options={options}></Line>
+            <Container>
+                <Row>
+                    <Col>
+                        <Bar data={data} options={options} />
+                    </Col>
+                    <Col>
+                        <Line data={data} options={options}></Line>
+                    </Col>
+                </Row>
+            </Container>
         </div>
     );
 }

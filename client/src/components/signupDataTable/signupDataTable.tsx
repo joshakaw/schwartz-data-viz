@@ -18,19 +18,18 @@ const SignupDataTable: React.FC<DetailedSignupTableProps> = ({ data }) => {
                             <th>How They Heard About Us</th>
                             <th>Date</th>
                             <th>School</th>
-                            {/*<th>School Type</th>*/}
                             <th>Sessions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((account) => (
-                            <tr key={account.name}>
+                            <tr>
+                                <td>{account.name}</td>
                                 <td>{account.accountType}</td>
                                 <td>{account.signupMethodCategory}</td>
                                 <td>{account.freeResponseText}</td>
                                 <td>{account.dateOfSignup}</td>
                                 <td>{account.school}</td>
-                                {/*<td>{account.schoolType}</td>*/}
                                 <td>{account.numberOfSessions}</td>
                             </tr>
                         ))}

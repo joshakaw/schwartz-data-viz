@@ -7,5 +7,4 @@ export interface DetailedSignupResponseDTO {
     numberOfSessions: string;
     school: string;
     signupMethodCategory: string;
-    //schoolType: string;
 }

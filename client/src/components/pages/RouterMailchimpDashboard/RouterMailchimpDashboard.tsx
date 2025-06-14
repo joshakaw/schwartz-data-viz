@@ -4,7 +4,6 @@ import './RouterMailchimpDashboard.css';
 
 // Custom component imports
 import AccountDataTable from '../../accountDataTable/accountDataTable';
-import { ApiPaginatedRequest } from '../../../dtos/ApiPaginatedRequest.ts';
 
 // React component imports
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -39,12 +38,12 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
         const reqData: MailchimpUsersRequestDTO = {
             pageIndex: 0,
             pageSize: 8,
-            accountType: accountTypes.length > 0 ? accountTypes.map(opt => opt.label) : null,
-            studentNameSearchKeyword: searchKeyword || null,
+            accountType: accountTypes.length > 0 ? accountTypes.map(opt => opt.label) : undefined,
+            studentNameSearchKeyword: searchKeyword || undefined,
             minNumberOfSessions: sessionRange === '1-2' ? 1 : sessionRange === '3+' ? 3 : sessionRange === '0' ? 0 : 0,
-            maxNumberOfSessions: sessionRange === '1-2' ? 2 : sessionRange === '0' ? 0 : null,
-            startDate: null,
-            endDate: null
+            maxNumberOfSessions: sessionRange === '1-2' ? 2 : sessionRange === '0' ? 0 : undefined,
+            startDate: undefined,
+            endDate: undefined
         };
 
         console.log(reqData);

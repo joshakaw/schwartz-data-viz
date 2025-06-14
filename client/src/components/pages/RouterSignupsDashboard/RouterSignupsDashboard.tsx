@@ -1,20 +1,20 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
-import { Button, Form, Overlay } from 'react-bootstrap';
+import { Button, Col, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
-import Select, { MultiValue, SingleValue } from 'react-select';
-import { signupOptions, userOptions, OptionType } from '../../../utils/input-fields';
-import NotImplementedWarning from '../../NotImplementedWarning/NotImplementedWarning';
+import Select, { MultiValue } from 'react-select';
+import { signupOptions, userOptions } from '../../../utils/input-fields';
 import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
 import instance from '../../../utils/axios';
+import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOptions/DetailedSignupsOptions';
 
 interface RouterSignupsDashboardProps { }
 
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
-    const [data, setData] = useState();
+    const [data, setData] = useState<SignupData[]>([]);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
-    const [user, setUser] = useState<SingleValue<{ value: string, label: string }>>();
+    const [user, setUser] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: undefined,
@@ -23,34 +23,61 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const datePickerTarget = useRef(null);
 
     function getData() {
-        var reqJson: SignupsByCategoryRequestDTO = {
-            signupMethodCategories: signupMethods.map(opt => opt.value), // real value of select
-            startDate: dateRange?.from ? dateRange.from.toISOString() : null,
-            endDate: dateRange?.to ? dateRange.to.toISOString() : null
+        const methodList = signupMethods.map(opt => opt.value);
+        const userList = user.map(opt => opt.value);
+
+        const reqJson: SignupsByCategoryRequestDTO = {
+            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
 
         console.log(reqJson);
 
-        instance.get("/signupDashboard/signupsByCategory", { data: reqJson }).then((response) => {
+        instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
             console.log(response.data);
-            setData(response.data);
+            setData(response.data as SignupData[]);
+            console.log(data);
         })
+
+        return data;
     }
 
-    const changeSignupMethods = (selected: MultiValue<{ value: string, label: string}>) => {
+    const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
         setSignupMethods(selected);
-        getData();
     }
 
-    const changeUser = (selected: SingleValue<{ value: string, label: string }>) => {
+    const changeUser = (selected: MultiValue<{ value: string, label: string }>) => {
         setUser(selected);
-        getData();
     }
 
     const changeDates = (selected: DateRange | undefined) => {
         setDateRange(selected);
-        getData();
     }
+
+    // Loads default filter. Also has handlers for filters to prevent getData() being called before respective changes
+    useEffect(() => {
+        getData();
+    }, [])
+
+    useEffect(() => {
+        if (signupMethods) {
+            getData();
+        }
+    }, [signupMethods])
+
+    useEffect(() => {
+        if (dateRange) {
+            getData();
+        }
+    }, [dateRange])
+
+    useEffect(() => {
+        if (user) {
+            getData();
+        }
+    }, [user])
 
     return <div className="RouterSignupsDashboard">
         <div>
@@ -61,7 +88,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                         options={signupOptions}
                         className='inner-select'
                         isMulti
-                        onChange={(newValue, actionMeta) => changeSignupMethods(newValue)}
+                        onChange={(newValue) => changeSignupMethods(newValue)}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -69,6 +96,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     <Select
                         options={userOptions}
                         className='inner-select'
+                        isMulti
                         onChange={(newValue) => changeUser(newValue)}
                     />
                 </Form.Group>
@@ -103,11 +131,23 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     </Overlay>
                 </Form.Group>
             </Form>
-
         </div>
-        <BarChart />
-        <NotImplementedWarning message="Summary box not completed." />
-        <NotImplementedWarning message="Trend line chart not completed." />
+        <BarChart sData={data} />
+        <div>
+            <Row style={{ backgroundColor: '#E0DFDE' }} className="rounded">
+                <Col>
+                    <p className="text-center">Total signups last week:</p>
+                    <h1 className="text-center">1</h1>
+                </Col>
+                <Col>
+                    <p className="text-center">Total signups this week:</p>
+                    <h1 className="text-center">2</h1>
+                </Col>
+            </Row>
+        </div>
+        <div>
+            
+        </div>
     </div>
 };
 

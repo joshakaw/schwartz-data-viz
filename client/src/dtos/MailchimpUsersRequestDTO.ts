@@ -14,12 +14,16 @@ export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
 
     /**
      * Minimum number of a sessions a user attended.
-     * If undefined, no minimum is set.
+     * If null, no minimum is set.
+     * (inclusive)
+
      */
     minNumberOfSessions?: number;
 
     /**
      * Maxmimum number of a sessions a user attended.
+     * If null, no maximum is set.
+     * (inclusive)
      * If undefined, no maximum is set.
      */
     maxNumberOfSessions?: number;

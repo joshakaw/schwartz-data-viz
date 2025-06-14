@@ -58,20 +58,13 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
     // This is a janky solution but it works.
     const presetDateRangeSelected = (selected: SingleValue<{ value: string, label: string }>) => {
-        if (selected != undefined) {
-            if (dateRange) {
-                if (selected.value == "7") {
-                    dateRange.from = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7);
-                    dateRange.to = new Date();
-                }
-                if (selected.value == "14") {
-                    dateRange.from = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 14);
-                }
-                if (selected.value == "30") {
-                    dateRange.from = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30);
-                }
-            }
-            getData();
+        if (selected) {
+            if (selected.value === "7")
+                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7), to: new Date() });
+            if (selected.value === "14")
+                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 14), to: new Date() });
+            if (selected.value === "30")
+                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30), to: new Date() });
         }
     }
 

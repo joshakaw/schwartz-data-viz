@@ -1,8 +1,10 @@
+import { ApiPaginatedRequest } from "./ApiPaginatedRequest";
+
 /**
  * Request body DTO for filtering
  * GET ---------
  */
-export interface DetailedSignupRequestDTO {
+export interface DetailedSignupRequestDTO extends ApiPaginatedRequest{
     /**
      * List of signup method categories to include in result. If undefined,
      * then all categories will be returned. 

@@ -27,7 +27,7 @@ const sessionOptions = [
 
 const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
-    const [sessionRange, setSessionRange] = useState<string | null>(null);
+    const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
     const [searchKeyword, setSearchKeyword] = useState<string>('');
     const [accountTypes, setAccountTypes] = useState<{ value: string, label: string }[]>([]);
     const [resJson, setResJson] = useState<Array<MailchimpUserResponseDTO>>([]);
@@ -40,7 +40,7 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
             pageSize: 8,
             accountType: accountTypes.length > 0 ? accountTypes.map(opt => opt.label) : undefined,
             studentNameSearchKeyword: searchKeyword || undefined,
-            minNumberOfSessions: sessionRange === '1-2' ? 1 : sessionRange === '3+' ? 3 : sessionRange === '0' ? 0 : 0,
+            minNumberOfSessions: sessionRange === '1-2' ? 1 : sessionRange === '3+' ? 3 : sessionRange === '0' ? 0 : undefined,
             maxNumberOfSessions: sessionRange === '1-2' ? 2 : sessionRange === '0' ? 0 : undefined,
             startDate: undefined,
             endDate: undefined
@@ -114,7 +114,7 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
 
                     <Button type="button" className="submit-button" variant="danger" onClick={() => {
                         setSelectedSession('Sessions');
-                        setSessionRange(null);
+                        setSessionRange(undefined);
                         setSearchKeyword('');
                         setAccountTypes([]);
                         setResJson([]);

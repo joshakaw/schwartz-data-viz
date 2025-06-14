@@ -6,43 +6,43 @@ import NotImplementedWarning from '../../NotImplementedWarning/NotImplementedWar
 import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
+import instance from '../../../utils/axios';
 
 
 interface RouterDetailedSignupsDashboardProps { }
 
 const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = () => {
-    //const [sessionRange, setSessionRange] = useState<string | null>(null);
-    //const [searchKeyword, setSearchKeyword] = useState<string>('');
-    //const [accountTypes, setAccountTypes] = useState<{ value: string, label: string }[]>([]);
-    //const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
+    const [sessionRange, setSessionRange] = useState<string | null>(null);
 
-    //const reqData: DetailedSignupRequestDTO = {
-    //    name: null,
-    //    accountType: null,
-    //    signupMethodCategory: null,
-    //    freeResponseText: null,
-    //    dateOfSignup: null,
-    //    school: null,
-    //    //schoolType: null,
-    //    numberOfSessions: null
-    //};
+    const [signupMethodCategories, setsignupMethodCategories] = useState<{ value: string, label: string }[]>([]);
+    const [freeResponseSearchKeyword, setfreeResponseSearchKeyword] = useState<string>('');
+    const [accountType, setAccountType] = useState<{ value: string, label: string }[]>([]);
+    const [educationLevel, seteducationLevel] = useState<{ value: string, label: string }[]>([]);
+    const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
 
-    //console.log(reqData);
-    //console.log(resJson);
+    const reqData: DetailedSignupRequestDTO = {
+        pageIndex: 0,
+        pageSize: 10
+    }
 
-    //try {
-    //    const response = await instance.get("mailchimpDashboard/users", { params: reqData });
-    //    setResJson(response.data);
-    //} catch (err) {
-    //    console.error("API error:", err);
-    //}
+    console.log(reqData);
+    console.log(resJson);
+
+    try {
+        const response = instance.get("detailedSignupsDashboard/table", { params: reqData }).then((response) => {
+            setResJson(response.data);
+        })
+        
+    } catch (err) {
+        console.error("API error:", err);
+    }
 
     return (
         <>
             <div className="RouterDetailedSignupsDashboard">
                 <DetailedSignupsOptions />
                 {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
-                <SignupDataTable data={[]} />
+                <SignupDataTable data={resJson} />
             </div>
         </>
     );

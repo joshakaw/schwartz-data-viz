@@ -52,3 +52,21 @@ body {
     text-align: center;
     white-space: nowrap; /* prevents text wrap */
 }
+
+.export-button {
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid darkgray;
+    border-radius: 6px;
+}
+
+.export-button:hover {
+    transition: background-color 0.2s ease-in-out;
+    background: darkgray;
+    border: 1px solid darkgray;
+    border-radius: 6px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}

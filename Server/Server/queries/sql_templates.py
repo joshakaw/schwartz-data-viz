@@ -77,9 +77,9 @@ left join
 	user.parentId = parent.id
 where 
 	1=1
-	{f"and CONCAT(user.firstName, ' ', user.lastName) like '{dto.studentNameSearchKeyword[0]}'" if dto.studentNameSearchKeyword[0] else ""}
-	{f"and latest_sessions.numbersessions > '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions[0] else ""}
-	{f"and latest_sessions.numbersessions < '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions[0] else ""}
+	{f"and CONCAT(user.firstName, ' ', user.lastName) like '%{dto.studentNameSearchKeyword[0]}%'" if dto.studentNameSearchKeyword[0] else ""}
+	{f"and latest_sessions.numbersessions >= '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions[0] else ""}
+	{f"and latest_sessions.numbersessions <= '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions[0] else ""}
 	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate[0] else ""}
     {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate[0] else ""}
 order by

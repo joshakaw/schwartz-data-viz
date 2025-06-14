@@ -48,7 +48,7 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
         <Container fluid style={{ marginBottom: "20px" }}>
             <h1>Filters</h1>
             <Row>
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Label>Signup Methods:</Form.Label>
                     <Select
                         options={Signup}
@@ -56,7 +56,7 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                         className='inner-select'
                     />
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Label>Account Types:</Form.Label>
                     <Select
                         options={User}
@@ -65,7 +65,7 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                         className='inner-select'
                     />
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Label>School type: </Form.Label>
                     <Select
                         options={School}
@@ -73,34 +73,34 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                         className='inner-select'
                     />
                 </Col>
-            </Row>
-
-            <Row>
-                <Button ref={target} onClick={() => setOpen(!isOpen)}>Select Date Range</Button>
-                <Overlay target={target.current} show={isOpen} placement="bottom">
-                    {({
-                        placement: _placement,
-                        arrowProps: _arrowProps,
-                        show: _show,
-                        popper: _popper,
-                        hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                        ...props
-                    }) => (
-                        <div
-                            {...props}
-                            style={{
-                                position: 'absolute',
-                                backgroundColor: 'rgba(100, 20, 20, 1)',
-                                padding: '2px 10px',
-                                color: 'white',
-                                borderRadius: 3,
-                                ...props.style,
-                            }}
-                        >
-                            <DayPicker animate mode="range"></DayPicker>
-                        </div>
-                    )}
-                </Overlay>
+                <Col>
+                    <Form.Label>Date range: </Form.Label><br />
+                    <Button ref={target} onClick={() => setOpen(!isOpen)}>Select Date Range</Button>
+                    <Overlay target={target.current} show={isOpen} placement="bottom">
+                        {({
+                            placement: _placement,
+                            arrowProps: _arrowProps,
+                            show: _show,
+                            popper: _popper,
+                            hasDoneInitialMeasure: _hasDoneInitialMeasure,
+                            ...props
+                        }) => (
+                            <div
+                                {...props}
+                                style={{
+                                    position: 'absolute',
+                                    backgroundColor: 'rgba(100, 20, 20, 1)',
+                                    padding: '2px 10px',
+                                    color: 'white',
+                                    borderRadius: 3,
+                                    ...props.style,
+                                }}
+                            >
+                                <DayPicker animate mode="range"></DayPicker>
+                            </div>
+                        )}
+                    </Overlay>
+                </Col>
             </Row>
         </Container>
     );

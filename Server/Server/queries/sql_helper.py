@@ -10,6 +10,7 @@ from flask import current_app
 # def init_sql_helper():
 
 
+
 def read_sql_from_queries(fileName: str) -> str:
     """
     Returns SQL string from file in queries folder.

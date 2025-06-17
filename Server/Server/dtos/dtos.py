@@ -63,7 +63,6 @@ class SignupLineChartResponseDTO(BaseModel):
     numberOfSignups: int
 
 class SignupSummaryBoxRequestDTO(BaseModel):
-    groupByDays: int
     signupMethodCategories: Union[List[str], None] = None
     accountType: Union[List[str], None] = None
     startDate: Union[Single[str], None] = None

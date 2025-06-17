@@ -1,7 +1,7 @@
 import unittest
 
-from Server.dtos.dtos import DetailedSignupRequestDTO
-from Server.queries.sql_templates import qDetailedSignups, qSignupsByCategory
+from Server.dtos.dtos import DetailedSignupRequestDTO, SignupSummaryBoxRequestDTO
+from Server.queries.sql_templates import qDetailedSignups, qSignupsByCategory, qSignupsSummaryBox
 
 class Test_test_sql_templates(unittest.TestCase):
     def test_signupsByCategory_full(self):
@@ -52,6 +52,17 @@ order by
             educationLevel=["K-12"]
         )
         (params, query) = qDetailedSignups(dto)
+        print(params)
+        print(query)
+
+    def test_qSignupsSummaryBox(self):
+        dto = SignupSummaryBoxRequestDTO(
+            signupMethodCategories=None,
+            startDate="2022-11-13",
+            endDate="2022-11-14",
+            accountType=["Student"],
+        )
+        (params, query) = qSignupsSummaryBox(dto)
         print(params)
         print(query)
 

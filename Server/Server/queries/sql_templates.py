@@ -1,7 +1,7 @@
 from typing import Any, List, Tuple, TypeAlias
 
 from MySQLdb.cursors import BaseCursor
-from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO
+from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO, SignupSummaryBoxRequestDTO
 from Server.queries import sql_helper
 
 def qSignupsByCategory(startDate, endDate, categories):
@@ -92,6 +92,10 @@ limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
 # Returns list of params, and str SQL query (with %s replacements)
 ParameterizedQueryReturn : TypeAlias = Tuple[List[Any], str]
 
+# Reusables
+accountTypeCase = "(case when u.tutor is true then 'Tutor' else '<UNKNOWN>' end)"
+
+
 def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
     # This query will use parameters, so the db.execute() can 
     # escape anything that could lead to SQL Injection
@@ -100,8 +104,6 @@ def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
     whereContent = "1=1 "
     params: List[Any] = []
 
-    # Reusables
-    accountTypeCase = "(case when u.tutor is true then 'Tutor' else '<UNKNOWN>' end)"
 
     if dto.signupMethodCategories:
         whereContent += "and u.hearAboutUsDropdown in %s "
@@ -152,3 +154,36 @@ from user_t u
 inner join school_t st on schoolId = st.id
 where {whereContent};
 """)
+
+def qSignupsSummaryBox(dto: SignupSummaryBoxRequestDTO) -> ParameterizedQueryReturn:
+    # Content of the Where clause
+    whereContent = "1=1 "
+    params: List[Any] = []
+
+    if dto.signupMethodCategories:
+        whereContent += "and u.hearAboutUsDropdown in %s "
+        params.append(dto.signupMethodCategories)
+
+    if dto.startDate:
+        whereContent += "and u.createdAt >= %s "
+        params.append(dto.startDate)
+
+    if dto.endDate:
+        whereContent += "and u.createdAt <= %s "
+        params.append(dto.endDate)
+
+    if dto.accountType:
+        whereContent += f"and {accountTypeCase} in %s "
+        params.append(dto.accountType)
+
+    # Create SQL string
+    return (params,
+f"""
+select COUNT(*) 
+from (select *, {accountTypeCase} as accountType from user_t u) u
+where 1=1
+{whereContent}
+""")
+
+def qSignupsLineChart() -> ParameterizedQueryReturn:
+    pass

@@ -9,8 +9,6 @@ from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
-    SignupLineChartResponseDTO,
-    SignupsByCategoryRequestDTO,
     SignupsByCategoryRequestDTO,
 )
 from flask import Blueprint, jsonify, request
@@ -170,7 +168,7 @@ def mailchimpUsers():
 
     return jsonify(
         loads(pdData.to_json(orient="records"))
-    )  # TODO: Is this expected format by client?
+    )
 
 
 @main_api.route("/params")

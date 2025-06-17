@@ -43,7 +43,9 @@ class SignupsByCategoryRequestDTO(BaseModel):
 class DetailedSignupRequestDTO(BaseModel):
     signupMethodCategories: Union[List[str], None] = None
     freeResponseSearchKeyword: Union[Single[str], None] = None
-    startDate: Union[Single[str], None] = None # Single[str] stores first str value in array
+    startDate: Union[
+        Single[str], None
+    ] = None  # Single[str] stores first str value in array
     endDate: Union[Single[str], None] = None
     accountType: Union[List[str], None] = None
     educationLevel: Union[List[str], None] = None

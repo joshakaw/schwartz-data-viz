@@ -1,14 +1,19 @@
 from typing import Any, List, Tuple, TypeAlias
 
 from MySQLdb.cursors import BaseCursor
-from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO
+from Server.dtos.dtos import (
+    DetailedSignupRequestDTO,
+    MailchimpUsersRequestDTO,
+    SignupLineChartRequestDTO,
+    SignupSummaryBoxRequestDTO,
+)
 from Server.queries import sql_helper
+
 
 def qSignupsByCategory(startDate, endDate, categories):
     sqlListOfCategories = sql_helper.array_to_sql_in_clause(categories)
 
-    return \
-f"""
+    return f"""
 select 
     user.hearAboutUsDropdown  as 'category',
     count(*) as 'signups' from `user_t` as user
@@ -21,13 +26,15 @@ group by
     user.hearAboutUsDropdown
 order by 
     count(*) desc
-""".replace("\n", " ")
+""".replace(
+        "\n", " "
+    )
+
 
 def qMailchimpUsers(dto: MailchimpUsersRequestDTO):
     # TODO: Important! Account type not implemented!
 
-    return\
-f"""
+    return f"""
 select
     user.id as studentId,
     -- Kept AS for clear column name
@@ -89,19 +96,21 @@ order by
 limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
 """
 
+
 # Returns list of params, and str SQL query (with %s replacements)
-ParameterizedQueryReturn : TypeAlias = Tuple[List[Any], str]
+ParameterizedQueryReturn: TypeAlias = Tuple[List[Any], str]
+
+# Reusables
+accountTypeCase = "(case when u.tutor is true then 'Tutor' when u.parentAccount is true then 'Parent' else 'Student' end)"
+
 
 def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
-    # This query will use parameters, so the db.execute() can 
+    # This query will use parameters, so the db.execute() can
     # escape anything that could lead to SQL Injection
 
     # Content of the Where clause
     whereContent = "1=1 "
     params: List[Any] = []
-
-    # Reusables
-    accountTypeCase = "(case when u.tutor is true then 'Tutor' else '<UNKNOWN>' end)"
 
     if dto.signupMethodCategories:
         whereContent += "and u.hearAboutUsDropdown in %s "
@@ -124,7 +133,7 @@ def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
         params.append(dto.accountType)
 
     if dto.educationLevel:
-        educationLevelsList : List[str] = []
+        educationLevelsList: List[str] = []
         if "K-12" in dto.educationLevel:
             educationLevelsList.append("elementary")
             educationLevelsList.append("middle")
@@ -138,8 +147,9 @@ def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
         params.append(educationLevelsList)
 
     # Create SQL string
-    return (params,
-f"""
+    return (
+        params,
+        f"""
 select
     CONCAT(u.firstName, ' ', u.lastName) as name,
     {accountTypeCase} as accountType,
@@ -151,4 +161,98 @@ select
 from user_t u
 inner join school_t st on schoolId = st.id
 where {whereContent};
-""")
+""",
+    )
+
+
+def qSignupsSummaryBox(dto: SignupSummaryBoxRequestDTO) -> ParameterizedQueryReturn:
+    # Content of the Where clause
+    whereContent = "1=1 "
+    params: List[Any] = []
+
+    if dto.signupMethodCategories:
+        whereContent += "and u.hearAboutUsDropdown in %s "
+        params.append(dto.signupMethodCategories)
+
+    if dto.startDate:
+        whereContent += "and u.createdAt >= %s "
+        params.append(dto.startDate)
+
+    if dto.endDate:
+        whereContent += "and u.createdAt <= %s "
+        params.append(dto.endDate)
+
+    if dto.accountType:
+        whereContent += f"and {accountTypeCase} in %s "
+        params.append(dto.accountType)
+
+    # Create SQL string
+    return (
+        params,
+        f"""
+select COUNT(*) as signupCount
+from (select *, {accountTypeCase} as accountType from user_t u) u
+where {whereContent};
+""",
+    )
+
+
+def qSignupsLineChart(dto: SignupLineChartRequestDTO) -> ParameterizedQueryReturn:
+
+    # Reusable clause for SELECT and GROUP BY
+    firstSundayOfWeek = (
+        "DATE(DATE_SUB(DATE(u.createdAt), INTERVAL DAYOFWEEK(u.createdAt) - 1 DAY))"
+    )
+    firstDayOfMonth = (
+        "DATE(CONCAT(year(DATE(u.createdAt)), '-', MONTH(DATE(u.createdAt)), '-1'))"
+    )
+    firstDayOfYear = "DATE(CONCAT(year(DATE(u.createdAt)), '-1-1'))"
+
+    selectedGrouping = ""
+    match dto.groupBy:
+        case "week":
+            selectedGrouping = firstSundayOfWeek
+        case "month":
+            selectedGrouping = firstDayOfMonth
+        case "year":
+            selectedGrouping = firstDayOfYear
+        case _:
+            # Unknown input
+            selectedGrouping = firstSundayOfWeek
+
+    # Content of the Where clause
+    whereContent = "1=1 "
+    params: List[Any] = []
+
+    if dto.signupMethodCategories:
+        whereContent += "and u.hearAboutUsDropdown in %s "
+        params.append(dto.signupMethodCategories)
+
+    if dto.startDate:
+        whereContent += "and u.createdAt >= %s "
+        params.append(dto.startDate)
+
+    if dto.endDate:
+        whereContent += "and u.createdAt <= %s "
+        params.append(dto.endDate)
+
+    if dto.accountType:
+        whereContent += f"and {accountTypeCase} in %s "
+        params.append(dto.accountType)
+
+    # Create SQL string
+
+    return (
+        params,
+        f"""
+select
+	{selectedGrouping} as date,
+	u.hearAboutUsDropdown as signupMethodCategory,
+	COUNT(u.createdAt) as numberOfSignups
+from
+	user_t u
+where {whereContent}
+group by {selectedGrouping}, hearAboutUsDropdown
+order by date desc;
+""",
+    )

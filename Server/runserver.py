@@ -1,5 +1,5 @@
 """
-This script runs the Server application 
+This script runs the Server application
 using a development server.
 """
 

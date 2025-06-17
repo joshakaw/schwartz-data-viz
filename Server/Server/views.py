@@ -8,6 +8,8 @@ from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
+    SignupLineChartRequestDTO,
+    SignupLineChartResponseDTO,
     SignupsByCategoryRequestDTO,
     SignupsByCategoryRequestDTO,
 )
@@ -18,7 +20,11 @@ from Server import db
 from json import loads
 
 from Server.queries.sql_helper import read_sql_from_queries
-from Server.queries.sql_templates import qDetailedSignups, qMailchimpUsers, qSignupsByCategory
+from Server.queries.sql_templates import (
+    qDetailedSignups,
+    qMailchimpUsers,
+    qSignupsByCategory,
+)
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
@@ -36,6 +42,7 @@ def sqlTest():
     c.execute(query)
 
     return str(c.fetchall())
+
 
 @main_api.route("/detailedSignupsDashboard/table")
 def detailedSignupsTable():
@@ -55,13 +62,52 @@ def detailedSignupsTable():
 
     return jsonify(loads(pdData.to_json(orient="records")))
 
+
 @main_api.route("/signupDashboard/lineChart")
 def signupsLineChart():
-    pass
+    # Get request
+    # Create query
+    # Execute query
+    # Transform
+
+    sampleData = [
+        {
+            "date": "2024-06-01",
+            "signupMethodCategory": "Friend Referral",
+            "numberOfSignups": 25,
+        },
+        {
+            "date": "2024-06-01",
+            "signupMethodCategory": "Physical Advertising",
+            "numberOfSignups": 60,
+        },
+        {
+            "date": "2024-06-08",
+            "signupMethodCategory": "Friend Referral",
+            "numberOfSignups": 19,
+        },
+        {
+            "date": "2024-06-08",
+            "signupMethodCategory": "Physical Advertising",
+            "numberOfSignups": 40,
+        },
+    ]
+
+    pdSampleData = pd.DataFrame(sampleData)
+    return jsonify(loads(pdSampleData.to_json(orient="records")))
+
 
 @main_api.route("/signupDashboard/summaryBox")
 def signupsSummaryBox():
-    pass
+    # Get request
+    # Create query
+    # Execute query
+    # Transform
+
+    sampleData = {"signnupCount": 69}
+
+    # pdSampleData = pd.DataFrame(sampleData)
+    return jsonify(sampleData)
 
 
 @main_api.route("/signupDashboard/signupsByCategory")
@@ -135,7 +181,7 @@ def paramsTest():
     )
     query = "select * from user_t where firstName like %s and id > %s limit 10;"
     params: List[Any] = ["%Ar%", 100]
-    
+
     # Execute query
     c = db.get_db_cursor()
     c.execute(query, params)

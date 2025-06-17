@@ -5,7 +5,7 @@ from Server.queries.sql_templates import qDetailedSignups, qSignupsByCategory
 
 class Test_test_sql_templates(unittest.TestCase):
     def test_signupsByCategory_full(self):
-        string = qSignupsByCategory('2002-01-01', '2004-01-01', ['A', 'B'])
+        string = qSignupsByCategory(['2002-01-01'], ['2004-01-01'], ['A', 'B'])
         self.maxDiff = None
         self.assertEqual(\
 """

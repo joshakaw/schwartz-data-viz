@@ -40,8 +40,6 @@ class SignupsByCategoryRequestDTO(BaseModel):
     startDate: Union[SingleItemList[str], None] = None
     endDate: Union[SingleItemList[str], None] = None
 
-# TODO: If array is empty, and expected list, convert to None; takes responsibility away from client
-
 class DetailedSignupRequestDTO(BaseModel):
     signupMethodCategories: Union[List[str], None] = None # TODO: Does the Flask parser turn nulls/Nones from client into an empty list?
     freeResponseSearchKeyword: Union[Single[str], None] = None
@@ -51,3 +49,15 @@ class DetailedSignupRequestDTO(BaseModel):
     educationLevel: Union[List[str], None] = None
 
 # TODO: Markup lists that should only contain one element after query param interpretation
+
+class SignupLineChartRequestDTO(BaseModel):
+    groupByDays: int
+    signupMethodCategories: Union[List[str], None] = None
+    accountType: Union[List[str], None] = None
+    startDate: Union[Single[str], None] = None
+    endDate: Union[Single[str], None] = None
+
+class SignupLineChartResponseDTO(BaseModel):
+    date: str
+    signupMethodCategory: str
+    numberOfSignups: int

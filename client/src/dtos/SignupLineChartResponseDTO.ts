@@ -1,4 +1,4 @@
-interface SignupLineChartResponseDTO {
+export interface SignupLineChartResponseDTO {
     /** 
      * Date of last signup in this period
      * (specified in request)

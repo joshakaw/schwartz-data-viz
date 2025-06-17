@@ -55,6 +55,15 @@ def detailedSignupsTable():
 
     return jsonify(loads(pdData.to_json(orient="records")))
 
+@main_api.route("/signupDashboard/lineChart")
+def signupsLineChart():
+    pass
+
+@main_api.route("/signupDashboard/summaryBox")
+def signupsSummaryBox():
+    pass
+
+
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
     # Get request

@@ -1,14 +1,4 @@
-export interface SignupLineChartRequestDTO {
-
-    /**
-     * Specifies the increment that signups should
-     * be grouped into in the response
-     * 
-     * (e.g. if 7, then each item in 
-     * response array is signups per week)
-     */
-    groupByDays: number;
-
+export interface SignupSummaryBoxRequestDTO {
     /**
      * List of signup method categories to include in result. If undefined,
      * then all categories will be returned. 

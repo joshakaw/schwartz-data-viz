@@ -190,7 +190,7 @@ def qSignupsSummaryBox(dto: SignupSummaryBoxRequestDTO) -> ParameterizedQueryRet
     return (
         params,
         f"""
-select COUNT(*) 
+select COUNT(*) as signupCount
 from (select *, {accountTypeCase} as accountType from user_t u) u
 where {whereContent};
 """,

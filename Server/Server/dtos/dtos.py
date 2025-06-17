@@ -49,7 +49,7 @@ class DetailedSignupRequestDTO(BaseModel):
     educationLevel: Union[List[str], None] = None
 
 class SignupLineChartRequestDTO(BaseModel):
-    groupBy: str
+    groupBy: Single[str]
     signupMethodCategories: Union[List[str], None] = None
     accountType: Union[List[str], None] = None
     startDate: Union[Single[str], None] = None

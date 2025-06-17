@@ -9,6 +9,7 @@ from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
+    SignupSummaryBoxRequestDTO,
     SignupsByCategoryRequestDTO,
 )
 from flask import Blueprint, jsonify, request
@@ -22,6 +23,8 @@ from Server.queries.sql_templates import (
     qDetailedSignups,
     qMailchimpUsers,
     qSignupsByCategory,
+    qSignupsLineChart,
+    qSignupsSummaryBox,
 )
 
 # Defines the API blueprint to be applied to the app
@@ -64,48 +67,69 @@ def detailedSignupsTable():
 @main_api.route("/signupDashboard/lineChart")
 def signupsLineChart():
     # Get request
+    dto = SignupLineChartRequestDTO(**request.args.to_dict(flat=False))
+
     # Create query
+    (params, query) = qSignupsLineChart(dto)
+
     # Execute query
+    c = db.get_db_cursor()
+    c.execute(query, params)
+
     # Transform
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
 
-    sampleData = [
-        {
-            "date": "2024-06-01",
-            "signupMethodCategory": "Friend Referral",
-            "numberOfSignups": 25,
-        },
-        {
-            "date": "2024-06-01",
-            "signupMethodCategory": "Physical Advertising",
-            "numberOfSignups": 60,
-        },
-        {
-            "date": "2024-06-08",
-            "signupMethodCategory": "Friend Referral",
-            "numberOfSignups": 19,
-        },
-        {
-            "date": "2024-06-08",
-            "signupMethodCategory": "Physical Advertising",
-            "numberOfSignups": 40,
-        },
-    ]
+    return jsonify(loads(pdData.to_json(orient="records")))
 
-    pdSampleData = pd.DataFrame(sampleData)
-    return jsonify(loads(pdSampleData.to_json(orient="records")))
+    # sampleData = [
+    #     {
+    #         "date": "2024-06-01",
+    #         "signupMethodCategory": "Friend Referral",
+    #         "numberOfSignups": 25,
+    #     },
+    #     {
+    #         "date": "2024-06-01",
+    #         "signupMethodCategory": "Physical Advertising",
+    #         "numberOfSignups": 60,
+    #     },
+    #     {
+    #         "date": "2024-06-08",
+    #         "signupMethodCategory": "Friend Referral",
+    #         "numberOfSignups": 19,
+    #     },
+    #     {
+    #         "date": "2024-06-08",
+    #         "signupMethodCategory": "Physical Advertising",
+    #         "numberOfSignups": 40,
+    #     },
+    # ]
+
+    # pdSampleData = pd.DataFrame(sampleData)
+    # return jsonify(loads(pdSampleData.to_json(orient="records")))
 
 
 @main_api.route("/signupDashboard/summaryBox")
 def signupsSummaryBox():
     # Get request
+    dto = SignupSummaryBoxRequestDTO(**request.args.to_dict(flat=False))
+
     # Create query
+    (params, query) = qSignupsSummaryBox(dto)
+
     # Execute query
+    c = db.get_db_cursor()
+    c.execute(query, params)
+
     # Transform
+    data = c.fetchall()  # Returns 2d tuple
+    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
 
-    sampleData = {"signnupCount": 69}
+    return jsonify(loads(pdData.to_json(orient="records")))
 
-    # pdSampleData = pd.DataFrame(sampleData)
-    return jsonify(sampleData)
+    # sampleData = {"signnupCount": 69}
+    # # pdSampleData = pd.DataFrame(sampleData)
+    # return jsonify(sampleData)
 
 
 @main_api.route("/signupDashboard/signupsByCategory")

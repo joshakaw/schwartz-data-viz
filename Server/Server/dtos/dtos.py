@@ -1,8 +1,16 @@
-from typing import (    Annotated, Any, List,    TypeAlias,    TypeVar,    Union,)
+from typing import (
+    Annotated,
+    Any,
+    List,
+    TypeAlias,
+    TypeVar,
+    Union,
+)
 from pydantic import BaseModel, BeforeValidator
 
 # A list with a single item.
 SingleItemList: TypeAlias = List
+
 
 def unpack_single_list_item(v: Any) -> Any:
     """
@@ -17,11 +25,13 @@ def unpack_single_list_item(v: Any) -> Any:
             return None  # Or [] if you prefer empty list for empty input lists
     return v
 
+
 # Since the data comes back as a List for all keys (via request.args.to_dict(flat=False)),
 # the Single type allows us to convert a class member to type rather than List[type]
 # so we don't have to do member[0] every time.
 T = TypeVar("T")
-Single : TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
+Single: TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
+
 
 class MailchimpUsersRequestDTO(BaseModel):
     pageIndex: SingleItemList[int]
@@ -40,15 +50,17 @@ class SignupsByCategoryRequestDTO(BaseModel):
     startDate: Union[SingleItemList[str], None] = None
     endDate: Union[SingleItemList[str], None] = None
 
+
 class DetailedSignupRequestDTO(BaseModel):
     signupMethodCategories: Union[List[str], None] = None
     freeResponseSearchKeyword: Union[Single[str], None] = None
-    startDate: Union[
-        Single[str], None
-    ] = None  # Single[str] stores first str value in array
+    startDate: Union[Single[str], None] = (
+        None  # Single[str] stores first str value in array
+    )
     endDate: Union[Single[str], None] = None
     accountType: Union[List[str], None] = None
     educationLevel: Union[List[str], None] = None
+
 
 class SignupLineChartRequestDTO(BaseModel):
     groupBy: Single[str]
@@ -57,16 +69,19 @@ class SignupLineChartRequestDTO(BaseModel):
     startDate: Union[Single[str], None] = None
     endDate: Union[Single[str], None] = None
 
+
 class SignupLineChartResponseDTO(BaseModel):
     date: str
     signupMethodCategory: str
     numberOfSignups: int
+
 
 class SignupSummaryBoxRequestDTO(BaseModel):
     signupMethodCategories: Union[List[str], None] = None
     accountType: Union[List[str], None] = None
     startDate: Union[Single[str], None] = None
     endDate: Union[Single[str], None] = None
+
 
 class SignupSummaryBoxResponseDTO(BaseModel):
     signnupCount: int

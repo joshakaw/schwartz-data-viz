@@ -4,6 +4,7 @@ from werkzeug import Response
 
 from Server import create_app
 
+
 class Test_test_views(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -57,18 +58,23 @@ class Test_test_views(unittest.TestCase):
         self.assertEqual(response.status_code, 200)  # OK
 
     def test_signupsLineChart(self):
-        response : Response = self._client.get("/signupDashboard/lineChart?groupBy=week&startDate=2022-01-01")
+        response: Response = self._client.get(
+            "/signupDashboard/lineChart?groupBy=week&startDate=2022-01-01"
+        )
         print(response.get_json())
 
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
     def test_signupsSummaryBox(self):
-        response : Response = self._client.get("/signupDashboard/summaryBox?startDate=2022-01-01")
+        response: Response = self._client.get(
+            "/signupDashboard/summaryBox?startDate=2022-01-01"
+        )
         print(response.get_json())
 
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
+
 
 if __name__ == "__main__":
     unittest.main()

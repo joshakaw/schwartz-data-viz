@@ -7,8 +7,8 @@ import os
 
 from flask import current_app
 
-#def init_sql_helper():
-    
+# def init_sql_helper():
+
 
 def read_sql_from_queries(fileName: str) -> str:
     """
@@ -22,9 +22,9 @@ def read_sql_from_queries(fileName: str) -> str:
 
     sql = open(filePath, encoding="utf-8").read().replace("\n", " ")
 
-    if(sql.__len__ == 0):
+    if sql.__len__ == 0:
         raise Exception("File is empty.")
-    if(sql.find(";") != -1):
+    if sql.find(";") != -1:
         raise Exception("Only one SQL statement allowed.")
 
     return sql
@@ -58,4 +58,6 @@ def array_to_sql_in_clause(arr):
         return "(" + ",".join(quoted_elements) + ")"
     else:
         # Handle other types if necessary, or raise an error
-        raise ValueError("Unsupported data type in array. Only numbers and strings are supported.")
+        raise ValueError(
+            "Unsupported data type in array. Only numbers and strings are supported."
+        )

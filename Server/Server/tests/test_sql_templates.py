@@ -73,7 +73,13 @@ order by
         print(params)
         print(query)
 
-        assert params == ['%Royal%', '2022-11-13', '2022-11-14', ['Student'], ['elementary', 'middle', 'high']]
+        assert params == [
+            "%Royal%",
+            "2022-11-13",
+            "2022-11-14",
+            ["Student"],
+            ["elementary", "middle", "high"],
+        ]
         assert "u.hearAboutUsFRQ like %s" in query
         assert "u.createdAt >= %s" in query
         assert "u.createdAt <= %s" in query
@@ -111,6 +117,7 @@ order by
         assert "order by date desc" in query
         assert "u.createdAt >= %s" in query
         assert "u.createdAt <= %s" in query
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -190,9 +190,7 @@ def mailchimpUsers():
         ],
     )
 
-    return jsonify(
-        loads(pdData.to_json(orient="records"))
-    )
+    return jsonify(loads(pdData.to_json(orient="records")))
 
 
 @main_api.route("/params")

@@ -96,6 +96,7 @@ order by
 {f"limit {dto.pageSize[0]} offset {dto.pageIndex[0]}" if dto.pageSize else ""}
 """
 
+
 # Returns list of params, and str SQL query (with %s replacements)
 ParameterizedQueryReturn: TypeAlias = Tuple[List[Any], str]
 

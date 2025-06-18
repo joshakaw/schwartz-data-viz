@@ -31,7 +31,7 @@ order by
     )
 
 
-def qMailchimpUsers(dto: MailchimpUsersRequestDTO):
+def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
     # TODO: Important! Account type not implemented!
 
     return f"""
@@ -93,7 +93,7 @@ where
     {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate else ""}
 order by
     mostrecentsession desc
-limit {dto.pageSize[0]} offset {dto.pageIndex[0]};
+{f"limit {dto.pageSize[0]} offset {dto.pageIndex[0]}" if dto.pageSize else ""}
 """
 
 

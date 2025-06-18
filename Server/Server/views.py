@@ -3,9 +3,11 @@ Routes and views for
 the Flask application.
 """
 
+from copy import copy
 from typing import Any, List
 from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
+    ApiPaginatedResponse,
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
@@ -190,7 +192,25 @@ def mailchimpUsers():
         ],
     )
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    # Create count query
+    cloneDto = copy(dto)
+    cloneDto.pageSize = None
+    cloneDto.pageIndex = None
+
+    countQuery = f"select count(*) from ({qMailchimpUsers(cloneDto)}) as a"
+
+    # Get count
+    c.execute(countQuery)
+    number = c.fetchall()
+
+    paginatedRepsonse = {
+        "pageIndex": dto.pageIndex[0],
+        "pageSize": dto.pageSize[0],
+        "totalItems": number[0][0],
+        "data": loads(pdData.to_json(orient="records")),
+    }
+
+    return jsonify(paginatedRepsonse)
 
 
 @main_api.route("/params")

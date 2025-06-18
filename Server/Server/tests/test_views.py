@@ -40,7 +40,7 @@ class Test_test_views(unittest.TestCase):
     def test_mailchimpUsers(self):
         # Does not test response/query validity
         response = self._client.get(
-            "/mailchimpDashboard/users?pageIndex=0&pageSize=10&studentNameSearchKeyword=D&minNumberOfSessions=1&maxNumberOfSessions=10&startDate=2021-10-01&endDate=2022-01-01&accountType=Student&accountType=Tutor&accountType=Parent&educationLevel=K-12",
+            "/mailchimpDashboard/users?pageIndex=0&pageSize=10&studentNameSearchKeyword=D&minNumberOfSessions=1&maxNumberOfSessions=10&startDate=2020-10-01&endDate=2023-01-01&accountType=Student&accountType=Tutor&accountType=Parent&educationLevel=K-12",
             # json={
             #     "pageIndex": 0,
             #     "pageSize": 10,
@@ -54,6 +54,7 @@ class Test_test_views(unittest.TestCase):
             # },
         )
 
+        print(response.get_json())
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 

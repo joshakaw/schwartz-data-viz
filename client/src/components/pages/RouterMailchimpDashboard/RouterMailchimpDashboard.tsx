@@ -6,8 +6,7 @@ import './RouterMailchimpDashboard.css';
 import AccountDataTable from '../../accountDataTable/accountDataTable';
 
 // React component imports
-import Dropdown from 'react-bootstrap/Dropdown';
-import { InputGroup, Form, Button } from 'react-bootstrap';
+import { InputGroup, Form, Button, Dropdown, Col, Row, Container } from 'react-bootstrap';
 import Select from 'react-select';
 import CsvDownloadButton from 'react-json-to-csv';
 
@@ -75,73 +74,97 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
 
     return (
         <>
-            <div className="RouterMailchimpDashboard">
-                <h1>Mailchimp Dashboard</h1>
-                <p>Welcome to your Mailchimp Dashboard. Here you can view campaign stats, manage subscribers, and more.</p>
-            </div>
-
-            <div className="top-row">
-                <Form className="filter-form" onSubmit={handleSubmit}>
-                    <InputGroup className="search-input">
-                        <Form.Control
-                            placeholder="Enter Full Student Name"
-                            value={searchKeyword}
-                            onChange={(e) => setSearchKeyword(e.target.value)}
-                        />
-                    </InputGroup>
-
-                    <Dropdown className="sessions">
-                        <Dropdown.Toggle id="dropdown-basic">
-                            {selectedSession}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => { setSelectedSession('0'); setSessionRange('0'); }}>0</Dropdown.Item>
-                            <Dropdown.Item onClick={() => { setSelectedSession('1-2'); setSessionRange('1-2'); }}>1-2</Dropdown.Item>
-                            <Dropdown.Item onClick={() => { setSelectedSession('3+'); setSessionRange('3+'); }}>3+</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-
-                    <div className="session-select">
-                        <Select
-                            options={sessionOptions}
-                            isMulti
-                            placeholder="Account Type"
-                            className="inner-select"
-                            onChange={(selected) => setAccountTypes(selected as any)}
-                            value={accountTypes}
-                        />
+            <Container>
+                <Row>
+                    <div className="RouterMailchimpDashboard">
+                        <h1>Mailchimp Dashboard</h1>
+                        <p>Welcome to your Mailchimp Dashboard. Here you can view campaign stats, manage subscribers, and more.</p>
                     </div>
+                </Row>
+                <Form className="filter-form mb-2" onSubmit={handleSubmit}>
+                    <Row>
+                        <Col xs={12} md={4} lg={2}>
+                            <Form.Group className="search-input mb-2">
+                                <Form.Control
+                                    placeholder="Enter Full Student Name"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
+                                />
+                            </Form.Group>
+                        </Col>
 
-                    <Button type="button" className="submit-button" variant="danger" onClick={() => {
-                        setSelectedSession('Sessions');
-                        setSessionRange(undefined);
-                        setSearchKeyword('');
-                        setAccountTypes([]);
-                        setResJson([]);
-                    }}>
-                        Clear Filters
-                    </Button>
+                        <Col xs={12} md={4} lg={2}>
+                            <Form.Group className="sessions-multi-select mb-2">
+                                <Form.Select
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setSelectedSession(val);
+                                        setSessionRange(val);
+                                    }}
+                                    value={sessionRange}
+                                >
+                                    <option value="">Select Sessions</option>
+                                    <option value="0">0</option>
+                                    <option value="1-2">1-2</option>
+                                    <option value="3+">3+</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
 
-                    <Button type="submit" className="submit-button" variant="success">
-                        Apply Filters
-                    </Button>
+                        <Col xs={12} md={4} lg={2}>
+                            <Form.Group className="mb-2">
+                                <Select
+                                    options={sessionOptions}
+                                    isMulti
+                                    placeholder="Account Type"
+                                    className="inner-select"
+                                    onChange={(selected) => setAccountTypes(selected as any)}
+                                    value={accountTypes}
+                                />
+                            </Form.Group>
+                        </Col>
+
+                        <Col xs={12} md={6} lg={2}>
+                            <Button
+                                type="button"
+                                className="submit-button w-100 mb-2"
+                                variant="danger"
+                                onClick={() => {
+                                    setSelectedSession('Sessions');
+                                    setSessionRange(undefined);
+                                    setSearchKeyword('');
+                                    setAccountTypes([]);
+                                    setResJson([]);
+                                }}
+                            >
+                                Clear Filters
+                            </Button>
+                        </Col>
+
+                        <Col xs={12} md={6} lg={2}>
+                            <Button type="submit" className="submit-button w-100 mb-2" variant="success">
+                                Apply Filters
+                            </Button>
+                        </Col>
+
+                        <Col xs={12} md={12} lg={2}>
+                            <CsvDownloadButton className="export-button w-100" delimiter="," data={resJson} />
+                        </Col>
+                    </Row>
                 </Form>
-
-                {/* 
-                    Takes the last submitted filter json
-                    data and converts it into a csv file
-                    for MailChimp compatibility.
-                */}
-                <CsvDownloadButton className="export-button" delimiter="," data={resJson} />
-            </div>
-
-            <div className="account-table">
-                <AccountDataTable data={resJson} />
-            </div>
-
-            <Pagination className="pagination">
-                <Pagination>{items}</Pagination>
-            </Pagination>
+                <Row>
+                    <Col>
+                        <AccountDataTable data={resJson} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Pagination className="pagination">
+                            <Pagination>{items}</Pagination>
+                        </Pagination>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

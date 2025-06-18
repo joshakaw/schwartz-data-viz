@@ -10,10 +10,14 @@
 */
 
 .table-outer-scroll {
-    overflow-x: hidden; /* hides horizontal scrollbar */
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem; /* Rounded corners */
+    padding: 0.5rem;
+    background-color: #fff;
 }
 
 .table-inner-wrapper {
-    width: 100%;
+    min-width: 100%;
+    border-radius: 0.5rem;
 }
-

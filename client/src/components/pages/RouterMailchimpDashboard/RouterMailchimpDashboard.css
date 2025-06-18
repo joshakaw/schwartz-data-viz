@@ -2,57 +2,6 @@ body {
     margin: 0;
 }
 
-.account-table {
-    width: 100%;
-    overflow-x: hidden;
-}
-
-.top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-}
-
-.filter-form {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 1rem;
-    padding-bottom: 0.5rem;
-}
-
-.search-input {
-    min-width: 200px;
-    max-width: 400px;
-    flex-shrink: 0;
-}
-
-.sessions {
-    flex-shrink: 0;
-}
-
-.session-select .inner-select{
-    min-width: 200px;
-    white-space: nowrap;
-}
-
-.export-button {
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.submit-button {
-    white-space: nowrap;
-}
-
-.sessions .dropdown-toggle {
-    min-width: 100px; /* or fixed width like 100px */
-    text-align: center;
-    white-space: nowrap; /* prevents text wrap */
-}
-
 .export-button {
     transition: background-color 0.2s ease-in-out;
     border: 1px solid darkgray;

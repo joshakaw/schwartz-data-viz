@@ -9,7 +9,7 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
     return (
         <div className="table-outer-scroll">
             <div className="table-inner-wrapper">
-                <Table striped bordered hover responsive>
+                <Table striped bordered responsive>
                     <thead>
                         <tr>
                             <th>First Name</th>

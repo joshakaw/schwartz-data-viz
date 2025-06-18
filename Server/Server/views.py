@@ -7,7 +7,6 @@ from copy import copy
 from typing import Any, List
 from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
-    ApiPaginatedResponse,
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,

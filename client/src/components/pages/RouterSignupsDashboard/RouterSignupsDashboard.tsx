@@ -4,23 +4,29 @@ import BarChart from '../../bar-chart/bar-chart';
 import { Button, Col, Container, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { MultiValue, SingleValue } from 'react-select';
-import { signupOptions, userOptions, rangeOptions } from '../../../utils/input-fields';
+import { signupOptions, userOptions, rangeOptions, organizeOptions, weekMonthYear } from '../../../utils/input-fields';
 import { SignupsByCategoryRequestDTO } from '../../../dtos/SignupsByCategoryRequestDTO';
 import instance from '../../../utils/axios';
 import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOptions/DetailedSignupsOptions';
+import { SignupLineChartRequestDTO } from '../../../dtos/SignupLineChartRequestDTO';
+import { SignupSummaryBoxRequestDTO } from '../../../dtos/SignupSummaryBoxRequestDTO';
+import LineChart from '../../line-chart/line-chart';
 
 interface RouterSignupsDashboardProps { }
 
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const [data, setData] = useState<SignupData[]>([]);
+    const [lineData, setLineData] = useState<SignupData[]>([]);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
+    const [lineSetup, setLineSetup] = useState<SingleValue<{ value: string, label: string }>>(); // Handles the 'organize by week/month/year filters for linechart
     const [user, setUser] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        to: new Date("2021-12-08"),
-        from: new Date(new Date("2021-12-08").valueOf() - 1000 * 60 * 60 * 24 * 7) // This will be updated later when more seed data is added.
+        to: new Date(),
+        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7)
     });
     const datePickerTarget = useRef(null);
+
 
     function getData() {
         const methodList = signupMethods.map(opt => opt.value);
@@ -33,15 +39,41 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
 
-        console.log(reqJson);
-
         instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
-            console.log(response.data);
             setData(response.data as SignupData[]);
-            console.log(data);
+            // console.log(data);
         })
+    }
 
-        return data;
+    function getLineData() {
+        const methodList = signupMethods.map(opt => opt.value);
+        const userList = user.map(opt => opt.value);
+
+        // FIX GROUPBY LATER
+        const lineJson: SignupLineChartRequestDTO = {
+            groupBy: lineSetup == null ? 'week' : lineSetup.value as weekMonthYear,
+            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
+        }
+
+        instance.get("/signupDashboard/lineChart", { params: lineJson }).then((response) => {
+            setLineData(response.data as SignupData[]);
+            console.log(lineData);
+        })
+    }
+
+    function getSummaryData() {
+        const methodList = signupMethods.map(opt => opt.value);
+        const userList = user.map(opt => opt.value);
+
+        const summaryBoxJson: SignupSummaryBoxRequestDTO = {
+            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
+        }
     }
 
     const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
@@ -54,6 +86,10 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
     const changeDates = (selected: DateRange | undefined) => {
         setDateRange(selected);
+    }
+
+    const changeLineSetup = (selected: SingleValue<{ value: weekMonthYear, label: string }>) => {
+        setLineSetup(selected);
     }
 
     // This is a janky solution but it works.
@@ -71,25 +107,37 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     // Loads default filter. Also has handlers for filters to prevent getData() being called before respective changes
     useEffect(() => {
         getData();
+        getLineData();
+        getSummaryData();
     }, [])
 
     useEffect(() => {
         if (signupMethods) {
             getData();
+            getLineData();
         }
     }, [signupMethods])
 
     useEffect(() => {
         if (dateRange) {
             getData();
+            getLineData();
         }
     }, [dateRange])
 
     useEffect(() => {
         if (user) {
             getData();
+            getLineData();
         }
     }, [user])
+
+    // Only calls getLineData since this has no bearing on other 2
+    useEffect(() => {
+        if (lineSetup) {
+            getLineData();
+        }
+    }, [lineSetup]) 
 
     return <div className="RouterSignupsDashboard">
         <Container>
@@ -167,8 +215,29 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                             </Col>
                         </Row>
                     </div>
-                    <h1>Graphs: </h1>
-                    <BarChart sData={data} />
+                    <Row>
+                        <Col>
+                            <h1>Graphs:</h1>
+                        </Col>
+                        <Col className="d-flex align-items-center justify-content-end">
+                            <Form.Group>
+                                <Select
+                                    options={organizeOptions}
+                                    className='input-select'
+                                    placeholder='Organize line chart data by...'
+                                    onChange={changeLineSetup}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <BarChart sData={data} />
+                        </Col>
+                        <Col>
+                            <LineChart sData={lineData} />
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
         </Container>

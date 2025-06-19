@@ -9,6 +9,8 @@ export type OptionType = {
     label: string;
 }
 
+export type weekMonthYear = 'week' | 'month' | 'year';
+
 export const signupOptions: Options<{value: string, label: string}> = [
     { value: 'Social Media', label: 'Social Media' },
     { value: 'Physical Advertising', label: 'Physical Advertising' },
@@ -26,6 +28,12 @@ export const rangeOptions: Options<{ value: string, label: string }> = [
     { value: '7', label: 'Last 7 days' },
     { value: '14', label: 'Last 14 days' },
     { value: '30', label: 'Last month' }
+];
+
+export const organizeOptions: Options<{ value: weekMonthYear, label: string }> = [
+    { value: 'week', label: 'By week' },
+    { value: 'month', label: 'By month' },
+    { value: 'year', label: 'By year' }
 ];
 
 const School: Options<{ value: string, label: string }> = [

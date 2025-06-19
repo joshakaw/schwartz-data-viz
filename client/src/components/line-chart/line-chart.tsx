@@ -1,18 +1,18 @@
 'use client'; // This directive must be at the very top
 
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { SignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 import { FC } from 'react';
 
 Chart.register(CategoryScale);
 
-interface BarChartProps {
+interface LineChartProps {
     sData: SignupData[];
 };
 
 // Just sends the bar when called.
-const BarChart: FC<BarChartProps> = ({ sData }) => {
+const LineChart: FC<LineChartProps> = ({ sData }) => {
     // Disables legend
     const options = {
         plugins: {
@@ -22,7 +22,7 @@ const BarChart: FC<BarChartProps> = ({ sData }) => {
         }
     }
 
-    // Turns rawSignupData into something readable for a bar chart in chartjs
+    // Turns rawSignupData into something readable for a line chart in chartjs
     const data = {
         labels: sData.map(item => item.category),
         datasets: [
@@ -39,9 +39,9 @@ const BarChart: FC<BarChartProps> = ({ sData }) => {
 
     return (
         <div>
-            <Bar data={data} options={options} />
+            <Line data={data} options={options} />
         </div>
     );
 }
 
-export default BarChart;
+export default LineChart;

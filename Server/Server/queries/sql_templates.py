@@ -36,27 +36,27 @@ def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
 
     return f"""
 select
-    user.id as studentId,
+    u.id as studentId,
     -- Kept AS for clear column name
-    user.firstName,
-    user.lastName,
-    user.email,
-    user.phone,
+    u.firstName,
+    u.lastName,
+    u.email,
+    u.phone,
     CONCAT(tutor.firstName, ' ', tutor.lastName) as tutor,
     parent.id as parentAccount,
-    user.createdAt as createdAt,
+    u.createdAt as createdAt,
     school.name as school,
     latest_sessions.numbersessions as numSessions,
     tutoringsession.date as mostRecentSession,
     subject.name as mostRecentSubject
 from
-    user_t as user
+    user_t as u
 inner join
     school_t as school on
-    user.schoolId = school.id
+    u.schoolId = school.id
 inner join
   sessionstudent_t as sessionstudent on
-    user.id = sessionstudent.studentId
+    u.id = sessionstudent.studentId
 inner join
   tutoringsession_t as tutoringsession on
     sessionstudent.sessionId = tutoringsession.id
@@ -73,7 +73,7 @@ inner join (
     group by
         sessionstudent.studentId
 ) as latest_sessions on
-    user.id = latest_sessions.studentId
+    u.id = latest_sessions.studentId
     and tutoringsession.date = latest_sessions.maxSessionDate
 inner join
   user_t tutor on
@@ -83,10 +83,11 @@ inner join
     tutoringsession.subjectId = subject.id
 left join 
     user_t parent on
-    user.parentId = parent.id
+    u.parentId = parent.id
 where 
 	1=1
-	{f"and CONCAT(user.firstName, ' ', user.lastName) like '%{dto.studentNameSearchKeyword[0]}%'" if dto.studentNameSearchKeyword else ""}
+    {f"and {accountTypeCase} = '{dto.accountType[0]}'" if dto.accountType else ""}
+	{f"and CONCAT(u.firstName, ' ', u.lastName) like '%{dto.studentNameSearchKeyword[0]}%'" if dto.studentNameSearchKeyword else ""}
 	{f"and latest_sessions.numbersessions >= '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions else ""}
 	{f"and latest_sessions.numbersessions <= '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions else ""}
 	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate else ""}

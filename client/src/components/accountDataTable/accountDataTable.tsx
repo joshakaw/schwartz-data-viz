@@ -1,6 +1,7 @@
 import Table from 'react-bootstrap/Table';
 import { MailchimpUserResponseDTO } from '../../dtos/MailchimpUsersResponseDTO';
 
+
 interface AccountDataTableProps {
     data: MailchimpUserResponseDTO[];
 }
@@ -34,9 +35,9 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
                                 <td>{`(${account.phone.substring(0, 3)})-${account.phone.substring(3, 6)}-${account.phone.substring(6)}`}</td>
                                 <td>{account.school}</td>
                                 <td>{account.parentAccount}</td>
-                                <td>{account.createdAt}</td>
+                                <td>{new Date(account.createdAt).toLocaleString()}</td>
                                 <td>{account.numSession}</td>
-                                <td>{account.mostRecentSession}</td>
+                                <td>{new Date(account.mostRecentSession).toLocaleString()}</td>
                                 <td>{account.mostRecentSubject}</td>
                                 <td>{account.tutor}</td>
                             </tr>
@@ -49,3 +50,5 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
 };
 
 export default AccountDataTable;
+
+

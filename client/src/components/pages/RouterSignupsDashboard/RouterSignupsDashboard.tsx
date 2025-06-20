@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import './RouterSignupsDashboard.css';
 import BarChart from '../../bar-chart/bar-chart';
+import SummaryBox from '../../summary-box/summary-box'
 import { Button, Col, Container, Form, Overlay, Row } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { MultiValue, SingleValue } from 'react-select';
@@ -14,6 +15,11 @@ import LineChart from '../../line-chart/line-chart';
 
 interface RouterSignupsDashboardProps { }
 
+type summaryData = {
+    lastWeek: number;
+    thisWeek: number;
+}
+
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const [data, setData] = useState<SignupData[]>([]);
     const [lineData, setLineData] = useState<SignupData[]>([]);
@@ -26,7 +32,10 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7)
     });
     const datePickerTarget = useRef(null);
-
+    const [summaryBoxData, setSummaryBoxData] = useState<summaryData>({
+        lastWeek: 0,
+        thisWeek: 0
+    });
 
     function getData() {
         const methodList = signupMethods.map(opt => opt.value);
@@ -49,7 +58,6 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
 
-        // FIX GROUPBY LATER
         const lineJson: SignupLineChartRequestDTO = {
             groupBy: lineSetup == null ? 'week' : lineSetup.value as weekMonthYear,
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
@@ -59,21 +67,45 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         }
 
         instance.get("/signupDashboard/lineChart", { params: lineJson }).then((response) => {
+            // I'm gonna cast this to the other signupdata for the linechart. 
+            // afterwards it will strip the data according to the filters.
+            // e.g.if the filters only contain 2 signuptypes it will remove the other 2
             setLineData(response.data as SignupData[]);
-            console.log(lineData);
+            // console.log(lineData);
+
+            
         })
     }
 
-    function getSummaryData() {
+    // Almost works. Race condition problem between instance gets
+    async function getSummaryData() {
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
+        let lastWeekNum = 0;
+        let thisWeekNum = 0;
+
+        const summaryBoxJsonLastWk: SignupSummaryBoxRequestDTO = {
+            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString(),
+            endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString()
+        }
+
+        await instance.get("/signupDashboard/summaryBox", { params: summaryBoxJsonLastWk }).then((response) => {
+            lastWeekNum = response.data[0].signupCount;
+        })
 
         const summaryBoxJson: SignupSummaryBoxRequestDTO = {
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
             accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
-            startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
-            endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
+            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+            endDate: new Date().toISOString()
         }
+
+        instance.get("/signupDashboard/summaryBox", { params: summaryBoxJson }).then((response) => {
+            thisWeekNum = response.data[0].signupCount;
+            setSummaryBoxData({ lastWeek: lastWeekNum, thisWeek: thisWeekNum });
+        })
     }
 
     const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
@@ -114,6 +146,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     useEffect(() => {
         if (signupMethods) {
             getData();
+            getSummaryData();
             getLineData();
         }
     }, [signupMethods])
@@ -121,6 +154,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     useEffect(() => {
         if (dateRange) {
             getData();
+            getSummaryData();
             getLineData();
         }
     }, [dateRange])
@@ -128,6 +162,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     useEffect(() => {
         if (user) {
             getData();
+            getSummaryData();
             getLineData();
         }
     }, [user])
@@ -141,6 +176,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
     return <div className="RouterSignupsDashboard">
         <Container>
+            <h1>Signups Dashboard</h1>
+            <p>Welcome to your Signup Dashboard. Here you can view performance of certain advertising and compare them.</p>
             <Row>
                 <Col md={3}>
                     <Form>
@@ -203,41 +240,35 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                     </Form>
                 </Col>
                 <Col>
-                    <div>
-                        <Row style={{ backgroundColor: '#E0DFDE' }} className="rounded">
+                    <div style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '5rem' }} className="rounded">
+                        <h2 style={{ paddingLeft: '0.5rem' }}>Summary</h2>
+                        <SummaryBox sData={{ thisWeek: summaryBoxData?.thisWeek, lastWeek: summaryBoxData?.lastWeek }} />
+                    </div>
+                    <div style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)' }} className="rounded">
+                        <Row>
                             <Col>
-                                <p className="text-center">Total signups last week:</p>
-                                <h1 className="text-center">1</h1>
+                                <h2 style={{ paddingLeft: '0.5rem' }}>Graphs:</h2>
+                            </Col>
+                            <Col className="d-flex align-items-center justify-content-end">
+                                <Form.Group>
+                                    <Select
+                                        options={organizeOptions}
+                                        className='input-select'
+                                        placeholder='Organize line chart data by...'
+                                        onChange={changeLineSetup}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <BarChart sData={data} />
                             </Col>
                             <Col>
-                                <p className="text-center">Total signups this week:</p>
-                                <h1 className="text-center">2</h1>
+                                <LineChart sData={lineData} />
                             </Col>
                         </Row>
                     </div>
-                    <Row>
-                        <Col>
-                            <h1>Graphs:</h1>
-                        </Col>
-                        <Col className="d-flex align-items-center justify-content-end">
-                            <Form.Group>
-                                <Select
-                                    options={organizeOptions}
-                                    className='input-select'
-                                    placeholder='Organize line chart data by...'
-                                    onChange={changeLineSetup}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <BarChart sData={data} />
-                        </Col>
-                        <Col>
-                            <LineChart sData={lineData} />
-                        </Col>
-                    </Row>
                 </Col>
             </Row>
         </Container>

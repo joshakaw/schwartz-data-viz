@@ -1,4 +1,5 @@
 import { ApiPaginatedRequest } from "./ApiPaginatedRequest";
+import { ApiPaginatedResponse } from "./ApiPaginatedResponse";
 
 /**
  * Request body DTO for filtering

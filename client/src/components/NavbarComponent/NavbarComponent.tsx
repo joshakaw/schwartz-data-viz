@@ -54,8 +54,8 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto links" activeKey={activeKey} onSelect={handleSelect}>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="mailchimp">Mailchimp</Nav.Link>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/#accounts-receivable")} eventKey="">Accounts Receivable</Nav.Link>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/#tutor-data")} eventKey="">Tutor Data</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/accounts-receivable")} eventKey="">Accounts Receivable</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/tutor-data")} eventKey="">Tutor Data</Nav.Link>
                         
                         
                         <NavDropdown title="Signups" id="basic-nav-dropdown">

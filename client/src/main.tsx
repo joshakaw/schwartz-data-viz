@@ -6,6 +6,8 @@ import RootComponent from "./components/pages/RootComponent/RootComponent.tsx";
 import RouterHomeComponent from "./components/pages/RouterHomeComponent/RouterHomeComponent.tsx";
 import RouterSignupsDashboard from "./components/pages/RouterSignupsDashboard/RouterSignupsDashboard.tsx";
 import RouterMailchimpDashboard from "./components/pages/RouterMailchimpDashboard/RouterMailchimpDashboard.tsx";
+import AccountsReceivableDashboard from "./components/pages/AccountsReceivableDashboard/AccountsReceivableDashboard.tsx";
+import TutorDataDashboard from "./components/pages/TutorDataDashboard/TutorDataDashboard.tsx";
 
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -27,6 +29,8 @@ ReactDOM.createRoot(root).render(
             <Route path="/" element={<RootComponent />}>
                 <Route index element={<RouterHomeComponent />} />
                 <Route path="/mailchimp" element={<RouterMailchimpDashboard />} />
+                <Route path="/accounts-receivable" element={<AccountsReceivableDashboard />} />
+                <Route path="/tutor-data" element={<TutorDataDashboard />} />
                 <Route path="/signups" element={<RouterSignupsDashboard />} />
                 <Route path="/detailedsignups" element={<RouterDetailedSignupsDashboard />} />
             </Route>

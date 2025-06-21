@@ -113,6 +113,15 @@ export interface SignupData {
     signups: number;
 }
 
+// Presuming Josh updates data to this.
+export interface LineSignupData {
+    date: number;
+    socialMedSignups: number;
+    physicalAdvSignups: number;
+    friendRefSignups: number;
+    emailCampaignSignups: number;
+}
+
 // Example raw data.
 export const rawSignupData: SignupData[] = [
     { category: 'Social Media', signups: 15 },

@@ -37,6 +37,9 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         thisWeek: 0
     });
 
+    let lastWeekNum = 0;
+    let thisWeekNum = 0;
+
     function getData() {
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
@@ -78,11 +81,10 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     }
 
     // Almost works. Race condition problem between instance gets
-    async function getSummaryData() {
+    function getSummaryData() {
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
-        let lastWeekNum = 0;
-        let thisWeekNum = 0;
+
 
         const summaryBoxJsonLastWk: SignupSummaryBoxRequestDTO = {
             signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
@@ -91,8 +93,9 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
             endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString()
         }
 
-        await instance.get("/signupDashboard/summaryBox", { params: summaryBoxJsonLastWk }).then((response) => {
+        instance.get("/signupDashboard/summaryBox", { params: summaryBoxJsonLastWk }).then((response) => {
             lastWeekNum = response.data[0].signupCount;
+            setSummaryBoxData({ lastWeek: lastWeekNum, thisWeek: thisWeekNum });
         })
 
         const summaryBoxJson: SignupSummaryBoxRequestDTO = {

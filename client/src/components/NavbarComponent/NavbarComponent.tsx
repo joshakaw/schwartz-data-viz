@@ -43,14 +43,16 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
     return (
         <Navbar expand="lg" className="app-navbar-schwartz-bg">
             <Container>
-                <Navbar.Brand href="#home">
-                    {/*Schwartz Tutoring*/}
-                    <img src="/schwartz-tutoring-logo.svg" width="100px"></img>
-                </Navbar.Brand>
+                <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/")} eventKey="home">
+                    <Navbar.Brand href="#home">
+                        {/*Schwartz Tutoring*/}
+                        <img src="/schwartz-tutoring-logo.svg" width="100px"></img>
+                    </Navbar.Brand>
+                </Nav.Link>
+
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto links" activeKey={activeKey} onSelect={handleSelect}>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/")} eventKey="home">Home</Nav.Link>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="mailchimp">Mailchimp</Nav.Link>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/#accounts-receivable")} eventKey="">Accounts Receivable</Nav.Link>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/#tutor-data")} eventKey="">Tutor Data</Nav.Link>

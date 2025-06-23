@@ -26,6 +26,7 @@ from Server.queries.sql_templates import (
     qSignupsByCategory,
     qSignupsLineChart,
     qSignupsSummaryBox,
+    qSchoolsNameType,
 )
 
 # Defines the API blueprint to be applied to the app
@@ -210,6 +211,22 @@ def mailchimpUsers():
     }
 
     return jsonify(paginatedRepsonse)
+
+
+@main_api.route("/mailchimpDashboard/schoolsNameType")
+def schoolsNameType():
+
+    # Create query
+    query = qSchoolsNameType()
+
+    # Execute query
+    c = db.get_db_cursor()
+    c.execute(query)
+
+    # Transform
+    data = c.fetchall()
+    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    return jsonify(loads(pdData.to_json(orient="records")))
 
 
 @main_api.route("/params")

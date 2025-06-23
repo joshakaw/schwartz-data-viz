@@ -98,6 +98,10 @@ order by
 """
 
 
+def qSchoolsNameType() -> str:
+    return f"SELECT DISTINCT name as SchoolName, schoolType as SchoolType FROM school_t;"
+
+
 # Returns list of params, and str SQL query (with %s replacements)
 ParameterizedQueryReturn: TypeAlias = Tuple[List[Any], str]
 

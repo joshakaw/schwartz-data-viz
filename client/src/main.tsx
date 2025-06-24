@@ -1,6 +1,5 @@
 import { BrowserRouter, createBrowserRouter, Route, Routes } from "react-router";
 
-import './index.css'
 import ReactDOM from "react-dom/client";
 import RootComponent from "./components/pages/RootComponent/RootComponent.tsx";
 import RouterHomeComponent from "./components/pages/RouterHomeComponent/RouterHomeComponent.tsx";
@@ -12,6 +11,9 @@ import TutorDataDashboard from "./components/pages/TutorDataDashboard/TutorDataD
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "react-day-picker/style.css"; // React Daypicker styling
+import './index.css'
+
+
 import RouterDetailedSignupsDashboard from "./components/pages/RouterDetailedSignupsDashboard/RouterDetailedSignupsDashboard.tsx";
 
 //const router = createBrowserRouter([

@@ -216,7 +216,6 @@ def mailchimpUsers():
 
 @main_api.route("/schoolsNameType")
 def schoolsNameType():
-
     # Create query
     query = qSchoolsNameType()
     query2 = qSchoolTypes()  # School types

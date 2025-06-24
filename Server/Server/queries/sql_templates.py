@@ -99,7 +99,13 @@ order by
 
 
 def qSchoolsNameType() -> str:
-    return f"SELECT DISTINCT name as SchoolName, schoolType as SchoolType FROM school_t;"
+    return (
+        f"SELECT DISTINCT name as schoolName, schoolType as schoolType FROM school_t;"
+    )
+
+
+def qSchoolTypes() -> str:
+    return f"SELECT DISTINCT schoolType FROM school_t;"
 
 
 # Returns list of params, and str SQL query (with %s replacements)

@@ -23,6 +23,7 @@ from Server.queries.sql_helper import read_sql_from_queries
 from Server.queries.sql_templates import (
     qDetailedSignups,
     qMailchimpUsers,
+    qSchoolTypes,
     qSignupsByCategory,
     qSignupsLineChart,
     qSignupsSummaryBox,
@@ -213,20 +214,30 @@ def mailchimpUsers():
     return jsonify(paginatedRepsonse)
 
 
-@main_api.route("/mailchimpDashboard/schoolsNameType")
+@main_api.route("/schoolsNameType")
 def schoolsNameType():
 
     # Create query
     query = qSchoolsNameType()
+    query2 = qSchoolTypes()  # School types
 
-    # Execute query
+    # Execute first query
     c = db.get_db_cursor()
     c.execute(query)
-
-    # Transform
     data = c.fetchall()
     pdData = pd.DataFrame(data, columns=db.get_column_names(c))
-    return jsonify(loads(pdData.to_json(orient="records")))
+
+    # Execute second query
+    c.execute(query2)
+    data2 = c.fetchall()
+    pdData2 = pd.DataFrame(data2, columns=db.get_column_names(c))
+
+    return jsonify(
+        {
+            "schools": loads(pdData.to_json(orient="records")),
+            "schoolTypes": loads(pdData2.to_json(orient="records")),
+        }
+    )
 
 
 @main_api.route("/params")

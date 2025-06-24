@@ -6,6 +6,15 @@ import { ApiPaginatedResponse } from "./ApiPaginatedResponse";
  * GET /mailchimpDashboard/users
  */
 export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
+
+    /**
+     * Sorts the data in the response.
+     * If none provided, then userCreationDate is chosen.
+     * 
+     * NOT IMPLEMENTED
+     */
+    sortByDesc?: "userCreationDate" | "mostRecentSession";
+
     /**
      * The keyword to search for in 
      * CONCAT(First Name, " ", Last Name). If undefined,

@@ -3,7 +3,9 @@ Routes and views for
 the Flask application.
 """
 
+from collections import defaultdict
 from copy import copy
+import datetime
 from typing import Any, List
 from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
@@ -80,8 +82,37 @@ def signupsLineChart():
     # Transform
     data = c.fetchall()  # Returns 2d tuple
     pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    pivoted = (
+        pdData.pivot_table(
+            columns="signupMethodCategory",
+            index=["date"],
+            values="numberOfSignups",
+            aggfunc="sum",
+        )
+        .fillna(0)
+        .reset_index()
+    )
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    # Build data series for each signup method
+    series_by_category = defaultdict(list)
+
+    for row in pivoted.to_dict(orient="records"):
+        for category, value in row.items():
+            if category == "date":
+                continue
+            series_by_category[category].append(
+                {"x": row["date"].isoformat(), "y": int(value)}
+            )
+
+    # Convert to desired format: list of { name, data } series
+    chart_data = [
+        {"signupMethodCategory": category, "data": points}
+        for category, points in series_by_category.items()
+    ]
+
+    return jsonify(chart_data)
+
+    # return jsonify(loads(pivoted.to_json(orient="records")))
 
     # sampleData = [
     #     {

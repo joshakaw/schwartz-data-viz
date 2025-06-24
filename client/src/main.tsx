@@ -11,6 +11,7 @@ import TutorDataDashboard from "./components/pages/TutorDataDashboard/TutorDataD
 
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "react-day-picker/style.css"; // React Daypicker styling
 import RouterDetailedSignupsDashboard from "./components/pages/RouterDetailedSignupsDashboard/RouterDetailedSignupsDashboard.tsx";
 
 //const router = createBrowserRouter([

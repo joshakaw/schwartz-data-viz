@@ -9,7 +9,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Select, { MultiValue } from 'react-select';
 import { DateRange, DayPicker } from 'react-day-picker';
-import 'react-day-picker/style.css';
 import { Overlay } from 'react-bootstrap';
 import { userOptions, signupOptions, School } from '../../../../utils/input-fields'
 

@@ -14,7 +14,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Select from 'react-select';
 import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/style.css';
 import { Overlay } from 'react-bootstrap';
 
 export interface SignupData {

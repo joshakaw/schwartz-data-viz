@@ -19,9 +19,9 @@ export const signupOptions: Options<{value: string, label: string}> = [
 ];
 
 export const userOptions: Options<{ value: string, label: string }> = [
-    { value: 'Students', label: 'Students' },
-    { value: 'Parents', label: 'Parents' },
-    { value: 'Tutors', label: 'Tutors' }
+    { value: 'Student', label: 'Students' },
+    { value: 'Parent', label: 'Parents' },
+    { value: 'Tutor', label: 'Tutors' }
 ];
 
 export const rangeOptions: Options<{ value: string, label: string }> = [
@@ -36,7 +36,7 @@ export const organizeOptions: Options<{ value: weekMonthYear, label: string }> =
     { value: 'year', label: 'By year' }
 ];
 
-const School: Options<{ value: string, label: string }> = [
+export const School: Options<{ value: string, label: string }> = [
     { value: 'K-12', label: 'K-12' },
     { value: 'University', label: 'University' },
 ];

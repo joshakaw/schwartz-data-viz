@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import './DetailedSignupsOptions.css';
 
 import { useState, useRef } from 'react';
@@ -7,42 +7,45 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Select from 'react-select';
-import { DayPicker } from 'react-day-picker';
+import Select, { MultiValue } from 'react-select';
+import { DateRange, DayPicker } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import { Overlay } from 'react-bootstrap';
+import { userOptions, signupOptions, School } from '../../../../utils/input-fields'
 
 
 interface DetailedSignupsOptionsProps { }
 
 const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
-    const [timeframe, setTimeframe] = useState<Date[] | undefined>();
-    const [userType, setUserType] = useState("default");
-    const [schoolType, setSchoolType] = useState("default");
-    const [signupType, setSignupType] = useState("default");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        to: new Date(),
+        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7)
+    });
+    const [userTypes, setUserTypes] = useState<MultiValue<{ value: string, label: string }>>([]);
+    const [schoolTypes, setSchoolTypes] = useState<MultiValue<{ value: string, label: string }>>([]);
+    const [signupTypes, setSignupTypes] = useState<MultiValue<{ value: string, label: string }>>([]);;
     const [isOpen, setOpen] = useState(false);
-
 
     const target = useRef(null);
 
-    // const [rawSignupData, setRawSignupData] = useState<SignupData[]>([]);
-
-    const UserTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setUserType(event.target.value);
+    const UserTypeChange = (selected: MultiValue<{ value: string, label: string }>) => {
+        setUserTypes(selected);
         // SQL Call with new usertype and curr usertype
     };
 
-    const SchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(schoolType);
-        setSchoolType(event.target.value);
+    const SchoolChange = (selected: MultiValue<{ value: string, label: string }>) => {
+        setSchoolTypes(selected);
         // SQL Call with new usertype and curr usertype
     };
 
-    const SignupChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        alert(signupType);
-        setSignupType(event.target.value);
+    const signupChange = (selected: MultiValue<{ value: string, label: string }>) => {
+        setSignupTypes(selected);
         // SQL Call with new usertype and curr usertype
     };
+
+    function getData() {
+
+    }
 
     return (
         <Container fluid style={{ marginBottom: "20px" }}>
@@ -51,16 +54,18 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                 <Col md={3}>
                     <Form.Label>Signup Methods:</Form.Label>
                     <Select
-                        options={Signup}
+                        isMulti
+                        options={signupOptions}
                         placeholder='Please select signup method'
                         className='inner-select'
+                        onChange={signupChange}
                     />
                 </Col>
                 <Col md={3}>
                     <Form.Label>Account Types:</Form.Label>
                     <Select
-                        options={User}
                         isMulti
+                        options={userOptions}
                         placeholder='Please select account type(s)'
                         className='inner-select'
                     />
@@ -68,6 +73,7 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                 <Col md={3}>
                     <Form.Label>School type: </Form.Label>
                     <Select
+                        isMulti
                         options={School}
                         placeholder='Please select school type'
                         className='inner-select'
@@ -128,22 +134,4 @@ export const rawSignupData: SignupData[] = [
     { category: 'Physical Advertising', signups: 10 },
     { category: 'Friend Referral', signups: 8 },
     { category: 'Email Campaign', signups: 12 }
-];
-
-const Signup = [
-    { value: 'Social Media', label: 'Social Media' },
-    { value: 'Physical Advertising', label: 'Physical Advertising' },
-    { value: 'Friend Referral', label: 'Friend Referral' },
-    { value: 'Email Campaign', label: 'Email Campaign' },
-];
-
-const User = [
-    { value: 'Students', label: 'Students' },
-    { value: 'Parents', label: 'Parents' },
-    { value: 'Tutors', label: 'Tutors' }
-];
-
-const School = [
-    { value: 'K-12', label: 'K-12' },
-    { value: 'University', label: 'University' },
 ];

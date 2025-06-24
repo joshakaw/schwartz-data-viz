@@ -214,8 +214,8 @@ def mailchimpUsers():
     return jsonify(paginatedRepsonse)
 
 
-@main_api.route("/schoolsNameType")
-def schoolsNameType():
+@main_api.route("/educationLevelSchools")
+def educationLevelSchools():
     # Create query
     query = qSchoolsNameType()
     query2 = qSchoolTypes()  # School types
@@ -233,7 +233,7 @@ def schoolsNameType():
 
     return jsonify(
         {
-            "schools": loads(pdData.to_json(orient="records")),
+            "schoolNames": loads(pdData.to_json(orient="records")),
             "schoolTypes": loads(pdData2.to_json(orient="records")),
         }
     )

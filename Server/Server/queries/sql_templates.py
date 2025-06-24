@@ -133,19 +133,20 @@ def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
         whereContent += f"and {accountTypeCase} in %s "
         params.append(dto.accountType)
 
-    if dto.educationLevel:
-        educationLevelsList: List[str] = []
-        if "K-12" in dto.educationLevel:
-            educationLevelsList.append("elementary")
-            educationLevelsList.append("middle")
-            educationLevelsList.append("high")
-        if "College" in dto.educationLevel:
-            educationLevelsList.append("college")
-            educationLevelsList.append("graduate")
-            educationLevelsList.append("postgraduate")
+        # TODO: Fix education level
+    # if dto.educationLevel:
+    #     educationLevelsList: List[str] = []
+    #     if "K-12" in dto.educationLevel:
+    #         educationLevelsList.append("elementary")
+    #         educationLevelsList.append("middle")
+    #         educationLevelsList.append("high")
+    #     if "College" in dto.educationLevel:
+    #         educationLevelsList.append("college")
+    #         educationLevelsList.append("graduate")
+    #         educationLevelsList.append("postgraduate")
 
-        whereContent += "and educationlevel in %s "
-        params.append(educationLevelsList)
+    #     whereContent += "and educationlevel in %s "
+    #     params.append(educationLevelsList)
 
     # Create SQL string
     return (

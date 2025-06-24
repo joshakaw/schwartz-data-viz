@@ -16,7 +16,6 @@ from Server.dtos.dtos import (
     SignupsByCategoryRequestDTO,
 )
 from flask import Blueprint, jsonify, request
-import pandas as pd
 from Server import db
 
 from json import loads
@@ -34,6 +33,20 @@ from Server.queries.sql_templates import (
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
+
+
+def rows_to_dicts(rows, columns):
+    """
+    Convert list of tuples and column names to list of dicts.
+
+    Args:
+        rows (list of tuple): Query result rows.
+        columns (list of str): Column names.
+
+    Returns:
+        list of dict: Each dict maps column name to value.
+    """
+    return [dict(zip(columns, row)) for row in rows]
 
 
 @main_api.route("/sql")
@@ -64,13 +77,14 @@ def detailedSignupsTable():
 
     # Transform
     data = c.fetchall()  # Returns 2d tuple
-    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    return jsonify(rows_to_dicts(data, columns=db.get_column_names(c)))
 
 
 @main_api.route("/signupDashboard/lineChart")
 def signupsLineChart():
+    import pandas as pd
+
     # Get request
     dto = SignupLineChartRequestDTO(**request.args.to_dict(flat=False))
 
@@ -157,9 +171,8 @@ def signupsSummaryBox():
 
     # Transform
     data = c.fetchall()  # Returns 2d tuple
-    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    return jsonify(rows_to_dicts(data, columns=db.get_column_names(c)))
 
     # sampleData = {"signnupCount": 69}
     # # pdSampleData = pd.DataFrame(sampleData)
@@ -181,9 +194,8 @@ def signupsByCategory():
 
     # Transform
     data = c.fetchall()  # Returns 2d tuple
-    pdData = pd.DataFrame(data, columns=["category", "signups"])
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    return jsonify(rows_to_dicts(data, columns=["category", "signups"]))
 
 
 @main_api.route("/mailchimpDashboard/users")
@@ -206,23 +218,6 @@ def mailchimpUsers():
 
     # Transform
     data = c.fetchall()  # Returns 2d tuple
-    pdData = pd.DataFrame(
-        data,
-        columns=[
-            "studentId",
-            "firstName",
-            "lastName",
-            "email",
-            "phone",
-            "tutor",
-            "parentAccount",
-            "createdAt",
-            "school",
-            "numSessions",
-            "mostRecentSession",
-            "mostRecentSubject",
-        ],
-    )
 
     # Create count query
     cloneDto = copy(dto)
@@ -239,7 +234,23 @@ def mailchimpUsers():
         "pageIndex": dto.pageIndex[0],
         "pageSize": dto.pageSize[0],
         "totalItems": number[0][0],
-        "data": loads(pdData.to_json(orient="records")),
+        "data": rows_to_dicts(
+            data,
+            columns=[
+                "studentId",
+                "firstName",
+                "lastName",
+                "email",
+                "phone",
+                "tutor",
+                "parentAccount",
+                "createdAt",
+                "school",
+                "numSessions",
+                "mostRecentSession",
+                "mostRecentSubject",
+            ],
+        ),
     }
 
     return jsonify(paginatedRepsonse)
@@ -255,17 +266,17 @@ def educationLevelSchools():
     c = db.get_db_cursor()
     c.execute(query)
     data = c.fetchall()
-    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    schoolNamesDict = rows_to_dicts(data, db.get_column_names(c))
 
     # Execute second query
     c.execute(query2)
     data2 = c.fetchall()
-    pdData2 = pd.DataFrame(data2, columns=db.get_column_names(c))
+    schoolTypesDict = rows_to_dicts(data2, db.get_column_names(c))
 
     return jsonify(
         {
-            "schoolNames": loads(pdData.to_json(orient="records")),
-            "schoolTypes": loads(pdData2.to_json(orient="records")),
+            "schoolNames": schoolNamesDict,
+            "schoolTypes": schoolTypesDict,
         }
     )
 
@@ -285,13 +296,15 @@ def paramsTest():
     print(f"Query: {c.mogrify(query, params)}")
     # Transform
     data = c.fetchall()
-    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    dictData = rows_to_dicts(data, columns=db.get_column_names(c))
 
-    return jsonify(loads(pdData.to_json(orient="records")))
+    return jsonify(dictData)
 
 
 @main_api.route("/dataTest")
 def dataTest():
+    import pandas as pd
+
     teamMembers = [
         {"name": "josh"},
         {"name": "owen"},

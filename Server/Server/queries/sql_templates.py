@@ -34,6 +34,9 @@ order by
 def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
     # TODO: Important! Account type not implemented!
 
+    # sortChoice = "mostrecentsession desc"
+    sortChoice = "createdAt desc"
+
     return f"""
 select
     u.id as studentId,
@@ -93,7 +96,7 @@ where
 	{f"and tutoringsession.date >= '{dto.startDate[0]}'" if dto.startDate else ""}
     {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate else ""}
 order by
-    mostrecentsession desc
+    {sortChoice}
 {f"limit {dto.pageSize[0]} offset {dto.pageIndex[0]}" if dto.pageSize else ""}
 """
 

@@ -36,7 +36,7 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
                                 <td>{account.school}</td>
                                 <td>{account.parentAccount}</td>
                                 <td>{new Date(account.createdAt).toLocaleString()}</td>
-                                <td>{account.numSession}</td>
+                                <td>{account.numSessions}</td>
                                 <td>{new Date(account.mostRecentSession).toLocaleString()}</td>
                                 <td>{account.mostRecentSubject}</td>
                                 <td>{account.tutor}</td>

@@ -1,5 +1,5 @@
 name: Check Python Code Formatting
-on: [push, pull_request]
+on: [push]
 permissions:
   contents: read
   pull-requests: write

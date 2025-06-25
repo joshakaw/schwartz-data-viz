@@ -9,7 +9,7 @@ export interface MailchimpUserResponseDTO {
     parentAccount: string | null; // This will be converted to boolean in future.
     createdAt: string;
     school: string;
-    numSession: number;
+    numSessions: number;
     mostRecentSession: string;
     mostRecentSubject: string;
 }

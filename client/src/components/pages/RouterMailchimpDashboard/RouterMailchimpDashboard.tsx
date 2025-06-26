@@ -17,6 +17,7 @@ import { MailchimpUsersRequestDTO } from "../../../dtos/MailchimpUsersRequestDTO
 import { MailchimpUserResponseDTO } from '../../../dtos/MailchimpUsersResponseDTO.ts';
 import { ApiPaginatedResponse } from '../../../dtos/ApiPaginatedResponse.ts';
 import { Input } from 'react-select/animated';
+import { EducationLevelSchoolsResponseDTO } from '../../../dtos/EducationLevelSchoolsResponseDTO.ts';
 
 interface RouterMailchimpDashboardProps { }
 
@@ -34,6 +35,7 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [minSessions, setMinSessions] = useState<number>(0);
     const [fullData, setFullData] = useState<MailchimpUserResponseDTO[]>([]);
+    const [schoolJson, setSchoolJson] = useState<EducationLevelSchoolsResponseDTO>();
 
     const getRequestParams = (pageIndex: number, pageSize: number): MailchimpUsersRequestDTO => ({
         pageIndex,
@@ -46,8 +48,9 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     });
 
     const handleSubmit = async () => {
+        var lastRecord = currentPage-1
         const pagedParams = getRequestParams(currentPage - 1, 8);
-        const allParams = getRequestParams(0, 500); // Optional cap
+        const allParams = getRequestParams(0, minSessions);
 
         try {
             const [pagedRes, allRes] = await Promise.all([
@@ -70,6 +73,11 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
     useEffect(() => {
         handleSubmit();
     }, [currentPage, sessionRange, accountTypes]);
+
+    // Look at this for future reference
+    /**
+     * var totalAfterLimiting = minSessions | resJson.total
+     */
 
     const loadPagination = () => {
         if (!resJson || !resJson.totalItems) return null;
@@ -157,7 +165,7 @@ const RouterMailchimpDashboard: FC<RouterMailchimpDashboardProps> = () => {
                                 <option value="">Select Sessions</option>
                                 <option value="0">0</option>
                                 <option value="1-2">1-2</option>
-                                <option value="3+">3+</option>
+                                <option value="3+">+3</option>
                             </Form.Select>
                         </Form.Group>
                     </Col>

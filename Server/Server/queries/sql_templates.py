@@ -89,7 +89,7 @@ left join
     u.parentId = parent.id
 where 
 	1=1
-    {f"and {accountTypeCase} = '{dto.accountType[0]}'" if dto.accountType else ""}
+    {f"and {accountTypeCase} in {sql_helper.array_to_sql_in_clause(dto.accountType)}" if dto.accountType else ""}
 	{f"and CONCAT(u.firstName, ' ', u.lastName) like '%{dto.studentNameSearchKeyword[0]}%'" if dto.studentNameSearchKeyword else ""}
 	{f"and latest_sessions.numbersessions >= '{dto.minNumberOfSessions[0]}'" if dto.minNumberOfSessions else ""}
 	{f"and latest_sessions.numbersessions <= '{dto.maxNumberOfSessions[0]}'" if dto.maxNumberOfSessions else ""}

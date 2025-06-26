@@ -200,8 +200,6 @@ def signupsByCategory():
 
 @main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
-    # TODO: Implement filtering
-
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
     # dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.json)

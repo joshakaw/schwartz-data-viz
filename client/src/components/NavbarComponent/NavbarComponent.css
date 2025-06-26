@@ -8,3 +8,12 @@
 #basic-nav-dropdown {
     color: #FFFFFF;
 }
+
+/* Style for the active link */
+.NavbarComponent .nav-link.active {
+    /*color: #007bff;*/ /* Example: Bright blue text for active */
+    font-weight: bold; /* Make it bold */
+    /*border-bottom: 2px solid #fff;*/ /* Add an underline/border */
+    /* You could also change background-color, add a shadow, etc. */
+    cursor: default
+}

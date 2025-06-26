@@ -5,10 +5,7 @@ the Flask application.
 
 from collections import defaultdict
 from copy import copy
-import datetime
-import math
 from typing import Any, List
-from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
@@ -321,13 +318,6 @@ def paramsTest():
 @main_api.route("/dataTest")
 def dataTest():
     import pandas as pd
-
-    teamMembers = [
-        {"name": "josh"},
-        {"name": "owen"},
-        {"name": "tyler"},
-        {"name": "tarik"},
-    ]
 
     pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
 

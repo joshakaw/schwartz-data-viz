@@ -1,6 +1,5 @@
 from typing import Any, List, Tuple, TypeAlias
 
-from MySQLdb.cursors import BaseCursor
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
@@ -32,8 +31,6 @@ order by
 
 
 def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
-    # TODO: Important! Account type not implemented!
-
     # sortChoice = "mostrecentsession desc"
     sortChoice = "createdAt desc"
 

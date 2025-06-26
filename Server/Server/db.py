@@ -12,7 +12,7 @@ from flask import g, current_app
 # https://mysqlclient.readthedocs.io/user_guide.html#installation
 
 
-def init_db(app):
+def init_db():
     """
     Sets up Flask so the close_db() function
     is called at the end of response handler.

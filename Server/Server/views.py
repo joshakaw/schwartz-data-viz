@@ -200,11 +200,13 @@ def signupsByCategory():
 
 @main_api.route("/mailchimpDashboard/users")
 def mailchimpUsers():
-    # TODO: Implement filtering
-
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
     # dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.json)
+
+
+    cutoffAtRecordNumber = dto.limit
+
 
     print(dto.pageIndex)
     print(dto.startDate)  # Works!
@@ -230,6 +232,16 @@ def mailchimpUsers():
     c.execute(countQuery)
     number = c.fetchall()
 
+    isOnPageOfLastRecord = True if dto.pageIndex[0] + dto.pageSize[0] > cutoffAtRecordNumber else False
+
+    numberOfItemsOnPage = cutoffAtRecordNumber - (dto.pageIndex[0] + dto.pageSize[0])
+    if numberOfItemsOnPage < 0:
+        numberOfItemsOnPage = 0
+    if numberOfItemsOnPage > dto.pageSize[0]:
+        numberOfItemsOnPage = dto.pageSize[0]
+
+    print(numberOfItemsOnPage)
+
     paginatedRepsonse = {
         "pageIndex": dto.pageIndex[0],
         "pageSize": dto.pageSize[0],
@@ -250,7 +262,7 @@ def mailchimpUsers():
                 "mostRecentSession",
                 "mostRecentSubject",
             ],
-        ),
+        )[:numberOfItemsOnPage],
     }
 
     return jsonify(paginatedRepsonse)

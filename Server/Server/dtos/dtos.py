@@ -36,6 +36,8 @@ Single: TypeAlias = Annotated[T, BeforeValidator(unpack_single_list_item)]
 class MailchimpUsersRequestDTO(BaseModel):
     pageIndex: SingleItemList[int]
     pageSize: SingleItemList[int]
+    limit: Union[Single[int], None] = None
+    sortByDesc: Union[Single[str], None] = None
     studentNameSearchKeyword: Union[SingleItemList[str], None] = None
     minNumberOfSessions: Union[SingleItemList[str], None] = None
     maxNumberOfSessions: Union[SingleItemList[str], None] = None

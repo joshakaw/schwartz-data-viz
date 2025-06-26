@@ -6,6 +6,11 @@ import { ApiPaginatedResponse } from "./ApiPaginatedResponse";
  * GET /mailchimpDashboard/users
  */
 export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
+    /**
+     * Limits the number of
+     * records returned
+     */
+    limit?: number;
 
     /**
      * Sorts the data in the response.

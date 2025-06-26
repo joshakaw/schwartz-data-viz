@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import './RouterDetailedSignupsDashboard.css';
 import Options from '../../../utils/bardata';
 import DetailedSignupsOptions from './DetailedSignupsOptions/DetailedSignupsOptions';
@@ -7,6 +7,9 @@ import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
 import instance from '../../../utils/axios';
+import DateRangePicker from '../../../components/DateRangePicker/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { Container, Row, Col } from 'react-bootstrap';
 
 
 interface RouterDetailedSignupsDashboardProps { }
@@ -20,28 +23,36 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
     const [educationLevel, seteducationLevel] = useState<{ value: string, label: string }[]>([]);
     const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
 
-    const reqData: DetailedSignupRequestDTO = {
-        pageIndex: 0,
-        pageSize: 10
-    }
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(new Date().setDate(new Date().getDate() - 7)),
+        to: new Date()
+    });
 
-    console.log(reqData);
-    console.log(resJson);
+    useEffect(() => {
+        const reqData: DetailedSignupRequestDTO = {
+            pageIndex: 0,
+            pageSize: 10,
+            startDate: dateRange?.from?.toISOString(),
+            endDate: dateRange?.to?.toISOString()
+        }
 
-    try {
-        const response = instance.get("detailedSignupsDashboard/table", { params: reqData }).then((response) => {
-            setResJson(response.data);
-        })
-        
-    } catch (err) {
-        console.error("API error:", err);
-    }
+        try {
+            instance.get("detailedSignupsDashboard/table", { params: reqData }).then((response) => {
+                setResJson(response.data);
+            }).catch(err => {
+                console.error("API promise error:", err);
+            });
+        } catch (err) {
+            console.error("API synchronous error:", err);
+        }
+    }, [dateRange]);
 
     return (
         <>
             <div className="RouterDetailedSignupsDashboard">
                 <DetailedSignupsOptions />
                 {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
+                <DateRangePicker value={dateRange} onChange={setDateRange} />
                 <SignupDataTable data={resJson} />
             </div>
         </>
@@ -49,4 +60,3 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
 };
 
 export default RouterDetailedSignupsDashboard;
-

@@ -12,6 +12,7 @@ import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOpt
 import { SignupLineChartRequestDTO } from '../../../dtos/SignupLineChartRequestDTO';
 import { SignupSummaryBoxRequestDTO } from '../../../dtos/SignupSummaryBoxRequestDTO';
 import LineChart from '../../line-chart/line-chart';
+import DateRangePicker from '../../DateRangePicker/DateRangePicker';
 
 interface RouterSignupsDashboardProps { }
 
@@ -202,44 +203,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                                 onChange={(newValue) => changeUser(newValue)}
                             />
                         </Form.Group>
-                        <Form.Group>
-                            <Form.Label className="w-100">Date Range:</Form.Label>
-                            <Button ref={datePickerTarget} variant="primary" onClick={() => setDatePickerOpen(!datePickerOpen)}>
-                                {dateRange ? dateRange.from?.toDateString() + " - " + dateRange.to?.toDateString() : "Select Date Range"}
-                            </Button>
-                            <Overlay target={datePickerTarget.current} show={datePickerOpen} placement="bottom">
-                                {({
-                                    placement: _placement,
-                                    arrowProps: _arrowProps,
-                                    show: _show,
-                                    popper: _popper,
-                                    hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                                    ...props
-                                }) => (
-                                    <div
-                                        {...props}
-                                        style={{
-                                            position: 'absolute',
-                                            backgroundColor: 'white',
-                                            padding: '2px 10px',
-                                            //color: 'white',
-                                            borderRadius: 3,
-                                            ...props.style,
-                                        }}
-                                    >
-                                        <DayPicker animate mode="range" onSelect={(range) => changeDates(range)} selected={dateRange}></DayPicker>
-                                    </div>
-                                )}
-                            </Overlay>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>or use a preset date range:</Form.Label>
-                            <Select
-                                options={rangeOptions}
-                                className='input-select'
-                                onChange={presetDateRangeSelected}
-                            />
-                        </Form.Group>
+                        <DateRangePicker value={dateRange} onChange={setDateRange} />
                     </Form>
                 </Col>
                 <Col>

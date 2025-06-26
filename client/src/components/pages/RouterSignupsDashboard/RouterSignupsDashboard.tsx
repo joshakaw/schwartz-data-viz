@@ -12,6 +12,8 @@ import { SignupData } from '../RouterDetailedSignupsDashboard/DetailedSignupsOpt
 import { SignupLineChartRequestDTO } from '../../../dtos/SignupLineChartRequestDTO';
 import { SignupSummaryBoxRequestDTO } from '../../../dtos/SignupSummaryBoxRequestDTO';
 import LineChart from '../../line-chart/line-chart';
+import { SignupsByCategoryResponseDTO } from '../../../dtos/SignupsByCategoryResponseDTO';
+import { SignupLineChartResponseDTO } from '../../../dtos/SignupLineChartResponseDTO';
 
 interface RouterSignupsDashboardProps { }
 
@@ -21,8 +23,8 @@ type summaryData = {
 }
 
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
-    const [data, setData] = useState<SignupData[]>([]);
-    const [lineData, setLineData] = useState<SignupData[]>([]);
+    const [data, setData] = useState<SignupsByCategoryResponseDTO[]>([]);
+    const [lineData, setLineData] = useState<SignupLineChartResponseDTO[]>([]);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [lineSetup, setLineSetup] = useState<SingleValue<{ value: string, label: string }>>(); // Handles the 'organize by week/month/year filters for linechart
     const [user, setUser] = useState<MultiValue<{ value: string, label: string }>>([]);
@@ -52,7 +54,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         }
 
         instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
-            setData(response.data as SignupData[]);
+            setData(response.data as SignupsByCategoryResponseDTO[]);
             // console.log(data);
         })
     }
@@ -73,7 +75,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
             // I'm gonna cast this to the other signupdata for the linechart. 
             // afterwards it will strip the data according to the filters.
             // e.g.if the filters only contain 2 signuptypes it will remove the other 2
-            setLineData(response.data as SignupData[]);
+            setLineData(response.data as SignupLineChartResponseDTO[]);
             // console.log(lineData);
 
             

@@ -2,6 +2,7 @@
 
 import { Row, Col } from 'react-bootstrap';
 import { FC } from 'react';
+import { SignupSummaryBoxResponseDTO } from '../../dtos/SignupSummaryBoxResponseDTO';
 
 interface SummaryProps {
     sData: {
@@ -16,11 +17,11 @@ const SummaryBox: FC<SummaryProps> = ({ sData }) => {
           <Row>
               <Col>
                   <p className="text-center">Total signups last week:</p>
-                  <h1 className="text-center">{ sData.lastWeek }</h1>
+                  <h1 className="text-center">{sData.lastWeek}</h1>
               </Col>
               <Col>
                   <p className="text-center">Total signups this week:</p>
-                  <h1 className="text-center">{ sData.thisWeek }</h1>
+                  <h1 className="text-center">{sData.thisWeek}</h1>
               </Col>
           </Row>
       </div>

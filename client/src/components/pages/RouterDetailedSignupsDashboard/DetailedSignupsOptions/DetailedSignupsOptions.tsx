@@ -78,34 +78,6 @@ const DetailedSignupsOptions: FC<DetailedSignupsOptionsProps> = () => {
                         className='inner-select'
                     />
                 </Col>
-                <Col>
-                    <Form.Label>Date range: </Form.Label><br />
-                    <Button ref={target} onClick={() => setOpen(!isOpen)}>Select Date Range</Button>
-                    <Overlay target={target.current} show={isOpen} placement="bottom">
-                        {({
-                            placement: _placement,
-                            arrowProps: _arrowProps,
-                            show: _show,
-                            popper: _popper,
-                            hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                            ...props
-                        }) => (
-                            <div
-                                {...props}
-                                style={{
-                                    position: 'absolute',
-                                    backgroundColor: 'rgba(100, 20, 20, 1)',
-                                    padding: '2px 10px',
-                                    color: 'white',
-                                    borderRadius: 3,
-                                    ...props.style,
-                                }}
-                            >
-                                <DayPicker animate mode="range"></DayPicker>
-                            </div>
-                        )}
-                    </Overlay>
-                </Col>
             </Row>
         </Container>
     );

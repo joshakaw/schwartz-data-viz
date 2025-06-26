@@ -6,6 +6,7 @@ import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
 import instance from '../../../utils/axios';
+import DateRangePicker from '../../../components/DateRangePicker/DateRangePicker';
 import { Col, Container, Row, Form, Button, Overlay } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import { School, signupOptions, userOptions } from '../../../utils/input-fields';
@@ -74,11 +75,6 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         } catch (err) {
             console.error("API Error:", err);
         }
-    }
-
-    // Calls for filter changes
-    const changeDates = (selected: DateRange | undefined) => {
-        setDateRange(selected);
     }
 
     const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
@@ -153,42 +149,15 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                 <Col>
                     <Form.Group>
                         <Form.Label className="w-100">Date Range:</Form.Label>
-                        <Button ref={datePickerTarget} variant="primary" onClick={() => setDatePickerOpen(!datePickerOpen)}>
-                            {dateRange ? dateRange.from?.toDateString() + " - " + dateRange.to?.toDateString() : "Select Date Range"}
-                        </Button>
-                        <Overlay target={datePickerTarget.current} show={datePickerOpen} placement="bottom">
-                            {({
-                                placement: _placement,
-                                arrowProps: _arrowProps,
-                                show: _show,
-                                popper: _popper,
-                                hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                                ...props
-                            }) => (
-                                <div
-                                    {...props}
-                                    style={{
-                                        position: 'absolute',
-                                        backgroundColor: 'white',
-                                        padding: '2px 10px',
-                                        //color: 'white',
-                                        borderRadius: 3,
-                                        ...props.style,
-                                    }}
-                                >
-                                    <DayPicker animate mode="range" onSelect={(range) => changeDates(range)} selected={dateRange}></DayPicker>
-                                </div>
-                            )}
-                        </Overlay>
+                        <DateRangePicker value={dateRange} onChange={setDateRange} />
+                       
                     </Form.Group>
                 </Col>
-            </Row>
-            <div className="RouterDetailedSignupsDashboard">
-                <SignupDataTable data={resJson} />
-            </div>
+                {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
+                
+            <SignupDataTable data={resJson} />
         </Container>
     );
 };
 
 export default RouterDetailedSignupsDashboard;
-

@@ -4,11 +4,12 @@ import { Bar } from 'react-chartjs-2';
 import { SignupData } from '../../utils/data';
 import Chart, { CategoryScale } from "chart.js/auto";
 import { FC } from 'react';
+import { SignupsByCategoryResponseDTO } from '../../dtos/SignupsByCategoryResponseDTO';
 
 Chart.register(CategoryScale);
 
 interface BarChartProps {
-    sData: SignupData[];
+    sData: Array<SignupsByCategoryResponseDTO>;
 };
 
 // Just sends the bar when called.

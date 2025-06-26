@@ -1,16 +1,14 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import './RouterDetailedSignupsDashboard.css';
-import Options from '../../../utils/bardata';
-import DetailedSignupsOptions from './DetailedSignupsOptions/DetailedSignupsOptions';
 import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
 import instance from '../../../utils/axios';
 import DateRangePicker from '../../../components/DateRangePicker/DateRangePicker';
-import { Col, Container, Row, Form, Button, Overlay } from 'react-bootstrap';
+import { Col, Container, Row, Form } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import { School, signupOptions, userOptions } from '../../../utils/input-fields';
-import { DateRange, DayPicker } from 'react-day-picker';
+import { DateRange } from 'react-day-picker';
 
 
 interface RouterDetailedSignupsDashboardProps { }
@@ -89,28 +87,28 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         seteducationLevel(selected);
     }
 
-    useEffect(() => {
-        getData();
-    }, []);
+    //useEffect(() => {
+    //    getData();
+    //}, []);
 
     useEffect(() => {
         if (dateRange) getData();
-        getData();
+    //    getData();
     }, [dateRange]);
 
     useEffect(() => {
         if (signupMethodCategories) getData();
-        getData();
+    //    getData();
     }, [signupMethodCategories]);
 
     useEffect(() => {
         if (accountType) getData();
-        getData();
+    //    getData();
     }, [accountType]);
 
     useEffect(() => {
         if (educationLevel) getData();
-        getData();
+    //    getData();
     }, [educationLevel]);
 
     return (
@@ -148,13 +146,11 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                 </Col>
                 <Col>
                     <Form.Group>
-                        <Form.Label className="w-100">Date Range:</Form.Label>
                         <DateRangePicker value={dateRange} onChange={setDateRange} />
-                       
                     </Form.Group>
                 </Col>
                 {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
-                
+                </Row>
             <SignupDataTable data={resJson} />
         </Container>
     );

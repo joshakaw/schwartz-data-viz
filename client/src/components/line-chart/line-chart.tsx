@@ -18,18 +18,12 @@ const LineChart: FC<LineChartProps> = ({ sData }) => {
     // Disables legend
     const options = {
         plugins: {
-            legend: {
-                display: false
-            }
         }
     }
 
     // Turns rawSignupData into something readable for a line chart in chartjs
-    if (sData.length == 0) {
-        return;
-    }
     const signupData = {
-        labels: sData[0].data.map((obj) => obj.x),
+        labels: sData.length > 0 ? sData[0].data.map((obj) => obj.x) : [],
         datasets: sData.map((obj) => {
             return {
                 label: obj.signupMethodCategory,
@@ -56,7 +50,7 @@ const LineChart: FC<LineChartProps> = ({ sData }) => {
 
     return (
         <div>
-            <Line data={signupData} options={options} />
+            <Line data={signupData} />
         </div>
     );
 }

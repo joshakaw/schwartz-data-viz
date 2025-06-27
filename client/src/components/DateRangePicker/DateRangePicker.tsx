@@ -1,5 +1,5 @@
 import { FC, useRef, useState } from 'react';
-import { Button, Form, Overlay } from 'react-bootstrap';
+import { Button, ButtonGroup, Dropdown, Form, Overlay } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import Select, { SingleValue } from 'react-select';
 
@@ -21,12 +21,22 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
     const datePickerTarget = useRef(null);
 
     // Handles selection from the preset dropdown
-    const presetDateRangeSelected = (selected: SingleValue<{ value: string; label: string }>) => {
-        if (selected) {
-            const days = parseInt(selected.value, 10);
+    const presetDateRangeSelected = (selected: string | null) => {
+        const option = rangeOptions.find(opt => opt.value === selected);
+        if (option) {
             const from = new Date();
-            from.setDate(from.getDate() - days);
-            onChange({ from: from, to: new Date() });
+            if (option.value == "7") {
+                from.setDate(from.getDate() - 7);
+                onChange({ from: from, to: new Date() });
+            }
+            if (option.value == "14") {
+                from.setDate(from.getDate() - 14);
+                onChange({ from: from, to: new Date() });
+            }
+            if (option.value == "30") {
+                from.setDate(from.getDate() - 30);
+                onChange({ from: from, to: new Date() });
+            }
         }
     };
 
@@ -39,9 +49,22 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
         <>
             <Form.Group className="mb-3">
                 <Form.Label className="w-100">Date Range:</Form.Label>
-                <Button ref={datePickerTarget} variant="primary" onClick={() => setDatePickerOpen(!datePickerOpen)}>
-                    {value ? value.from?.toDateString() + " - " + value.to?.toDateString() : "Select Date Range"}
-                </Button>
+                <Dropdown as={ButtonGroup} onSelect={presetDateRangeSelected} style={{ backgroundColor: "#DC5E2C" }}>
+                    <Button ref={datePickerTarget} variant="primary" onClick={() => setDatePickerOpen(!datePickerOpen)} style={{ backgroundColor: "#DC5E2C", borderColor: "transparent" }}>
+                        {value ? value.from?.toLocaleDateString() + " - " + value.to?.toLocaleDateString() : "Select Date Range"}
+                    </Button>
+
+                    <Dropdown.Toggle split variant="preset" id="dropdown-split-basic" style={{ color: "white", outline: "0 0 0 0.25rem rgba(220, 94, 44, 0.5)", }} />
+
+                    <Dropdown.Menu>
+                        {rangeOptions.map(option => (
+                            <Dropdown.Item key={option.value} eventKey={option.value}>
+                                {option.label}
+                            </Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+
                 <Overlay target={datePickerTarget.current} show={datePickerOpen} placement="bottom">
                     {({ ...props }) => (
                         <div
@@ -58,15 +81,6 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
                         </div>
                     )}
                 </Overlay>
-            </Form.Group>
-
-            <Form.Group>
-                <Form.Label>or use a preset date range:</Form.Label>
-                <Select
-                    options={rangeOptions}
-                    className='input-select'
-                    onChange={presetDateRangeSelected}
-                />
             </Form.Group>
         </>
     );

@@ -241,14 +241,13 @@ def mailchimpUsers():
     )
 
     if dto.limit:
-        cutoffAtRecordNumber = dto.limit
-        numberOfItemsOnPage = cutoffAtRecordNumber - (
-            dto.pageIndex[0] + dto.pageSize[0]
-        )
-        if numberOfItemsOnPage < 0:
-            numberOfItemsOnPage = 0
-        if numberOfItemsOnPage > dto.pageSize[0]:
-            numberOfItemsOnPage = dto.pageSize[0]
+        offset = dto.pageIndex[0] * dto.pageSize[0]
+        remaining = dto.limit - offset
+        numberOfItemsOnPage = min(max(remaining, 0), dto.pageSize[0])
+
+        pageData = pageData[:numberOfItemsOnPage]
+
+        print(numberOfItemsOnPage)
 
         pageData = pageData[:numberOfItemsOnPage]
 

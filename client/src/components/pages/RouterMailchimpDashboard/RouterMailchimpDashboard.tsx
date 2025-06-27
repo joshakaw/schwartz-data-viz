@@ -58,16 +58,13 @@ const RouterMailchimpDashboard: FC = () => {
         const pagedParams = getRequestParams(currentPage - 1, pageSize, rowsOfData);
 
         try {
-            const response = await instance.get("mailchimpDashboard/users", {params: pagedParams});
-            const receivedData = response.data;
+            const response = await instance.get("mailchimpDashboard/users", { params: pagedParams });
+            const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
             console.log(receivedData);
-
-            // Clamp totalItems to the requested frontend limit
-            const clampedTotal = Math.min(receivedData.totalItems, rowsOfData);
 
             setResJson({
                 data: receivedData.data,
-                totalItems: clampedTotal,
+                totalItems: receivedData.totalItems,
                 pageIndex: receivedData.pageIndex,
                 pageSize: receivedData.pageSize
             });

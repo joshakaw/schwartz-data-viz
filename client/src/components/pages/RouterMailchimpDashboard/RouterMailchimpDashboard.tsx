@@ -302,7 +302,7 @@ const RouterMailchimpDashboard: FC = () => {
                 <Row className="mb-2">
                     <Col className="text-center">
                         <p>
-                            Showing {resJson.data.length} of {resJson.totalItems} rows
+                            Showing rows {resJson.pageIndex * resJson.pageSize + 1}-{resJson.pageIndex * resJson.pageSize + resJson.data.length} of {resJson.totalItems} rows
                         </p>
                     </Col>
                 </Row>

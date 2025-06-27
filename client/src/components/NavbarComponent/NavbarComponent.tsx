@@ -51,7 +51,7 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
         <Navbar expand="lg" className="app-navbar-schwartz-bg NavbarComponent">
             <Container>
                 <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/")} eventKey="home">
-                    <Navbar.Brand href="#home">
+                    <Navbar.Brand>
                         {/*Schwartz Tutoring*/}
                         <img src="/schwartz-tutoring-logo.svg" width="100px"></img>
                     </Navbar.Brand>

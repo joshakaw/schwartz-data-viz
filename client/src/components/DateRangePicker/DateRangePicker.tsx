@@ -49,12 +49,12 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
         <>
             <Form.Group className="mb-3">
                 <Form.Label className="w-100">Date Range:</Form.Label>
-                <Dropdown as={ButtonGroup} onSelect={presetDateRangeSelected} style={{ backgroundColor: "#DC5E2C" }}>
+                <Dropdown as={ButtonGroup} onSelect={presetDateRangeSelected}>
                     <Button ref={datePickerTarget} variant="primary" onClick={() => setDatePickerOpen(!datePickerOpen)} style={{ backgroundColor: "#DC5E2C", borderColor: "transparent" }}>
                         {value ? value.from?.toLocaleDateString() + " - " + value.to?.toLocaleDateString() : "Select Date Range"}
                     </Button>
 
-                    <Dropdown.Toggle split variant="preset" id="dropdown-split-basic" style={{ color: "white", outline: "0 0 0 0.25rem rgba(220, 94, 44, 0.5)", }} />
+                    <Dropdown.Toggle split variant="preset" id="dropdown-split-basic" style={{ color: "white", backgroundColor: "#C25529", }}/>
 
                     <Dropdown.Menu>
                         {rangeOptions.map(option => (

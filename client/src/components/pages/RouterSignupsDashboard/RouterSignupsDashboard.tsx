@@ -73,13 +73,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         }
 
         instance.get("/signupDashboard/lineChart", { params: lineJson }).then((response) => {
-            // I'm gonna cast this to the other signupdata for the linechart. 
-            // afterwards it will strip the data according to the filters.
-            // e.g.if the filters only contain 2 signuptypes it will remove the other 2
             setLineData(response.data as SignupLineChartResponseDTO[]);
-            // console.log(lineData);
-
-            
         })
     }
 

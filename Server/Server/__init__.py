@@ -13,7 +13,7 @@ def create_app():
 
     # Initialize the DB
     with app.app_context():
-        db.init_db(app)
+        db.init_db()
 
     from Server.views import (
         main_api as main_blueprint,

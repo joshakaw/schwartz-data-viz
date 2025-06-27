@@ -1,10 +1,10 @@
-import React, { FC, SyntheticEvent, useState } from 'react';
+import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
 import './NavbarComponent.css';
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 // https://react-bootstrap.netlify.app/docs/components/navbar
@@ -14,6 +14,13 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
 
     const [activeKey, setActiveKey] = useState("home");
     const navigate = useNavigate();
+
+    const location = useLocation(); // Get the current location object
+
+    useEffect(() => {
+        setActiveKey(location.pathname)
+
+    }, [])
 
     /**
      * Alternative to 
@@ -41,7 +48,7 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
     }
 
     return (
-        <Navbar expand="lg" className="app-navbar-schwartz-bg">
+        <Navbar expand="lg" className="app-navbar-schwartz-bg NavbarComponent">
             <Container>
                 <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/")} eventKey="home">
                     <Navbar.Brand>
@@ -53,19 +60,18 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto links" activeKey={activeKey} onSelect={handleSelect}>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="mailchimp">Mailchimp</Nav.Link>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/accounts-receivable")} eventKey="">Accounts Receivable</Nav.Link>
-                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/tutor-data")} eventKey="">Tutor Data</Nav.Link>
-                        
-                        
-                        <NavDropdown title="Signups" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">
-                                <Nav.Link className="text-dark" onClick={(e) => handleNavigation(e, "/signups")} eventKey="signups">Limited</Nav.Link>
-                            </NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.2">
-                                <Nav.Link className="text-dark" onClick={(e) => handleNavigation(e, "/detailedsignups")} eventKey="detailedsignups">Detailed</Nav.Link>
-                            </NavDropdown.Item>
-                        </NavDropdown>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/signups")} eventKey="/signups">Signups</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="/mailchimp">Mailchimp</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/accounts-receivable")} eventKey="/accounts-receivable">Accounts Receivable</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/tutor-data")} eventKey="/tutor-data">Tutor Data</Nav.Link>
+                        {/*<NavDropdown title="Signups" id="basic-nav-dropdown">*/}
+                        {/*    <NavDropdown.Item href="#action/3.1">*/}
+                        {/*        <Nav.Link className="text-dark" onClick={(e) => handleNavigation(e, "/signups")} eventKey="signups">Limited</Nav.Link>*/}
+                        {/*    </NavDropdown.Item>*/}
+                        {/*    <NavDropdown.Item href="#action/3.2">*/}
+                        {/*        <Nav.Link className="text-dark" onClick={(e) => handleNavigation(e, "/detailedsignups")} eventKey="detailedsignups">Detailed</Nav.Link>*/}
+                        {/*    </NavDropdown.Item>*/}
+                        {/*</NavDropdown>*/}
                     </Nav>
                 </Navbar.Collapse>
             </Container>

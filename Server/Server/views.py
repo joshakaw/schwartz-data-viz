@@ -5,9 +5,7 @@ the Flask application.
 
 from collections import defaultdict
 from copy import copy
-import datetime
 from typing import Any, List
-from MySQLdb.cursors import Cursor
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
     MailchimpUsersRequestDTO,
@@ -202,7 +200,6 @@ def signupsByCategory():
 def mailchimpUsers():
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
-    # dto = ApiPaginatedRequest[MailchimpUsersRequestDTO](**request.json)
 
     # Create query
     query = qMailchimpUsers(dto)
@@ -226,26 +223,28 @@ def mailchimpUsers():
     number = c.fetchall()
 
     pageData = rows_to_dicts(
-            data,
-            columns=[
-                "studentId",
-                "firstName",
-                "lastName",
-                "email",
-                "phone",
-                "tutor",
-                "parentAccount",
-                "createdAt",
-                "school",
-                "numSessions",
-                "mostRecentSession",
-                "mostRecentSubject",
-            ],
-        )
+        data,
+        columns=[
+            "studentId",
+            "firstName",
+            "lastName",
+            "email",
+            "phone",
+            "tutor",
+            "parentAccount",
+            "createdAt",
+            "school",
+            "numSessions",
+            "mostRecentSession",
+            "mostRecentSubject",
+        ],
+    )
 
     if dto.limit:
         cutoffAtRecordNumber = dto.limit
-        numberOfItemsOnPage = cutoffAtRecordNumber - (dto.pageIndex[0] + dto.pageSize[0])
+        numberOfItemsOnPage = cutoffAtRecordNumber - (
+            dto.pageIndex[0] + dto.pageSize[0]
+        )
         if numberOfItemsOnPage < 0:
             numberOfItemsOnPage = 0
         if numberOfItemsOnPage > dto.pageSize[0]:
@@ -253,12 +252,18 @@ def mailchimpUsers():
 
         pageData = pageData[:numberOfItemsOnPage]
 
-        print(numberOfItemsOnPage)
+    # Minimum of actual total records available, or records available w/ row limit
+    totalItemsAvailable = min(number[0][0], dto.limit if dto.limit else number[0][0])
+
+    print(f"Number of items in data is {len(pageData)}.")
+    print(
+        f"[Index: {dto.pageIndex[0]}; Page Size: {dto.pageSize[0]}; totalItems: {totalItemsAvailable}]"
+    )
 
     paginatedRepsonse = {
         "pageIndex": dto.pageIndex[0],
         "pageSize": dto.pageSize[0],
-        "totalItems": number[0][0],
+        "totalItems": totalItemsAvailable,
         "data": pageData,
     }
 
@@ -313,13 +318,6 @@ def paramsTest():
 @main_api.route("/dataTest")
 def dataTest():
     import pandas as pd
-
-    teamMembers = [
-        {"name": "josh"},
-        {"name": "owen"},
-        {"name": "tyler"},
-        {"name": "tarik"},
-    ]
 
     pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
 

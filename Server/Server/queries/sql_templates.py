@@ -35,55 +35,68 @@ def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
     sortChoice = "createdAt desc"
 
     return f"""
-select
-    u.id as studentId,
-    -- Kept AS for clear column name
+SELECT
+    u.id AS studentId,
     u.firstName,
     u.lastName,
     u.email,
     u.phone,
-    CONCAT(tutor.firstName, ' ', tutor.lastName) as tutor,
-    parent.id as parentAccount,
-    u.createdAt as createdAt,
-    school.name as school,
-    latest_sessions.numbersessions as numSessions,
-    tutoringsession.date as mostRecentSession,
-    subject.name as mostRecentSubject
-from
-    user_t as u
-inner join
-    school_t as school on
-    u.schoolId = school.id
-inner join
-  sessionstudent_t as sessionstudent on
-    u.id = sessionstudent.studentId
-inner join
-  tutoringsession_t as tutoringsession on
-    sessionstudent.sessionId = tutoringsession.id
-inner join (
-    select
-        sessionstudent.studentId,
-        MAX(tutoringsession.date) as maxSessionDate,
-        COUNT(tutoringsession.id) as numberSessions
-    from
-        sessionstudent_t as sessionstudent
-    inner join
-    tutoringsession_t as tutoringsession on
-        sessionstudent.sessionId = tutoringsession.id
-    group by
-        sessionstudent.studentId
-) as latest_sessions on
-    u.id = latest_sessions.studentId
-    and tutoringsession.date = latest_sessions.maxSessionDate
-inner join
-  user_t tutor on
-    tutoringsession.tutorId = tutor.id
-inner join
-    subject_t as subject on
-    tutoringsession.subjectId = subject.id
-left join 
-    user_t parent on
-    u.parentId = parent.id
+    CONCAT(tutor.firstName, ' ', tutor.lastName) AS tutor,
+    parent.id AS parentAccount,
+    u.createdAt AS createdAt,
+    school.name AS school,
+    latest_sessions.numberSessions AS numSessions,
+    latest_session_details.date AS mostRecentSession,
+    subject.name AS mostRecentSubject
+FROM
+    user_t AS u
+INNER JOIN
+    school_t AS school ON u.schoolId = school.id
+LEFT JOIN
+    (
+        SELECT
+            sessionstudent.studentId,
+            COUNT(tutoringsession.id) AS numberSessions,
+            MAX(tutoringsession.date) AS maxSessionDate
+        FROM
+            sessionstudent_t AS sessionstudent
+        INNER JOIN
+            tutoringsession_t AS tutoringsession ON sessionstudent.sessionId = tutoringsession.id
+        GROUP BY
+            sessionstudent.studentId
+    ) AS latest_sessions ON latest_sessions.studentId = u.id
+LEFT JOIN
+    (
+        SELECT
+            sessionstudent.studentId,
+            tutoringsession.id AS sessionId,
+            tutoringsession.date,
+            tutoringsession.tutorId,
+            tutoringsession.subjectId
+        FROM
+            sessionstudent_t AS sessionstudent
+        INNER JOIN
+            tutoringsession_t AS tutoringsession ON sessionstudent.sessionId = tutoringsession.id
+        INNER JOIN (
+            SELECT
+                sessionstudent.studentId,
+                MAX(tutoringsession.date) AS maxDate
+            FROM
+                sessionstudent_t AS sessionstudent
+            INNER JOIN
+                tutoringsession_t AS tutoringsession ON sessionstudent.sessionId = tutoringsession.id
+            GROUP BY
+                sessionstudent.studentId
+        ) AS max_dates ON
+            max_dates.studentId = sessionstudent.studentId AND
+            tutoringsession.date = max_dates.maxDate
+    ) AS latest_session_details ON latest_session_details.studentId = u.id
+LEFT JOIN
+    user_t AS tutor ON tutor.id = latest_session_details.tutorId
+LEFT JOIN
+    subject_t AS subject ON subject.id = latest_session_details.subjectId
+LEFT JOIN
+    user_t AS parent ON parent.id = u.parentId
 where 
 	1=1
     {f"and {accountTypeCase} in {sql_helper.array_to_sql_in_clause(dto.accountType)}" if dto.accountType else ""}
@@ -96,7 +109,6 @@ order by
     {sortChoice}
 {f"limit {dto.pageSize[0]} offset {dto.pageIndex[0] * dto.pageSize[0]}" if dto.pageSize else ""}
 """
-
 
 def qSchoolsNameType() -> str:
     return (

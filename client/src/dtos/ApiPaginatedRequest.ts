@@ -3,9 +3,13 @@
  * Filter is an object that extends RequestDTO (e.g. MailchimpUsersRequestDTO)
  */
 export interface ApiPaginatedRequest {
-    /** The starting page index */
+    /** 
+     * The page number to fetch. The first page is 0.
+     */
     pageIndex: number;
 
-    /** Size of pages */
+    /** 
+     * Size of pages
+     */
     pageSize: number;
 }

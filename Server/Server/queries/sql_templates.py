@@ -94,7 +94,7 @@ where
     {f"and tutoringsession.date <= '{dto.endDate[0]}'" if dto.endDate else ""}
 order by
     {sortChoice}
-{f"limit {dto.pageSize[0]} offset {dto.pageIndex[0]}" if dto.pageSize else ""}
+{f"limit {dto.pageSize[0]} offset {dto.pageIndex[0] * dto.pageSize[0]}" if dto.pageSize else ""}
 """
 
 

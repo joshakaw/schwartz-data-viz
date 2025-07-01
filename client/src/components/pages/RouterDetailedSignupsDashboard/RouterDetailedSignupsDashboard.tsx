@@ -21,7 +21,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
     const [educationLevel, seteducationLevel] = useState <MultiValue<{ value: string, label: string }>>([]);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: new Date(),
-        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7)
+        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
     const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
 

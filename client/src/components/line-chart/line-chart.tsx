@@ -18,6 +18,11 @@ const LineChart: FC<LineChartProps> = ({ sData }) => {
         interaction: {
             mode: 'index',
             intersect: false
+        },
+        plugins: {
+            colors: {
+                forceOverride: true
+            }
         }
     }
 
@@ -34,7 +39,7 @@ const LineChart: FC<LineChartProps> = ({ sData }) => {
                 }),
                 y: point.y
             }))
-        }))
+        })),
     }
 
     console.log(signupData);

@@ -1,10 +1,8 @@
 'use client'; // This directive must be at the very top
 
 import { Line } from 'react-chartjs-2';
-import { SignupData } from '../../utils/data';
-import Chart, { CategoryScale } from "chart.js/auto";
+import Chart, { CategoryScale, ChartOptions } from "chart.js/auto";
 import { FC } from 'react';
-import { SignupLineChartRequestDTO } from '../../dtos/SignupLineChartRequestDTO';
 import { SignupLineChartResponseDTO } from '../../dtos/SignupLineChartResponseDTO';
 
 Chart.register(CategoryScale);
@@ -15,42 +13,35 @@ interface LineChartProps {
 
 // Just sends the bar when called.
 const LineChart: FC<LineChartProps> = ({ sData }) => {
-    // Disables legend
-    const options = {
-        plugins: {
+    // Sets the line chart to be able to show all data points when hovering over one
+    const options: ChartOptions<'line'> = {
+        interaction: {
+            mode: 'index',
+            intersect: false
         }
     }
 
     // Turns rawSignupData into something readable for a line chart in chartjs
     const signupData = {
-        labels: sData.length > 0 ? sData[0].data.map((obj) => obj.x) : [],
-        datasets: sData.map((obj) => {
-            return {
-                label: obj.signupMethodCategory,
-                data: obj.data
-            }
-        })
+        // New implementation
+        datasets: sData.map(obj => ({
+            label: obj.signupMethodCategory,
+            data: obj.data.map(point => ({
+                x: new Date(point.x).toLocaleDateString("en-US", {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                }),
+                y: point.y
+            }))
+        }))
     }
 
-    //alert(signupData.labels)
-
-    //const data = {
-    //    labels: sData.map(item => item.category),
-    //    datasets: [
-    //        {
-    //            label: 'Signups Per Category',
-    //            data: sData.map(item => item.signups),
-    //            backgroundColor: [
-    //                '#dd4726', '#dd4726', '#dd4726', '#dd4726', '#dd4726'
-    //            ],
-    //            borderWidth: 1
-    //        }
-    //    ]
-    //}
+    console.log(signupData);
 
     return (
         <div>
-            <Line data={signupData} />
+            <Line data={signupData} options={options} />
         </div>
     );
 }

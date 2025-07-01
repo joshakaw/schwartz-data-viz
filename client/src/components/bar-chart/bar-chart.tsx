@@ -1,8 +1,8 @@
 'use client'; // This directive must be at the very top
 
 import { Bar } from 'react-chartjs-2';
-import { SignupData } from '../../utils/data';
-import Chart, { CategoryScale } from "chart.js/auto";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import Chart, { CategoryScale, ChartOptions, Colors } from "chart.js/auto";
 import { FC } from 'react';
 import { SignupsByCategoryResponseDTO } from '../../dtos/SignupsByCategoryResponseDTO';
 
@@ -14,11 +14,21 @@ interface BarChartProps {
 
 // Just sends the bar when called.
 const BarChart: FC<BarChartProps> = ({ sData }) => {
-    // Disables legend
-    const options = {
+    // Disables legend. Adds labels
+    const options: ChartOptions<'bar'> = {
+        // May remove this later, recall Dylan mentioning something about only wanting the numbers in the bar chart itself
+        scales: {
+            y: {
+                display: false
+            },
+        },
+        responsive: true,
         plugins: {
             legend: {
                 display: false
+            },
+            datalabels: {
+                color: 'white'
             }
         }
     }
@@ -40,7 +50,7 @@ const BarChart: FC<BarChartProps> = ({ sData }) => {
 
     return (
         <div>
-            <Bar data={data} options={options} />
+            <Bar data={data} options={options} plugins={[ChartDataLabels]} />
         </div>
     );
 }

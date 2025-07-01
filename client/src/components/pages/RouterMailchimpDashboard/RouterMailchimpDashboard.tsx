@@ -45,7 +45,7 @@ const RouterMailchimpDashboard: FC = () => {
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
         limit,
         pageIndex,
-        pageSize: pageSize,
+        pageSize,
         accountType: accountTypes.length > 0 ? accountTypes.map(opt => opt.label) : undefined,
         minNumberOfSessions: sessionRange === '1-2' ? 1 : sessionRange === '3+' ? 3 : sessionRange === '0' ? 0 : undefined,
         maxNumberOfSessions: sessionRange === '1-2' ? 2 : sessionRange === '0' ? 0 : undefined,
@@ -53,37 +53,53 @@ const RouterMailchimpDashboard: FC = () => {
         endDate: undefined
     });
 
-    // Fetch data from the backend and apply pagination
+    // Fetch and store full data (used for pagination + CSV export)
     const handleSubmit = async () => {
-        const pagedParams = getRequestParams(currentPage - 1, pageSize, rowsOfData);
+        const fetchLimit = rowsOfData || 10000;
+        const allParams = getRequestParams(0, fetchLimit, fetchLimit);
 
         try {
-            const response = await instance.get("mailchimpDashboard/users", { params: pagedParams });
+            const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
-            console.log(receivedData);
 
+            setFullData(receivedData.data);
+
+            const paginatedSlice = receivedData.data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
             setResJson({
-                data: receivedData.data,
-                totalItems: receivedData.totalItems,
-                pageIndex: receivedData.pageIndex,
-                pageSize: receivedData.pageSize
+                data: paginatedSlice,
+                totalItems: receivedData.data.length,
+                pageIndex: currentPage - 1,
+                pageSize
             });
         } catch (err) {
             console.error("API error:", err);
         }
     };
 
-    // Reset to first page whenever filters change
+    // Reset to first page when filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [sessionRange, accountTypes]);
 
-    // Re-fetch data when filters or pagination change
+    // Re-fetch all data on filter or rows change
     useEffect(() => {
         handleSubmit();
     }, [currentPage, sessionRange, accountTypes, rowsOfData]);
 
-    // Prevent Enter key from submitting form when using filters
+    // Re-slice data for pagination when currentPage or fullData changes
+    useEffect(() => {
+        if (!fullData.length) return;
+
+        const paginatedSlice = fullData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+        setResJson({
+            data: paginatedSlice,
+            totalItems: fullData.length,
+            pageIndex: currentPage - 1,
+            pageSize
+        });
+    }, [currentPage, fullData]);
+
+    // Prevent Enter key from submitting filter form
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter') {
@@ -100,26 +116,21 @@ const RouterMailchimpDashboard: FC = () => {
         };
     }, []);
 
-    // Build pagination controls
-    const loadPagination = () => {
-        // If there's no response or no items, don't render any pagination
-        if (!resJson || !resJson.totalItems) return null;
+    // Pagination controls
+    const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
+        if (typeof totalItems === "undefined" || !totalItems) return null;
 
-        // Calculate total number of pages based on total items and page size
-        const totalPages = Math.ceil(resJson.totalItems / pageSize);
+        const totalPages = Math.ceil(totalItems / pageSizeNum);
         const items = [];
 
-        // Handler to update the current page, with bounds checking
         const handlePageChange = (page: number) => {
             if (page < 1 || page > totalPages) return;
             setCurrentPage(page);
         };
 
-        // Always render "First" and "Previous" buttons
         items.push(<Pagination.First key="first" onClick={() => handlePageChange(1)} />);
         items.push(<Pagination.Prev key="prev" onClick={() => handlePageChange(currentPage - 1)} />);
 
-        // If there are only a few pages, show them all
         if (totalPages <= 6) {
             for (let number = 1; number <= totalPages; number++) {
                 items.push(
@@ -133,7 +144,6 @@ const RouterMailchimpDashboard: FC = () => {
                 );
             }
         } else {
-            // Always show the first two pages (1 and 2)
             for (let number = 1; number <= 2; number++) {
                 items.push(
                     <Pagination.Item
@@ -146,12 +156,10 @@ const RouterMailchimpDashboard: FC = () => {
                 );
             }
 
-            // Show ellipsis after first few pages if user is far into the list
             if (currentPage > 4) {
                 items.push(<Pagination.Ellipsis key="ellipsis-start" disabled />);
             }
 
-            // Show the current page number in the middle of pagination if it's not near the start or end
             if (currentPage > 2 && currentPage < totalPages - 1) {
                 items.push(
                     <Pagination.Item key={currentPage} active onClick={() => handlePageChange(currentPage)}>
@@ -160,12 +168,10 @@ const RouterMailchimpDashboard: FC = () => {
                 );
             }
 
-            // Show ellipsis before the last few pages if user is not near the end
             if (currentPage < totalPages - 3) {
                 items.push(<Pagination.Ellipsis key="ellipsis-end" disabled />);
             }
 
-            // Always show the last two pages (n-1 and n)
             for (let number = totalPages - 1; number <= totalPages; number++) {
                 items.push(
                     <Pagination.Item
@@ -179,17 +185,14 @@ const RouterMailchimpDashboard: FC = () => {
             }
         }
 
-        // Always render "Next" and "Last" buttons
         items.push(<Pagination.Next key="next" onClick={() => handlePageChange(currentPage + 1)} />);
         items.push(<Pagination.Last key="last" onClick={() => handlePageChange(totalPages)} />);
 
         return items;
     };
 
-
     return (
         <Container>
-            {/* Header */}
             <Row>
                 <div className="RouterMailchimpDashboard">
                     <h1>MailChimp Dashboard</h1>
@@ -200,7 +203,6 @@ const RouterMailchimpDashboard: FC = () => {
             {/* Filter Form */}
             <div className="filter-form mb-2">
                 <Row>
-                    {/* Session Range Filter */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="sessions-multi-select mb-2">
                             <Form.Select
@@ -219,7 +221,6 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    {/* Placeholder School Filter */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
                             <Form.Select
@@ -235,7 +236,6 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    {/* Account Type Multi-Select */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
                             <Select
@@ -249,7 +249,6 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    {/* Max Rows Selector */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group controlId="minSessions" className="mb-2">
                             <Form.Label>Total Records to Request</Form.Label>
@@ -262,7 +261,6 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    {/* Clear Filters Button */}
                     <Col xs={12} md={6} lg={1}>
                         <Button
                             type="button"
@@ -279,7 +277,6 @@ const RouterMailchimpDashboard: FC = () => {
                         </Button>
                     </Col>
 
-                    {/* CSV Export Button */}
                     <Col xs={12} md={12} lg={2}>
                         <CsvDownloadButton
                             className="export-button w-100"
@@ -312,7 +309,7 @@ const RouterMailchimpDashboard: FC = () => {
             <Row>
                 <Col>
                     <Pagination className="pagination">
-                        {loadPagination()}
+                        {loadPagination(resJson?.totalItems, pageSize)}
                     </Pagination>
                 </Col>
             </Row>

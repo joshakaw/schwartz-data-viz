@@ -59,6 +59,7 @@ const RouterMailchimpDashboard: FC = () => {
         const allParams = getRequestParams(0, fetchLimit, fetchLimit);
 
         try {
+            // Recieves user account data.
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
 
@@ -114,6 +115,24 @@ const RouterMailchimpDashboard: FC = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
+    }, []);
+
+    // Loads the unique school data when the page loads
+    useEffect(() => {
+        const fetchSchools = async () => {
+            try {
+                const schoolsResponse = await instance.get("/educationLevelSchools");
+                const uniqueSchools: EducationLevelSchoolsResponseDTO = schoolsResponse.data;
+                setSchoolJson(uniqueSchools);
+
+                // REMOVE **TEST**
+                console.log(uniqueSchools);
+            } catch (error) {
+                console.error("Error fetching schools:", error);
+            }
+        };
+
+        fetchSchools();
     }, []);
 
     // Pagination controls

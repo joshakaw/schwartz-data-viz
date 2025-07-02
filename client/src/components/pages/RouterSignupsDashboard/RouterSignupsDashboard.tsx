@@ -32,7 +32,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: new Date(),
-        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7)
+        from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
     const datePickerTarget = useRef(null);
     const [summaryBoxData, setSummaryBoxData] = useState<summaryData>({
@@ -122,18 +122,6 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
     const changeLineSetup = (selected: SingleValue<{ value: weekMonthYear, label: string }>) => {
         setLineSetup(selected);
-    }
-
-    // This is a janky solution but it works.
-    const presetDateRangeSelected = (selected: SingleValue<{ value: string, label: string }>) => {
-        if (selected) {
-            if (selected.value === "7")
-                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7), to: new Date() });
-            if (selected.value === "14")
-                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 14), to: new Date() });
-            if (selected.value === "30")
-                setDateRange({ from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30), to: new Date() });
-        }
     }
 
     // Loads default filter. Also has handlers for filters to prevent getData() being called before respective changes

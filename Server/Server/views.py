@@ -19,6 +19,16 @@ from Server import db
 from json import loads
 
 from Server.queries.sql_helper import read_sql_from_queries
+from Server.queries.sql_queries import (
+    DetailedSignupsQ,
+    MailchimpUsersQ,
+    SchoolTypesQ,
+    SchoolsNameAndTypeQ,
+    SignupsByCategoryQ,
+    SignupsLineChartQ,
+    SignupsSummaryBoxQ,
+    makeEngine,
+)
 from Server.queries.sql_templates import (
     qDetailedSignups,
     qMailchimpUsers,
@@ -31,6 +41,9 @@ from Server.queries.sql_templates import (
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
+
+# Start the SQLAlchemy engine
+makeEngine()
 
 
 def rows_to_dicts(rows, columns):
@@ -66,17 +79,10 @@ def detailedSignupsTable():
     # Get request
     dto = DetailedSignupRequestDTO(**request.args.to_dict(flat=False))
 
-    # Create query and params
-    (params, query) = qDetailedSignups(dto)
+    # Get result
+    (result, sql) = DetailedSignupsQ(dto)
 
-    # Execute query
-    c = db.get_db_cursor()
-    c.execute(query, params)
-
-    # Transform
-    data = c.fetchall()  # Returns 2d tuple
-
-    return jsonify(rows_to_dicts(data, columns=db.get_column_names(c)))
+    return jsonify(result)
 
 
 @main_api.route("/signupDashboard/lineChart")
@@ -86,16 +92,10 @@ def signupsLineChart():
     # Get request
     dto = SignupLineChartRequestDTO(**request.args.to_dict(flat=False))
 
-    # Create query
-    (params, query) = qSignupsLineChart(dto)
+    # Run query
+    (result, sql) = SignupsLineChartQ(dto)
 
-    # Execute query
-    c = db.get_db_cursor()
-    c.execute(query, params)
-
-    # Transform
-    data = c.fetchall()  # Returns 2d tuple
-    pdData = pd.DataFrame(data, columns=db.get_column_names(c))
+    pdData = pd.DataFrame(result)
     pivoted = (
         pdData.pivot_table(
             columns="signupMethodCategory",
@@ -114,9 +114,7 @@ def signupsLineChart():
         for category, value in row.items():
             if category == "date":
                 continue
-            series_by_category[category].append(
-                {"x": row["date"].isoformat(), "y": int(value)}
-            )
+            series_by_category[category].append({"x": row["date"], "y": int(value)})
 
     # Convert to desired format: list of { name, data } series
     chart_data = [
@@ -160,40 +158,21 @@ def signupsSummaryBox():
     # Get request
     dto = SignupSummaryBoxRequestDTO(**request.args.to_dict(flat=False))
 
-    # Create query
-    (params, query) = qSignupsSummaryBox(dto)
+    # Get query result
+    (result, sql) = SignupsSummaryBoxQ(dto)
 
-    # Execute query
-    c = db.get_db_cursor()
-    c.execute(query, params)
-
-    # Transform
-    data = c.fetchall()  # Returns 2d tuple
-
-    return jsonify(rows_to_dicts(data, columns=db.get_column_names(c)))
-
-    # sampleData = {"signnupCount": 69}
-    # # pdSampleData = pd.DataFrame(sampleData)
-    # return jsonify(sampleData)
+    return jsonify(result)
 
 
 @main_api.route("/signupDashboard/signupsByCategory")
 def signupsByCategory():
     # Get request
     dto = SignupsByCategoryRequestDTO(**request.args.to_dict(flat=False))
-    # dto = SignupsByCategoryRequestDTO(**request.get_json())
 
-    # Create query
-    query = qSignupsByCategory(dto.startDate, dto.endDate, dto.signupMethodCategories)
+    # Run query
+    (result, sql) = SignupsByCategoryQ(dto.startDate, dto.endDate, dto.signupMethodCategories)
 
-    # Execute query
-    c = db.get_db_cursor()
-    c.execute(query)
-
-    # Transform
-    data = c.fetchall()  # Returns 2d tuple
-
-    return jsonify(rows_to_dicts(data, columns=["category", "signups"]))
+    return jsonify(result)
 
 
 @main_api.route("/mailchimpDashboard/users")
@@ -201,46 +180,23 @@ def mailchimpUsers():
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
 
-    # Create query
-    query = qMailchimpUsers(dto)
-
-    # Execute query
-    c = db.get_db_cursor()
-    c.execute(query)
-
-    # Transform
-    data = c.fetchall()  # Returns 2d tuple
+    # Get query result
+    (data, sql) = MailchimpUsersQ(dto)
 
     # Create count query
     cloneDto = copy(dto)
     cloneDto.pageSize = None
     cloneDto.pageIndex = None
 
-    countQuery = f"select count(*) from ({qMailchimpUsers(cloneDto)}) as a"
+    (counterResult, counterSql) = MailchimpUsersQ(cloneDto)
+    number = len(counterResult)
 
-    # Get count
-    c.execute(countQuery)
-    number = c.fetchall()
-
-    pageData = rows_to_dicts(
-        data,
-        columns=[
-            "studentId",
-            "firstName",
-            "lastName",
-            "email",
-            "phone",
-            "tutor",
-            "parentAccount",
-            "createdAt",
-            "school",
-            "numSessions",
-            "mostRecentSession",
-            "mostRecentSubject",
-        ],
-    )
+    pageData = data
+    print(f"Page Data: {pageData}")
 
     if dto.limit:
+        # Remember that pageIndex is the page number, 
+        # not the index of the first record.
         offset = dto.pageIndex[0] * dto.pageSize[0]
         remaining = dto.limit - offset
         numberOfItemsOnPage = min(max(remaining, 0), dto.pageSize[0])
@@ -252,7 +208,7 @@ def mailchimpUsers():
         pageData = pageData[:numberOfItemsOnPage]
 
     # Minimum of actual total records available, or records available w/ row limit
-    totalItemsAvailable = min(number[0][0], dto.limit if dto.limit else number[0][0])
+    totalItemsAvailable = min(number, dto.limit if dto.limit else number)
 
     print(f"Number of items in data is {len(pageData)}.")
     print(
@@ -271,20 +227,11 @@ def mailchimpUsers():
 
 @main_api.route("/educationLevelSchools")
 def educationLevelSchools():
-    # Create query
-    query = qSchoolsNameType()
-    query2 = qSchoolTypes()  # School types
-
     # Execute first query
-    c = db.get_db_cursor()
-    c.execute(query)
-    data = c.fetchall()
-    schoolNamesDict = rows_to_dicts(data, db.get_column_names(c))
+    schoolNamesDict = SchoolsNameAndTypeQ()
 
     # Execute second query
-    c.execute(query2)
-    data2 = c.fetchall()
-    schoolTypesDict = rows_to_dicts(data2, db.get_column_names(c))
+    schoolTypesDict = SchoolTypesQ()
 
     return jsonify(
         {

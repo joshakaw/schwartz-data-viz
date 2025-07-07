@@ -50,12 +50,16 @@
     <Compile Include="Server\queries\sql_helper.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Server\queries\sql_queries.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server\queries\sql_templates.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Server\tests\test_sql_templates.py">
+    <Compile Include="Server\tests\expiredtest_sql_templates.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Server\tests\test_queries.py" />
     <Compile Include="Server\tests\test_views.py">
       <SubType>Code</SubType>
     </Compile>

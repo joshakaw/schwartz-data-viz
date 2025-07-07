@@ -1,4 +1,26 @@
+"""
+These queries will eventually all be replaced by
+the sql_queries file. Do not make new queries here.
+
+The queries that exist here are not transferrable between
+different database providers, and are made specifically
+for MySQL.
+"""
+
 from typing import Any, List, Tuple, TypeAlias
+from sqlalchemy import (
+    Engine,
+    Inspector,
+    MetaData,
+    Table,
+    case,
+    create_engine,
+    func,
+    inspect,
+    literal,
+    select,
+)
+from sqlalchemy.sql import and_
 
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
@@ -10,6 +32,9 @@ from Server.queries import sql_helper
 
 
 def qSignupsByCategory(startDate, endDate, categories):
+    """
+    MIGRATED - DO NOT USE
+    """
     sqlListOfCategories = sql_helper.array_to_sql_in_clause(categories)
 
     return f"""
@@ -31,6 +56,9 @@ order by
 
 
 def qMailchimpUsers(dto: MailchimpUsersRequestDTO) -> str:
+    """
+    MIGRATED - DO NOT USE
+    """
     # sortChoice = "mostrecentsession desc"
     sortChoice = "createdAt desc"
 
@@ -110,13 +138,20 @@ order by
 {f"limit {dto.pageSize[0]} offset {dto.pageIndex[0] * dto.pageSize[0]}" if dto.pageSize else ""}
 """
 
+
 def qSchoolsNameType() -> str:
+    """
+    MIGRATED
+    """
     return (
         f"SELECT DISTINCT name as schoolName, schoolType as schoolType FROM school_t;"
     )
 
 
 def qSchoolTypes() -> str:
+    """
+    MIGRATED
+    """
     return f"SELECT DISTINCT schoolType FROM school_t;"
 
 
@@ -128,6 +163,9 @@ accountTypeCase = "(case when u.tutor is true then 'Tutor' when u.parentAccount 
 
 
 def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
+    """
+    REPLACED IN SQL_QUERIES.PY
+    """
     # This query will use parameters, so the db.execute() can
     # escape anything that could lead to SQL Injection
 
@@ -190,6 +228,9 @@ where {whereContent};
 
 
 def qSignupsSummaryBox(dto: SignupSummaryBoxRequestDTO) -> ParameterizedQueryReturn:
+    """
+    MIGRATED TO SQL_QUERIES - DO NOT USE
+    """
     # Content of the Where clause
     whereContent = "1=1 "
     params: List[Any] = []
@@ -222,7 +263,9 @@ where {whereContent};
 
 
 def qSignupsLineChart(dto: SignupLineChartRequestDTO) -> ParameterizedQueryReturn:
-
+    """
+    MIGRATED TO SQL_QUERIES -  DO NOT USEs
+    """
     # Reusable clause for SELECT and GROUP BY
     firstSundayOfWeek = (
         "DATE(DATE_SUB(DATE(u.createdAt), INTERVAL DAYOFWEEK(u.createdAt) - 1 DAY))"

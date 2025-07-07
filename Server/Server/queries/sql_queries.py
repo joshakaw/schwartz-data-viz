@@ -1,0 +1,371 @@
+"""
+This file is intended to eventually replace sql_templates.py
+Instead of returning a paramaterized SQL string and parameters,
+these queries will return the results of the query immediately.
+
+Additionally, these all use SQLAlchemy, which will allow quick
+switching between different database engines (MySQL, SQLite).
+
+"""
+
+from sqlite3 import Row
+from typing import Any, Dict, List, Tuple, TypeAlias
+from sqlalchemy import (
+    Engine,
+    Inspector,
+    MetaData,
+    Table,
+    case,
+    create_engine,
+    desc,
+    func,
+    inspect,
+    literal,
+    select,
+)
+from sqlalchemy.engine import RowMapping
+from sqlalchemy.sql import and_
+from sqlalchemy.sql.elements import ColumnClause
+
+from Server.dtos.dtos import (
+    DetailedSignupRequestDTO,
+    MailchimpUsersRequestDTO,
+    SignupLineChartRequestDTO,
+    SignupSummaryBoxRequestDTO,
+)
+from Server.queries.sql_helper import (
+    get_first_day_of_month,
+    get_first_day_of_year,
+    get_first_sunday_of_week,
+)
+
+
+# SQLAlchemy Globals
+engine = None
+metadata = MetaData()
+
+
+def makeEngine():
+    global engine
+    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=True)
+    metadata.create_all(engine)
+
+    inspector: Inspector = inspect(engine)
+    table_names = inspector.get_table_names()
+
+
+def getAccountTypeCase(user_t: Table):
+    return case(
+        (user_t.c.tutor == 1, "Tutor"),
+        (user_t.c.parentAccount == 1, "Parent"),
+        else_="Student",
+    )
+
+
+ResultAndQuery: TypeAlias = Tuple[List[Dict[str, Any]], str]
+
+
+def getResults(stmt) -> ResultAndQuery:
+    with engine.connect() as conn:
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+        rows = conn.execute(stmt).all()
+
+        resultList: List[Dict[str, Any]] = []
+        for row in rows:
+            resultList.append(row._asdict())
+
+        return (resultList, sql)
+
+
+def DetailedSignupsQ(dto: DetailedSignupRequestDTO) -> ResultAndQuery:
+    """
+    Detailed Signups Query
+    """
+    user_t = Table("User", metadata, autoload_with=engine)
+    school_t = Table("School", metadata, autoload_with=engine)
+
+    # Build WHERE conditions
+    conditions = []
+
+    if dto.signupMethodCategories:
+        conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
+
+    if dto.freeResponseSearchKeyword:
+        conditions.append(
+            user_t.c.hearAboutUsFRQ.like(f"%{dto.freeResponseSearchKeyword}%")
+        )
+
+    if dto.startDate:
+        conditions.append(user_t.c.createdAt >= dto.startDate)
+
+    if dto.endDate:
+        conditions.append(user_t.c.createdAt <= dto.endDate)
+
+    if dto.accountType:
+        conditions.append(getAccountTypeCase(user_t).in_(dto.accountType))
+
+    # SELECT clause
+    stmt = (
+        select(
+            (user_t.c.firstName + literal(" ") + user_t.c.lastName).label("name"),
+            getAccountTypeCase(user_t).label("accountType"),
+            user_t.c.hearAboutUsDropdown.label("signupMethodCategory"),
+            user_t.c.hearAboutUsFRQ.label("freeResponseText"),
+            user_t.c.createdAt.label("dateOfSignup"),
+            school_t.c.name.label("school"),
+            literal(None).label("numberOfSessions"),
+        )
+        .select_from(user_t.join(school_t, user_t.c.schoolId == school_t.c.id))
+        .where(and_(*conditions))
+    )
+
+    return getResults(stmt)
+
+    # sql = stmt.compile(compile_kwargs={"literal_binds": True})
+    # return str(sql)
+
+
+def SignupsSummaryBoxQ(dto: SignupSummaryBoxRequestDTO) -> ResultAndQuery:
+    """
+    Signups Summary Box Query
+    """
+    user_t = Table("User", metadata, autoload_with=engine)
+    school_t = Table("School", metadata, autoload_with=engine)
+
+    # Build WHERE conditions
+    conditions = []
+
+    if dto.signupMethodCategories:
+        conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
+
+    if dto.startDate:
+        conditions.append(user_t.c.createdAt >= dto.startDate)
+
+    if dto.endDate:
+        conditions.append(user_t.c.createdAt <= dto.endDate)
+
+    if dto.accountType:
+        conditions.append(getAccountTypeCase(user_t).in_(dto.accountType))
+
+    stmt = (
+        select(func.count().label("signupCount"))
+        .select_from(user_t)
+        .where(and_(*conditions))
+    )
+
+    return getResults(stmt)
+
+
+def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
+    """
+    Signups Summary Box Query
+    """
+    user_t = Table("User", metadata, autoload_with=engine)
+    school_t = Table("School", metadata, autoload_with=engine)
+
+    # Get the date grouping selection
+    selectedGrouping: ColumnClause = None
+    match dto.groupBy:
+        case "week":
+            selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
+        case "month":
+            selectedGrouping = get_first_day_of_month(user_t, engine.dialect.name)
+        case "year":
+            selectedGrouping = get_first_day_of_year(user_t, engine.dialect.name)
+        case _:
+            # Unknown input
+            selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
+
+    # Build WHERE conditions
+    conditions = []
+
+    if dto.signupMethodCategories:
+        conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
+
+    if dto.startDate:
+        conditions.append(user_t.c.createdAt >= dto.startDate)
+
+    if dto.endDate:
+        conditions.append(user_t.c.createdAt <= dto.endDate)
+
+    if dto.accountType:
+        conditions.append(getAccountTypeCase(user_t).in_(dto.accountType))
+
+    stmt = (
+        select(
+            selectedGrouping.label("date"),
+            user_t.c.hearAboutUsDropdown.label("signupMethodCategory"),
+            func.count().label("numberOfSignups"),
+        )
+        .select_from(user_t)
+        .where(and_(*conditions))
+        .group_by(selectedGrouping, user_t.c.hearAboutUsDropdown)
+        .order_by(desc("date"))
+    )
+
+    return getResults(stmt)
+
+
+def SchoolTypesQ() -> ResultAndQuery:
+    school_t = Table("School", metadata, autoload_with=engine)
+
+    stmt = select(school_t.c.schoolType).distinct().select_from(school_t)
+    return getResults(stmt)
+
+def SchoolsNameAndTypeQ() -> ResultAndQuery:
+    school_t = Table("School", metadata, autoload_with=engine)
+
+    stmt = select(school_t.c.name.label("schoolName"), school_t.c.schoolType.label("schoolType")).distinct().select_from(school_t)
+    return getResults(stmt)
+
+def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
+    user_t = Table("User", metadata, autoload_with=engine)
+    school_t = Table("School", metadata, autoload_with=engine)
+    sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
+    tutoringsession_t = Table("TutoringSession", metadata, autoload_with=engine)
+    subject_t = Table("Subject", metadata, autoload_with=engine)
+
+    latest_sessions = (
+        select(
+            sessionstudent_t.c.studentId,
+            func.count(tutoringsession_t.c.id).label("numberSessions"),
+            func.max(tutoringsession_t.c.date).label("maxSessionDate")
+        )
+        .select_from(
+            sessionstudent_t.join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
+        )
+        .group_by(sessionstudent_t.c.studentId)
+        .subquery("latest_sessions")
+    )
+
+    max_dates = (
+        select(
+            sessionstudent_t.c.studentId,
+            func.max(tutoringsession_t.c.date).label("maxDate")
+        )
+        .select_from(
+            sessionstudent_t.join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
+        )
+        .group_by(sessionstudent_t.c.studentId)
+        .subquery("max_dates")
+    )
+
+    latest_session_details = (
+        select(
+            sessionstudent_t.c.studentId,
+            tutoringsession_t.c.id.label("sessionId"),
+            tutoringsession_t.c.date,
+            tutoringsession_t.c.tutorId,
+            tutoringsession_t.c.subjectId
+        )
+        .select_from(
+            sessionstudent_t
+            .join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
+            .join(
+                max_dates,
+                and_(
+                    max_dates.c.studentId == sessionstudent_t.c.studentId,
+                    max_dates.c.maxDate == tutoringsession_t.c.date,
+                )
+            )
+        )
+        .subquery("latest_session_details")
+    )
+
+    tutor = user_t.alias("tutor")
+    parent = user_t.alias("parent")
+
+    account_type_case = getAccountTypeCase(user_t)
+
+    stmt = (
+        select(
+            user_t.c.id.label("studentId"),
+            user_t.c.firstName,
+            user_t.c.lastName,
+            user_t.c.email,
+            user_t.c.phone,
+            (tutor.c.firstName + literal(" ") + tutor.c.lastName).label("tutor"),
+            parent.c.id.label("parentAccount"),
+            user_t.c.createdAt,
+            school_t.c.name.label("school"),
+            latest_sessions.c.numberSessions.label("numSessions"),
+            latest_session_details.c.date.label("mostRecentSession"),
+            subject_t.c.name.label("mostRecentSubject"),
+        )
+        .select_from(
+            user_t
+            .join(school_t, user_t.c.schoolId == school_t.c.id)
+            .outerjoin(latest_sessions, latest_sessions.c.studentId == user_t.c.id)
+            .outerjoin(latest_session_details, latest_session_details.c.studentId == user_t.c.id)
+            .outerjoin(tutor, tutor.c.id == latest_session_details.c.tutorId)
+            .outerjoin(subject_t, subject_t.c.id == latest_session_details.c.subjectId)
+            .outerjoin(parent, parent.c.id == user_t.c.parentId)
+        )
+    )
+
+    conditions = []
+
+    if dto.accountType:
+        conditions.append(account_type_case.in_(dto.accountType))
+
+    if dto.studentNameSearchKeyword:
+        keyword = f"%{dto.studentNameSearchKeyword[0]}%"
+        conditions.append((user_t.c.firstName + literal(" ") + user_t.c.lastName).like(keyword))
+
+    if dto.minNumberOfSessions:
+        conditions.append(latest_sessions.c.numberSessions >= int(dto.minNumberOfSessions[0]))
+
+    if dto.maxNumberOfSessions:
+        conditions.append(latest_sessions.c.numberSessions <= int(dto.maxNumberOfSessions[0]))
+
+    if dto.startDate:
+        conditions.append(tutoringsession_t.c.date >= dto.startDate[0])
+
+    if dto.endDate:
+        conditions.append(tutoringsession_t.c.date <= dto.endDate[0])
+
+    if conditions:
+        stmt = stmt.where(and_(*conditions))
+
+    sort_map = {
+        "createdAt desc": user_t.c.createdAt.desc(),
+        "mostrecentsession desc": latest_session_details.c.date.desc()
+    }
+
+    stmt = stmt.order_by(sort_map.get(dto.sortByDesc or "createdAt desc"))
+
+    if dto.pageSize:
+        stmt = stmt.limit(dto.pageSize[0]).offset(dto.pageIndex[0] * dto.pageSize[0])
+
+    return getResults(stmt)
+
+def SignupsByCategoryQ(startDate, endDate, categories) -> ResultAndQuery:
+    user_t = Table("User", metadata, autoload_with=engine)
+
+    # WHERE conditions
+    conditions = []
+    
+    if startDate:
+        conditions.append(user_t.c.createdAt >= startDate[0])
+
+    if endDate:
+        conditions.append(user_t.c.createdAt <= endDate[0])
+
+    if categories:
+        conditions.append(user_t.c.hearAboutUsDropdown.in_(categories))
+
+
+    # Base SELECT
+    stmt = (
+        select(
+            user_t.c.hearAboutUsDropdown.label("category"),
+            func.count().label("signups")
+        )
+        .select_from(user_t)
+        .where(user_t.c.hearAboutUsDropdown.isnot(None))
+        .group_by(user_t.c.hearAboutUsDropdown)
+        .order_by(desc(func.count()))
+        .where(and_(*conditions))
+    )
+
+    return getResults(stmt)

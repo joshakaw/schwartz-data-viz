@@ -4,12 +4,11 @@ import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
 import instance from '../../../utils/axios';
-import DateRangePicker from '../../../components/DateRangePicker/DateRangePicker';
 import { Col, Container, Row, Form, FormControlProps } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import { School, signupOptions, userOptions } from '../../../utils/input-fields';
 import { DateRange } from 'react-day-picker';
-
+import CsvDownloadButton from 'react-json-to-csv';
 
 interface RouterDetailedSignupsDashboardProps { }
 
@@ -131,6 +130,8 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
 
     return (
         <Container>
+            <h1>Signups Dashboard</h1>
+            <p>Welcome to your Signup Dashboard. Here you can view performance of certain advertising and compare them.</p>
             <Row style={{ paddingBottom: '2rem' }}>
                 <Col md={2}>
                     <Form.Label>Signup Methods:</Form.Label>
@@ -162,16 +163,18 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                         onChange={changeEducationLevel}
                     />
                 </Col>
-                <Col md={3}>
+                <Col md={4}>
                     <Form.Group>
                         <Form.Label>Keyword: </Form.Label>
                         <Form.Control type="text" onChangeCapture={changeKeyword} />
                     </Form.Group>
                 </Col>
                 <Col>
-                    <Form.Group>
-                        <DateRangePicker value={dateRange} onChange={setDateRange} />
-                    </Form.Group>
+                    <CsvDownloadButton
+                        className="export-button w-100 align-items-center"
+                        delimiter=","
+                        data={resJson}
+                    />
                 </Col>
                 {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
                 </Row>

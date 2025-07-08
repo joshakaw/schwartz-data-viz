@@ -1,11 +1,11 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import './RouterDetailedSignupsDashboard.css';
 import SignupDataTable from '../../signupDataTable/signupDataTable';
 import { DetailedSignupResponseDTO } from '../../../dtos/DetailedSignupResponseDTO';
 import { DetailedSignupRequestDTO } from '../../../dtos/DetailedSignupRequestDTO';
 import instance from '../../../utils/axios';
 import DateRangePicker from '../../../components/DateRangePicker/DateRangePicker';
-import { Col, Container, Row, Form } from 'react-bootstrap';
+import { Col, Container, Row, Form, FormControlProps } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import { School, signupOptions, userOptions } from '../../../utils/input-fields';
 import { DateRange } from 'react-day-picker';
@@ -24,6 +24,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
     const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
+    const [debounce, setDebounce] = useState(freeResponseSearchKeyword);
 
     // Wanna keep this here if there's a reason Tyler set this up seperately
     //const reqData: DetailedSignupRequestDTO = {
@@ -54,7 +55,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
 
         const jsonReq: DetailedSignupRequestDTO = {
             signupMethodCategories: methodList,
-            freeResponseSearchKeyword: '',
+            freeResponseSearchKeyword: freeResponseSearchKeyword,
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
             accountType: userList,
@@ -87,62 +88,85 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         seteducationLevel(selected);
     }
 
+    const changeKeyword = (selected: FormEvent<HTMLInputElement>) => {
+        setfreeResponseSearchKeyword(selected.currentTarget.value);
+    }
+
     //useEffect(() => {
     //    getData();
     //}, []);
 
     useEffect(() => {
         if (dateRange) getData();
-    //    getData();
     }, [dateRange]);
 
     useEffect(() => {
         if (signupMethodCategories) getData();
-    //    getData();
     }, [signupMethodCategories]);
 
     useEffect(() => {
         if (accountType) getData();
-    //    getData();
     }, [accountType]);
 
     useEffect(() => {
         if (educationLevel) getData();
-    //    getData();
     }, [educationLevel]);
+
+    // Debounce init
+    useEffect(() => {
+        const debouncer = setTimeout(() => {
+            setDebounce(freeResponseSearchKeyword);
+        }, 1000);
+
+        return () => {
+            clearTimeout(debouncer);
+        };
+    }, [freeResponseSearchKeyword]);
+
+
+    // Debounce done
+    useEffect(() => {
+        if (debounce) getData();
+    }, [debounce])
 
     return (
         <Container>
             <Row style={{ paddingBottom: '2rem' }}>
-                <Col md={3}>
+                <Col md={2}>
                     <Form.Label>Signup Methods:</Form.Label>
                     <Select
                         isMulti
                         options={signupOptions}
-                        placeholder='Please select signup method(s)'
+                        placeholder='Select...'
                         className='inner-select'
                         onChange={changeSignupMethods}
                     />
                 </Col>
-                <Col md={3}>
+                <Col md={2}>
                     <Form.Label>Account Types:</Form.Label>
                     <Select
                         isMulti
                         options={userOptions}
-                        placeholder='Please select account type(s)'
+                        placeholder='Select...'
                         className='inner-select'
                         onChange={changeUserType}
                     />
                 </Col>
-                <Col md={3}>
+                <Col md={2}>
                     <Form.Label>Education Level: </Form.Label>
                     <Select
                         isMulti
                         options={School}
-                        placeholder='Please select education level'
+                        placeholder='Select...'
                         className='inner-select'
                         onChange={changeEducationLevel}
                     />
+                </Col>
+                <Col md={3}>
+                    <Form.Group>
+                        <Form.Label>Keyword: </Form.Label>
+                        <Form.Control type="text" onChangeCapture={changeKeyword} />
+                    </Form.Group>
                 </Col>
                 <Col>
                     <Form.Group>

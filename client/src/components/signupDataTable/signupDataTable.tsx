@@ -28,7 +28,7 @@ const SignupDataTable: React.FC<DetailedSignupTableProps> = ({ data }) => {
                                 <td>{account.accountType}</td>
                                 <td>{account.signupMethodCategory}</td>
                                 <td>{account.freeResponseText}</td>
-                                <td>{account.dateOfSignup}</td>
+                                <td>{new Date(account.dateOfSignup).toDateString()}</td>
                                 <td>{account.school}</td>
                                 <td>{account.numberOfSessions}</td>
                             </tr>

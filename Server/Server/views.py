@@ -88,7 +88,11 @@ def signups_line_chart():
     # Run query
     (result, sql) = SignupsLineChartQ(dto)
 
-    pd_data = pd.DataFrame(result)
+    pdData = pd.DataFrame(result)
+
+    if pdData.empty:
+        return jsonify([])
+
     pivoted = (
         pd_data.pivot_table(
             columns="signupMethodCategory",

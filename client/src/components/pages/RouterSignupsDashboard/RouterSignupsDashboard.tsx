@@ -26,6 +26,7 @@ type summaryData = {
 const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     const [data, setData] = useState<SignupsByCategoryResponseDTO[]>([]);
     const [lineData, setLineData] = useState<SignupLineChartResponseDTO[]>([]);
+    const [loading, setLoading] = useState(true);
     const [signupMethods, setSignupMethods] = useState<MultiValue<{ value: string, label: string }>>([]);
     const [lineSetup, setLineSetup] = useState<SingleValue<{ value: string, label: string }>>(); // Handles the 'organize by week/month/year filters for linechart
     const [user, setUser] = useState<MultiValue<{ value: string, label: string }>>([]);
@@ -44,6 +45,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
     let thisWeekNum = 0;
 
     function getData() {
+        setLoading(true);
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
 
@@ -57,10 +59,13 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         instance.get("/signupDashboard/signupsByCategory", { params: reqJson }).then((response) => {
             setData(response.data as SignupsByCategoryResponseDTO[]);
             // console.log(data);
-        })
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     function getLineData() {
+        setLoading(true);
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
 
@@ -74,11 +79,14 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
         instance.get("/signupDashboard/lineChart", { params: lineJson }).then((response) => {
             setLineData(response.data as SignupLineChartResponseDTO[]);
-        })
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     // Almost works. Race condition problem between instance gets
     function getSummaryData() {
+        setLoading(true);
         const methodList = signupMethods.map(opt => opt.value);
         const userList = user.map(opt => opt.value);
 
@@ -105,7 +113,9 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         instance.get("/signupDashboard/summaryBox", { params: summaryBoxJson }).then((response) => {
             thisWeekNum = response.data[0].signupCount;
             setSummaryBoxData({ lastWeek: lastWeekNum, thisWeek: thisWeekNum });
-        })
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
@@ -213,10 +223,10 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                         </Row>
                         <Row>
                             <Col>
-                                <BarChart sData={data} />
+                                <BarChart sData={data} loading={loading} />
                             </Col>
                             <Col>
-                                <LineChart sData={lineData} />
+                                <LineChart sData={lineData} loading={loading} />
                             </Col>
                         </Row>
                     </div>

@@ -1,14 +1,30 @@
 import unittest
 
-from Server.dtos.dtos import DetailedSignupRequestDTO, MailchimpUsersRequestDTO, SignupLineChartRequestDTO, SignupSummaryBoxRequestDTO
-from Server.queries.sql_queries import DetailedSignupsQ, MailchimpUsersQ, SchoolTypesQ, SchoolsNameAndTypeQ, SignupsByCategoryQ, SignupsLineChartQ, SignupsSummaryBoxQ, makeEngine
+from Server.dtos.dtos import (
+    DetailedSignupRequestDTO,
+    MailchimpUsersRequestDTO,
+    SignupLineChartRequestDTO,
+    SignupSummaryBoxRequestDTO,
+    TutorLeaderboardRequestDTO,
+)
+from Server.queries.sql_queries import (
+    DetailedSignupsQ,
+    MailchimpUsersQ,
+    SchoolTypesQ,
+    SchoolsNameAndTypeQ,
+    SignupsByCategoryQ,
+    SignupsLineChartQ,
+    SignupsSummaryBoxQ,
+    TutorLeaderboardQ,
+    makeEngine,
+)
 
 
 class Test_test_queries(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-         makeEngine()   
+        makeEngine()
 
     def test_DetailedSignupsQ(self):
         """
@@ -58,22 +74,30 @@ class Test_test_queries(unittest.TestCase):
     def test_SchoolsNameAndTypeQ(self):
         (results, query) = SchoolsNameAndTypeQ()
         print(results)
-        print(query) 
-    
+        print(query)
+
     def test_MailchimpUsersQ(self):
-        dto = MailchimpUsersRequestDTO(
-            pageIndex=[0],
-            pageSize=[3]
-            )
+        dto = MailchimpUsersRequestDTO(pageIndex=[0], pageSize=[3])
         (results, query) = MailchimpUsersQ(dto)
         print(results)
         print(query)
 
     def test_SignupsByCategoryQ(self):
-        (results, query) = SignupsByCategoryQ(["2002-01-01"], ["2025-01-01"], ["Social Media", "Email Campaign"])
+        (results, query) = SignupsByCategoryQ(
+            ["2002-01-01"], ["2025-01-01"], ["Social Media", "Email Campaign"]
+        )
 
         print(results)
         print(query)
+
+    def test_TutorLeaderboardQ(self):
+        dto = TutorLeaderboardRequestDTO(subjects=["MMG 222"])
+
+        (results, query) = TutorLeaderboardQ(dto)
+        print(results)
+        print(len(results))
+        print(query)
+
 
 if __name__ == "__main__":
     unittest.main()

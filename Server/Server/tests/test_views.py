@@ -83,6 +83,13 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
+    def test_tutor_data_leaderboard(self):
+        response: Response = self._client.get("/tutorData/leaderboard")
+        print(response.get_json())
+
+        self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
+        self.assertEqual(response.status_code, 200)  # OK
+
 
 if __name__ == "__main__":
     unittest.main()

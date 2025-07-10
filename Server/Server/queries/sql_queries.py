@@ -24,6 +24,7 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.engine import RowMapping
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql import and_
 from sqlalchemy.sql.elements import ColumnClause
 
@@ -32,6 +33,7 @@ from Server.dtos.dtos import (
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
+    TutorLeaderboardRequestDTO,
 )
 from Server.queries.sql_helper import (
     get_first_day_of_month,
@@ -47,7 +49,7 @@ metadata = MetaData()
 
 def makeEngine():
     global engine
-    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=True)
+    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=False)
     metadata.create_all(engine)
 
     inspector: Inspector = inspect(engine)
@@ -301,6 +303,7 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
         user_t.c.phone,
         (tutor.c.firstName + literal(" ") + tutor.c.lastName).label("tutor"),
         parent.c.id.label("parentAccount"),
+        account_type_case.label("accountType"),
         user_t.c.createdAt,
         school_t.c.name.label("school"),
         latest_sessions.c.numberSessions.label("numSessions"),
@@ -386,6 +389,108 @@ def SignupsByCategoryQ(startDate, endDate, categories) -> ResultAndQuery:
         .group_by(user_t.c.hearAboutUsDropdown)
         .order_by(desc(func.count()))
         .where(and_(*conditions))
+    )
+
+    return getResults(stmt)
+
+
+def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
+    # TODO: dto.subjects filter
+
+    user_t = Table("User", metadata, autoload_with=engine)
+    tutoringsession_t = Table("TutoringSession", metadata, autoload_with=engine)
+    sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
+    subject_t = Table("Subject", metadata, autoload_with=engine)
+
+    conditions = []
+    # tutor_user_conditions = []
+
+    # Filters date of the tutoring session
+
+    if dto.startDate:
+        conditions.append(tutoringsession_t.c.date >= dto.startDate)
+        pass
+
+    if dto.endDate:
+        conditions.append(tutoringsession_t.c.date <= dto.startDate)
+        pass
+
+    order_by_argument = func.count(tutoringsession_t.c.date)
+
+    if dto.sortBy:
+        if dto.sortBy == "hours":
+            order_by_argument = "hoursTutored"
+        elif dto.sortBy == "sessions":
+            order_by_argument = "numberOfSessions"
+        elif dto.sortBy == "recurringSessions":
+            order_by_argument = "numRecurringSessions"
+        elif dto.sortBy == "revenue":
+            order_by_argument = "revenueGenerated"
+
+    if dto.subjects:
+        # NOT IMPLEMENTED - requires change to query
+        print(
+            "Subjects not implemented yet. Need to join subjects table and get subject name to be able to filter."
+        )
+        pass
+
+    if dto.locations:
+        # Aka session Method
+        conditions.append(tutoringsession_t.c.method.in_(dto.locations))
+        pass
+
+    # Tutor-student pairings with more than one meetup (as to not count first meetup
+    # as a recurring session with the JOIN, if HAVING were >= 0)
+    student_tutor_recurring_pairings = (
+        select(
+            tutoringsession_t.c.tutorId.label("tutorId"),
+            sessionstudent_t.c.studentId.label("studentId"),
+            literal(1).label("isRecurringPairing"),
+        )
+        .select_from(
+            tutoringsession_t.join(
+                sessionstudent_t, tutoringsession_t.c.id == sessionstudent_t.c.sessionId
+            )
+        )
+        .group_by("tutorId", "studentId")
+        .having(func.count() > 1)
+        .subquery()
+    )
+
+    stmt = (
+        select(
+            user_t.c.id.label("tutorId"),
+            (user_t.c.firstName + literal(" ") + user_t.c.lastName).label("name"),
+            func.count(tutoringsession_t.c.date).label("numberOfSessions"),
+            func.max(tutoringsession_t.c.date).label("lastSession"),
+            func.sum(tutoringsession_t.c.length).label("hoursTutored"),
+            func.sum(student_tutor_recurring_pairings.c.isRecurringPairing).label(
+                "numRecurringSessions"
+            ),
+            literal(0).label("revenueGenerated"),
+        )
+        .select_from(
+            user_t.outerjoin(
+                tutoringsession_t, tutoringsession_t.c.tutorId == user_t.c.id
+            )
+            .outerjoin(
+                sessionstudent_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id
+            )
+            .outerjoin(
+                student_tutor_recurring_pairings,
+                (
+                    student_tutor_recurring_pairings.c.tutorId
+                    == tutoringsession_t.c.tutorId
+                )
+                & (
+                    student_tutor_recurring_pairings.c.studentId
+                    == sessionstudent_t.c.studentId
+                ),
+            )
+        )
+        .group_by(user_t.c.id)
+        .where(and_(*conditions))
+        .order_by(order_by_argument.desc())
     )
 
     return getResults(stmt)

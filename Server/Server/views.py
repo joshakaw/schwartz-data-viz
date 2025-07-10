@@ -12,6 +12,7 @@ from Server.dtos.dtos import (
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
     SignupsByCategoryRequestDTO,
+    TutorLeaderboardRequestDTO,
 )
 from flask import Blueprint, jsonify, request
 from Server import db
@@ -27,6 +28,7 @@ from Server.queries.sql_queries import (
     SignupsByCategoryQ,
     SignupsLineChartQ,
     SignupsSummaryBoxQ,
+    TutorLeaderboardQ,
     makeEngine,
 )
 from Server.queries.sql_templates import (
@@ -239,6 +241,17 @@ def educationLevelSchools():
             "schoolTypes": schoolTypesDict,
         }
     )
+
+@main_api.route("/tutorData/leaderboard")
+def tutor_data_leaderboard():
+    # Get request
+    dto = TutorLeaderboardRequestDTO(**request.args.to_dict(flat=False))
+
+    # Run query
+    (result, query) = TutorLeaderboardQ(dto)
+
+    # Return result
+    return jsonify(result)
 
 
 @main_api.route("/params")

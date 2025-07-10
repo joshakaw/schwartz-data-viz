@@ -1,5 +1,7 @@
 'use client'; // This directive must be at the very top
 
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { Line } from 'react-chartjs-2';
 import Chart, { CategoryScale, ChartOptions } from "chart.js/auto";
 import { FC } from 'react';
@@ -9,10 +11,11 @@ Chart.register(CategoryScale);
 
 interface LineChartProps {
     sData: Array<SignupLineChartResponseDTO>;
+    loading: boolean;
 };
 
 // Just sends the bar when called.
-const LineChart: FC<LineChartProps> = ({ sData }) => {
+const LineChart: FC<LineChartProps> = ({ sData, loading }) => {
     // Sets the line chart to be able to show all data points when hovering over one
     const options: ChartOptions<'line'> = {
         interaction: {
@@ -43,6 +46,14 @@ const LineChart: FC<LineChartProps> = ({ sData }) => {
     }
 
     console.log(signupData);
+
+    if (loading) {
+        return <Skeleton height={250} />;
+    }
+
+    if (sData.length == 0) {
+        return <div style={{ textAlign: 'center', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No results found.</div>;
+    }
 
     return (
         <div>

@@ -24,6 +24,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
     });
     const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
     const [debounce, setDebounce] = useState(freeResponseSearchKeyword);
+    const [loading, setLoading] = useState(true);
 
     // Wanna keep this here if there's a reason Tyler set this up seperately
     //const reqData: DetailedSignupRequestDTO = {
@@ -48,6 +49,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
 
     // Fetches data for the data table
     function getData() {
+        setLoading(true);
         const methodList = signupMethodCategories.map(opt => opt.value);
         const userList = accountType.map(opt => opt.value);
         const educationList = educationLevel.map(opt => opt.value);
@@ -63,16 +65,13 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
             pageSize: 10
         }
 
-        console.log("Request: ", jsonReq);
-
-        try {
-            instance.get("/detailedSignupsDashboard/table", { params: jsonReq }).then((response) => {
-                console.log("Response: ", response.data);
-                setResJson(response.data);
-            })
-        } catch (err) {
+        instance.get("/detailedSignupsDashboard/table", { params: jsonReq }).then((response) => {
+            setResJson(response.data);
+        }).catch((err) => {
             console.error("API Error:", err);
-        }
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     const changeSignupMethods = (selected: MultiValue<{ value: string, label: string }>) => {
@@ -178,7 +177,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                 </Col>
                 {/*<NotImplementedWarning message="Detailed Signups table will go here according to Dylan's Project Notes" />*/}
                 </Row>
-            <SignupDataTable data={resJson} />
+            <SignupDataTable data={resJson} loading={loading} />
         </Container>
     );
 };

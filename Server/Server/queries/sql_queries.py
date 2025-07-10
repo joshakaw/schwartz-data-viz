@@ -8,10 +8,8 @@ switching between different database engines (MySQL, SQLite).
 
 """
 
-from sqlite3 import Row
 from typing import Any, Dict, List, Tuple, TypeAlias
 from sqlalchemy import (
-    Engine,
     Inspector,
     MetaData,
     Table,
@@ -23,8 +21,8 @@ from sqlalchemy import (
     literal,
     select,
 )
-from sqlalchemy.engine import RowMapping
-from sqlalchemy.sql import and_
+from sqlalchemy.engine import Engine
+from sqlalchemy.sql import ColumnElement, and_
 from sqlalchemy.sql.elements import ColumnClause
 
 from Server.dtos.dtos import (
@@ -32,6 +30,7 @@ from Server.dtos.dtos import (
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
+    TutorLeaderboardRequestDTO,
 )
 from Server.queries.sql_helper import (
     get_first_day_of_month,
@@ -41,13 +40,13 @@ from Server.queries.sql_helper import (
 
 
 # SQLAlchemy Globals
-engine = None
+engine: Engine = None
 metadata = MetaData()
 
 
 def makeEngine():
     global engine
-    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=True)
+    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=False)
     metadata.create_all(engine)
 
     inspector: Inspector = inspect(engine)
@@ -85,7 +84,7 @@ def DetailedSignupsQ(dto: DetailedSignupRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -133,7 +132,7 @@ def SignupsSummaryBoxQ(dto: SignupSummaryBoxRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -164,7 +163,9 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Get the date grouping selection
-    selectedGrouping: ColumnClause = None
+    selectedGrouping: ColumnClause = get_first_sunday_of_week(
+        user_t, engine.dialect.name
+    )
     match dto.groupBy:
         case "week":
             selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
@@ -173,11 +174,10 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
         case "year":
             selectedGrouping = get_first_day_of_year(user_t, engine.dialect.name)
         case _:
-            # Unknown input
-            selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
+            pass
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -212,13 +212,23 @@ def SchoolTypesQ() -> ResultAndQuery:
     stmt = select(school_t.c.schoolType).distinct().select_from(school_t)
     return getResults(stmt)
 
+
 def SchoolsNameAndTypeQ() -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
-    stmt = select(school_t.c.name.label("schoolName"), school_t.c.schoolType.label("schoolType")).distinct().select_from(school_t)
+    stmt = (
+        select(
+            school_t.c.name.label("schoolName"),
+            school_t.c.schoolType.label("schoolType"),
+        )
+        .distinct()
+        .select_from(school_t)
+    )
     return getResults(stmt)
 
+
 def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
+    # TODO: Fix education level (moved todo from old sql_template)
     user_t = Table("User", metadata, autoload_with=engine)
     school_t = Table("School", metadata, autoload_with=engine)
     sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
@@ -229,10 +239,13 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
         select(
             sessionstudent_t.c.studentId,
             func.count(tutoringsession_t.c.id).label("numberSessions"),
-            func.max(tutoringsession_t.c.date).label("maxSessionDate")
+            func.max(tutoringsession_t.c.date).label("maxSessionDate"),
         )
         .select_from(
-            sessionstudent_t.join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
+            sessionstudent_t.join(
+                tutoringsession_t,
+                sessionstudent_t.c.sessionId == tutoringsession_t.c.id,
+            )
         )
         .group_by(sessionstudent_t.c.studentId)
         .subquery("latest_sessions")
@@ -241,10 +254,13 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
     max_dates = (
         select(
             sessionstudent_t.c.studentId,
-            func.max(tutoringsession_t.c.date).label("maxDate")
+            func.max(tutoringsession_t.c.date).label("maxDate"),
         )
         .select_from(
-            sessionstudent_t.join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
+            sessionstudent_t.join(
+                tutoringsession_t,
+                sessionstudent_t.c.sessionId == tutoringsession_t.c.id,
+            )
         )
         .group_by(sessionstudent_t.c.studentId)
         .subquery("max_dates")
@@ -256,17 +272,18 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
             tutoringsession_t.c.id.label("sessionId"),
             tutoringsession_t.c.date,
             tutoringsession_t.c.tutorId,
-            tutoringsession_t.c.subjectId
+            tutoringsession_t.c.subjectId,
         )
         .select_from(
-            sessionstudent_t
-            .join(tutoringsession_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id)
-            .join(
+            sessionstudent_t.join(
+                tutoringsession_t,
+                sessionstudent_t.c.sessionId == tutoringsession_t.c.id,
+            ).join(
                 max_dates,
                 and_(
                     max_dates.c.studentId == sessionstudent_t.c.studentId,
                     max_dates.c.maxDate == tutoringsession_t.c.date,
-                )
+                ),
             )
         )
         .subquery("latest_session_details")
@@ -277,46 +294,51 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
 
     account_type_case = getAccountTypeCase(user_t)
 
-    stmt = (
-        select(
-            user_t.c.id.label("studentId"),
-            user_t.c.firstName,
-            user_t.c.lastName,
-            user_t.c.email,
-            user_t.c.phone,
-            (tutor.c.firstName + literal(" ") + tutor.c.lastName).label("tutor"),
-            parent.c.id.label("parentAccount"),
-            user_t.c.createdAt,
-            school_t.c.name.label("school"),
-            latest_sessions.c.numberSessions.label("numSessions"),
-            latest_session_details.c.date.label("mostRecentSession"),
-            subject_t.c.name.label("mostRecentSubject"),
+    stmt = select(
+        user_t.c.id.label("studentId"),
+        user_t.c.firstName,
+        user_t.c.lastName,
+        user_t.c.email,
+        user_t.c.phone,
+        (tutor.c.firstName + literal(" ") + tutor.c.lastName).label("tutor"),
+        parent.c.id.label("parentAccount"),
+        account_type_case.label("accountType"),
+        user_t.c.createdAt,
+        school_t.c.name.label("school"),
+        latest_sessions.c.numberSessions.label("numSessions"),
+        latest_session_details.c.date.label("mostRecentSession"),
+        subject_t.c.name.label("mostRecentSubject"),
+    ).select_from(
+        user_t.join(school_t, user_t.c.schoolId == school_t.c.id)
+        .outerjoin(latest_sessions, latest_sessions.c.studentId == user_t.c.id)
+        .outerjoin(
+            latest_session_details, latest_session_details.c.studentId == user_t.c.id
         )
-        .select_from(
-            user_t
-            .join(school_t, user_t.c.schoolId == school_t.c.id)
-            .outerjoin(latest_sessions, latest_sessions.c.studentId == user_t.c.id)
-            .outerjoin(latest_session_details, latest_session_details.c.studentId == user_t.c.id)
-            .outerjoin(tutor, tutor.c.id == latest_session_details.c.tutorId)
-            .outerjoin(subject_t, subject_t.c.id == latest_session_details.c.subjectId)
-            .outerjoin(parent, parent.c.id == user_t.c.parentId)
-        )
+        .outerjoin(tutor, tutor.c.id == latest_session_details.c.tutorId)
+        .outerjoin(subject_t, subject_t.c.id == latest_session_details.c.subjectId)
+        .outerjoin(parent, parent.c.id == user_t.c.parentId)
     )
 
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.accountType:
         conditions.append(account_type_case.in_(dto.accountType))
 
     if dto.studentNameSearchKeyword:
         keyword = f"%{dto.studentNameSearchKeyword[0]}%"
-        conditions.append((user_t.c.firstName + literal(" ") + user_t.c.lastName).like(keyword))
+        conditions.append(
+            (user_t.c.firstName + literal(" ") + user_t.c.lastName).like(keyword)
+        )
 
     if dto.minNumberOfSessions:
-        conditions.append(latest_sessions.c.numberSessions >= int(dto.minNumberOfSessions[0]))
+        conditions.append(
+            latest_sessions.c.numberSessions >= int(dto.minNumberOfSessions[0])
+        )
 
     if dto.maxNumberOfSessions:
-        conditions.append(latest_sessions.c.numberSessions <= int(dto.maxNumberOfSessions[0]))
+        conditions.append(
+            latest_sessions.c.numberSessions <= int(dto.maxNumberOfSessions[0])
+        )
 
     if dto.startDate:
         conditions.append(tutoringsession_t.c.date >= dto.startDate[0])
@@ -329,7 +351,7 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
 
     sort_map = {
         "createdAt desc": user_t.c.createdAt.desc(),
-        "mostrecentsession desc": latest_session_details.c.date.desc()
+        "mostrecentsession desc": latest_session_details.c.date.desc(),
     }
 
     stmt = stmt.order_by(sort_map.get(dto.sortByDesc or "createdAt desc"))
@@ -339,12 +361,13 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
 
     return getResults(stmt)
 
+
 def SignupsByCategoryQ(startDate, endDate, categories) -> ResultAndQuery:
     user_t = Table("User", metadata, autoload_with=engine)
 
     # WHERE conditions
-    conditions = []
-    
+    conditions: List[ColumnElement] = []
+
     if startDate:
         conditions.append(user_t.c.createdAt >= startDate[0])
 
@@ -354,18 +377,115 @@ def SignupsByCategoryQ(startDate, endDate, categories) -> ResultAndQuery:
     if categories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(categories))
 
-
     # Base SELECT
     stmt = (
         select(
             user_t.c.hearAboutUsDropdown.label("category"),
-            func.count().label("signups")
+            func.count().label("signups"),
         )
         .select_from(user_t)
         .where(user_t.c.hearAboutUsDropdown.isnot(None))
         .group_by(user_t.c.hearAboutUsDropdown)
         .order_by(desc(func.count()))
         .where(and_(*conditions))
+    )
+
+    return getResults(stmt)
+
+
+def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
+    # TODO: dto.subjects filter
+
+    user_t = Table("User", metadata, autoload_with=engine)
+    tutoringsession_t = Table("TutoringSession", metadata, autoload_with=engine)
+    sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
+    subject_t = Table("Subject", metadata, autoload_with=engine)
+
+    conditions: List[ColumnElement] = []
+    # tutor_user_conditions = []
+
+    # Filters date of the tutoring session
+
+    if dto.startDate:
+        conditions.append(tutoringsession_t.c.date >= dto.startDate)
+
+    if dto.endDate:
+        conditions.append(tutoringsession_t.c.date <= dto.startDate)
+
+    order_by_argument = func.count(tutoringsession_t.c.date)
+
+    if dto.sortBy:
+        if dto.sortBy == "hours":
+            order_by_argument = "hoursTutored"
+        elif dto.sortBy == "sessions":
+            order_by_argument = "numberOfSessions"
+        elif dto.sortBy == "recurringSessions":
+            order_by_argument = "numRecurringSessions"
+        elif dto.sortBy == "revenue":
+            order_by_argument = "revenueGenerated"
+
+    if dto.subjects:
+        # NOT IMPLEMENTED - requires change to query
+        print(
+            "Subjects not implemented yet. Need to join subjects table and get subject name to be able to filter."
+        )
+
+    if dto.locations:
+        # Aka session Method
+        conditions.append(tutoringsession_t.c.method.in_(dto.locations))
+
+    # Tutor-student pairings with more than one meetup (as to not count first meetup
+    # as a recurring session with the JOIN, if HAVING were >= 0)
+    student_tutor_recurring_pairings = (
+        select(
+            tutoringsession_t.c.tutorId.label("tutorId"),
+            sessionstudent_t.c.studentId.label("studentId"),
+            literal(1).label("isRecurringPairing"),
+        )
+        .select_from(
+            tutoringsession_t.join(
+                sessionstudent_t, tutoringsession_t.c.id == sessionstudent_t.c.sessionId
+            )
+        )
+        .group_by("tutorId", "studentId")
+        .having(func.count() > 1)
+        .subquery()
+    )
+
+    stmt = (
+        select(
+            user_t.c.id.label("tutorId"),
+            (user_t.c.firstName + literal(" ") + user_t.c.lastName).label("name"),
+            func.count(tutoringsession_t.c.date).label("numberOfSessions"),
+            func.max(tutoringsession_t.c.date).label("lastSession"),
+            func.sum(tutoringsession_t.c.length).label("hoursTutored"),
+            func.sum(student_tutor_recurring_pairings.c.isRecurringPairing).label(
+                "numRecurringSessions"
+            ),
+            literal(0).label("revenueGenerated"),
+        )
+        .select_from(
+            user_t.outerjoin(
+                tutoringsession_t, tutoringsession_t.c.tutorId == user_t.c.id
+            )
+            .outerjoin(
+                sessionstudent_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id
+            )
+            .outerjoin(
+                student_tutor_recurring_pairings,
+                (
+                    student_tutor_recurring_pairings.c.tutorId
+                    == tutoringsession_t.c.tutorId
+                )
+                & (
+                    student_tutor_recurring_pairings.c.studentId
+                    == sessionstudent_t.c.studentId
+                ),
+            )
+        )
+        .group_by(user_t.c.id)
+        .where(and_(*conditions))
+        .order_by(order_by_argument.desc())
     )
 
     return getResults(stmt)

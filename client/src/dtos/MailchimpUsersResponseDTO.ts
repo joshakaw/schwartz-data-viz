@@ -12,4 +12,5 @@ export interface MailchimpUserResponseDTO {
     numSessions: number;
     mostRecentSession: string;
     mostRecentSubject: string;
+    accountType: string;
 }

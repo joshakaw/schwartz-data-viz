@@ -10,6 +10,7 @@ import { Form, Button, Col, Row, Container } from 'react-bootstrap';
 import Select from 'react-select';
 import CsvDownloadButton from 'react-json-to-csv';
 import Pagination from 'react-bootstrap/Pagination';
+import CreatableSelect from 'react-select/creatable';
 
 // Data handling and DTO imports
 import instance from "../../../utils/axios";
@@ -224,43 +225,52 @@ const RouterMailchimpDashboard: FC = () => {
                 <Row>
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="sessions-multi-select mb-2">
+                            <Form.Label>Num of Sessions</Form.Label>
+                            <CreatableSelect
+                                isClearable
+                                value={sessionRange ? { value: sessionRange, label: sessionRange } : null}
+                                onChange={(selected) => {
+                                    const val = selected?.value || '';
+                                    setSelectedSession(val);
+                                    setSessionRange(val);
+                                }}
+                                options={[
+                                    { value: '0', label: '0' },
+                                    { value: '1-2', label: '1-2' },
+                                    { value: '3+', label: '+3' }
+                                ]}
+                            />
+                        </Form.Group>
+
+                    </Col>
+
+                    <Col xs={12} md={4} lg={2}>
+                        <Form.Group className="mb-2">
+                            <Form.Label>Edu. Level</Form.Label>
                             <Form.Select
+                                value={selectedSession}
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     setSelectedSession(val);
                                     setSessionRange(val);
                                 }}
-                                value={sessionRange}
                             >
-                                <option value="">Select Sessions</option>
-                                <option value="0">0</option>
-                                <option value="1-2">1-2</option>
-                                <option value="3+">+3</option>
+                                <option value="" disabled hidden>Select...</option>
+                                {schoolJson?.schoolNames?.map((school, index) => (
+                                    <option key={`${index}-${school.schoolName}-${school.schoolType}`} value={school.schoolName}>
+                                        {school.schoolName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
                     </Col>
 
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
-                            <Form.Select
-                                aria-placeholder="School"
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSelectedSession(val);
-                                    setSessionRange(val);
-                                }}
-                            >
-                                <option value="">School</option>
-                            </Form.Select>
-                        </Form.Group>
-                    </Col>
-
-                    <Col xs={12} md={4} lg={2}>
-                        <Form.Group className="mb-2">
+                            <Form.Label>Account Type</Form.Label>
                             <Select
                                 options={sessionOptions}
                                 isMulti
-                                placeholder="Account Type"
                                 className="inner-select"
                                 onChange={(selected) => setAccountTypes(selected as any)}
                                 value={accountTypes}
@@ -270,7 +280,7 @@ const RouterMailchimpDashboard: FC = () => {
 
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group controlId="minSessions" className="mb-2">
-                            <Form.Label>Total Records to Request</Form.Label>
+                            <Form.Label>Records Limit</Form.Label>
                             <Form.Control
                                 type="number"
                                 min={0}
@@ -280,23 +290,7 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    <Col xs={12} md={6} lg={1}>
-                        <Button
-                            type="button"
-                            className="submit-button w-100 mb-2"
-                            variant="danger"
-                            onClick={() => {
-                                setCurrentPage(1);
-                                setSelectedSession('');
-                                setSessionRange(undefined);
-                                setAccountTypes([]);
-                            }}
-                        >
-                            Clear
-                        </Button>
-                    </Col>
-
-                    <Col xs={12} md={12} lg={2}>
+                    <Col xs={12} md={8} lg={2}>
                         <CsvDownloadButton
                             className="export-button w-100"
                             delimiter=","

@@ -6,7 +6,7 @@ from Server.queries.sql_templates import (
 
 
 class Test_test_sql_templates(unittest.TestCase):
-    def test_signupsByCategory_full(self):
+    def test_signups_by_category_full(self):
         string = qSignupsByCategory(["2002-01-01"], ["2004-01-01"], ["A", "B"])
         self.maxDiff = None
         self.assertEqual(
@@ -29,7 +29,7 @@ order by
             string,
         )
 
-    def test_signupsByCategory_empty(self):
+    def test_signups_by_category_empty(self):
         string = qSignupsByCategory(None, None, None)
         self.maxDiff = None
         self.assertEqual(

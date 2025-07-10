@@ -24,16 +24,16 @@ def init_db():
 def get_db_cursor() -> Cursor:
     if "db" not in g:
 
-        dbSettingsJson = loads(
+        db_settings_json = loads(
             open("./Server/util/dbconfig.json", encoding="utf-8").read()
         )
 
         g.db = MySQLdb.connect(
-            host=dbSettingsJson["endpoint"],
-            user=dbSettingsJson["username"],
-            password=dbSettingsJson["password"],
-            database=dbSettingsJson["database"],
-            port=dbSettingsJson["port"],
+            host=db_settings_json["endpoint"],
+            user=db_settings_json["username"],
+            password=db_settings_json["password"],
+            database=db_settings_json["database"],
+            port=db_settings_json["port"],
         )
     return g.db.cursor()
 

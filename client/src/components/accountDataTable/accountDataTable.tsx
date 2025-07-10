@@ -34,7 +34,7 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data }) => {
                                 <td>{account.email}</td>
                                 <td>{`(${account.phone.substring(0, 3)})-${account.phone.substring(3, 6)}-${account.phone.substring(6)}`}</td>
                                 <td>{account.school}</td>
-                                <td>{account.parentAccount}</td>
+                                <td>{account.accountType}</td>
                                 <td>{new Date(account.createdAt).toLocaleDateString()}</td>
                                 <td>{account.numSessions}</td>
                                 <td>{new Date(account.mostRecentSession).toLocaleDateString()}</td>

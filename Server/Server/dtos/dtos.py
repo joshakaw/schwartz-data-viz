@@ -87,3 +87,11 @@ class SignupSummaryBoxRequestDTO(BaseModel):
 
 class SignupSummaryBoxResponseDTO(BaseModel):
     signnupCount: int
+
+
+class TutorLeaderboardRequestDTO(BaseModel):
+    startDate: Union[Single[str], None] = None
+    endDate: Union[Single[str], None] = None
+    sortBy: Union[Single[str], None] = None
+    subjects: Union[List[str], None] = None
+    locations: Union[List[str], None] = None

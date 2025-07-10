@@ -16,7 +16,7 @@ class Test_test_views(unittest.TestCase):
     def tearDownClass(cls):
         cls._client = None
 
-    def test_detailedSignupsTable(self):
+    def test_detailed_signups_table(self):
         response = self._client.get(
             "/detailedSignupsDashboard/table?startDate=2021-10-01&endDate=2025-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral&accountType=Tutor"
         )
@@ -24,7 +24,7 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
-    def test_signupsByCategory(self):
+    def test_signups_by_category(self):
         # Does not test response/query validity
         response = self._client.get(
             "/signupDashboard/signupsByCategory?startDate=2021-10-01&endDate=2022-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral",
@@ -37,7 +37,7 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
-    def test_mailchimpUsers(self):
+    def test_mailchimp_users(self):
         # Does not test response/query validity
         response = self._client.get(
             "/mailchimpDashboard/users?pageIndex=1&pageSize=10&studentNameSearchKeyword=D&minNumberOfSessions=1&maxNumberOfSessions=10&startDate=2020-10-01&endDate=2023-01-01&accountType=Student&accountType=Tutor&accountType=Parent&educationLevel=K-12&limit=15",
@@ -58,7 +58,7 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
-    def test_signupsLineChart(self):
+    def test_signups_line_chart(self):
         response: Response = self._client.get(
             "/signupDashboard/lineChart?groupBy=week&startDate=2022-01-01"
         )
@@ -67,7 +67,7 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
-    def test_signupsSummaryBox(self):
+    def test_signups_summary_box(self):
         response: Response = self._client.get(
             "/signupDashboard/summaryBox?startDate=2022-01-01"
         )
@@ -76,7 +76,7 @@ class Test_test_views(unittest.TestCase):
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"
         self.assertEqual(response.status_code, 200)  # OK
 
-    def test_educationLevelSchools(self):
+    def test_education_level_schools(self):
         response: Response = self._client.get("/educationLevelSchools")
         print(response.get_json())
 

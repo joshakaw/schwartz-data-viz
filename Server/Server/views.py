@@ -54,7 +54,7 @@ def rows_to_dicts(rows, columns):
 
 
 @main_api.route("/sql")
-def sqlTest():
+def sql_test():
     """
     TEST
     """
@@ -68,7 +68,7 @@ def sqlTest():
 
 
 @main_api.route("/detailedSignupsDashboard/table")
-def detailedSignupsTable():
+def detailed_signups_table():
     # Get request
     dto = DetailedSignupRequestDTO(**request.args.to_dict(flat=False))
 
@@ -79,7 +79,7 @@ def detailedSignupsTable():
 
 
 @main_api.route("/signupDashboard/lineChart")
-def signupsLineChart():
+def signups_line_chart():
     import pandas as pd
 
     # Get request
@@ -88,9 +88,9 @@ def signupsLineChart():
     # Run query
     (result, sql) = SignupsLineChartQ(dto)
 
-    pdData = pd.DataFrame(result)
+    pd_data = pd.DataFrame(result)
     pivoted = (
-        pdData.pivot_table(
+        pd_data.pivot_table(
             columns="signupMethodCategory",
             index=["date"],
             values="numberOfSignups",
@@ -147,7 +147,7 @@ def signupsLineChart():
 
 
 @main_api.route("/signupDashboard/summaryBox")
-def signupsSummaryBox():
+def signups_summary_box():
     # Get request
     dto = SignupSummaryBoxRequestDTO(**request.args.to_dict(flat=False))
 
@@ -158,7 +158,7 @@ def signupsSummaryBox():
 
 
 @main_api.route("/signupDashboard/signupsByCategory")
-def signupsByCategory():
+def signups_by_category():
     # Get request
     dto = SignupsByCategoryRequestDTO(**request.args.to_dict(flat=False))
 
@@ -171,7 +171,7 @@ def signupsByCategory():
 
 
 @main_api.route("/mailchimpDashboard/users")
-def mailchimpUsers():
+def mailchimp_users():
     # Get request
     dto = MailchimpUsersRequestDTO(**request.args.to_dict(flat=False))
 
@@ -179,59 +179,59 @@ def mailchimpUsers():
     (data, sql) = MailchimpUsersQ(dto)
 
     # Create count query
-    cloneDto = copy(dto)
-    cloneDto.pageSize = None
-    cloneDto.pageIndex = None
+    clone_dto = copy(dto)
+    clone_dto.pageSize = None
+    clone_dto.pageIndex = None
 
-    (counterResult, counterSql) = MailchimpUsersQ(cloneDto)
-    number = len(counterResult)
+    (counter_result, counter_sql) = MailchimpUsersQ(clone_dto)
+    number = len(counter_result)
 
-    pageData = data
-    print(f"Page Data: {pageData}")
+    page_data = data
+    print(f"Page Data: {page_data}")
 
     if dto.limit:
         # Remember that pageIndex is the page number,
         # not the index of the first record.
         offset = dto.pageIndex[0] * dto.pageSize[0]
         remaining = dto.limit - offset
-        numberOfItemsOnPage = min(max(remaining, 0), dto.pageSize[0])
+        number_of_items_on_page = min(max(remaining, 0), dto.pageSize[0])
 
-        pageData = pageData[:numberOfItemsOnPage]
+        page_data = page_data[:number_of_items_on_page]
 
-        print(numberOfItemsOnPage)
+        print(number_of_items_on_page)
 
-        pageData = pageData[:numberOfItemsOnPage]
+        page_data = page_data[:number_of_items_on_page]
 
     # Minimum of actual total records available, or records available w/ row limit
-    totalItemsAvailable = min(number, dto.limit if dto.limit else number)
+    total_items_available = min(number, dto.limit if dto.limit else number)
 
-    print(f"Number of items in data is {len(pageData)}.")
+    print(f"Number of items in data is {len(page_data)}.")
     print(
-        f"[Index: {dto.pageIndex[0]}; Page Size: {dto.pageSize[0]}; totalItems: {totalItemsAvailable}]"
+        f"[Index: {dto.pageIndex[0]}; Page Size: {dto.pageSize[0]}; totalItems: {total_items_available}]"
     )
 
-    paginatedRepsonse = {
+    paginated_repsonse = {
         "pageIndex": dto.pageIndex[0],
         "pageSize": dto.pageSize[0],
-        "totalItems": totalItemsAvailable,
-        "data": pageData,
+        "totalItems": total_items_available,
+        "data": page_data,
     }
 
-    return jsonify(paginatedRepsonse)
+    return jsonify(paginated_repsonse)
 
 
 @main_api.route("/educationLevelSchools")
-def educationLevelSchools():
+def education_level_schools():
     # Execute first query
-    schoolNamesDict = SchoolsNameAndTypeQ()
+    school_names_dict = SchoolsNameAndTypeQ()
 
     # Execute second query
-    schoolTypesDict = SchoolTypesQ()
+    school_types_dict = SchoolTypesQ()
 
     return jsonify(
         {
-            "schoolNames": schoolNamesDict,
-            "schoolTypes": schoolTypesDict,
+            "schoolNames": school_names_dict,
+            "schoolTypes": school_types_dict,
         }
     )
 
@@ -249,7 +249,7 @@ def tutor_data_leaderboard():
 
 
 @main_api.route("/params")
-def paramsTest():
+def params_test():
     # Create query
     # prefilledQuery = (
     #     "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
@@ -263,18 +263,18 @@ def paramsTest():
     print(f"Query: {c.mogrify(query, params)}")
     # Transform
     data = c.fetchall()
-    dictData = rows_to_dicts(data, columns=db.get_column_names(c))
+    dict_data = rows_to_dicts(data, columns=db.get_column_names(c))
 
-    return jsonify(dictData)
+    return jsonify(dict_data)
 
 
 @main_api.route("/dataTest")
-def dataTest():
+def data_test():
     import pandas as pd
 
-    pdTeamMembers = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
+    pd_team_members = pd.DataFrame({"name": ["josh", "owen", "tyler", "tarik"]})
 
-    capitalized = pdTeamMembers[
+    capitalized = pd_team_members[
         "name"
     ].str.capitalize()  # Now all names should be capitalized
 

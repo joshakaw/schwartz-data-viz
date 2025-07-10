@@ -31,15 +31,6 @@ from Server.queries.sql_queries import (
     TutorLeaderboardQ,
     makeEngine,
 )
-from Server.queries.sql_templates import (
-    qDetailedSignups,
-    qMailchimpUsers,
-    qSchoolTypes,
-    qSignupsByCategory,
-    qSignupsLineChart,
-    qSignupsSummaryBox,
-    qSchoolsNameType,
-)
 
 # Defines the API blueprint to be applied to the app
 main_api = Blueprint("main", __name__)
@@ -172,7 +163,9 @@ def signupsByCategory():
     dto = SignupsByCategoryRequestDTO(**request.args.to_dict(flat=False))
 
     # Run query
-    (result, sql) = SignupsByCategoryQ(dto.startDate, dto.endDate, dto.signupMethodCategories)
+    (result, sql) = SignupsByCategoryQ(
+        dto.startDate, dto.endDate, dto.signupMethodCategories
+    )
 
     return jsonify(result)
 
@@ -197,7 +190,7 @@ def mailchimpUsers():
     print(f"Page Data: {pageData}")
 
     if dto.limit:
-        # Remember that pageIndex is the page number, 
+        # Remember that pageIndex is the page number,
         # not the index of the first record.
         offset = dto.pageIndex[0] * dto.pageSize[0]
         remaining = dto.limit - offset
@@ -242,6 +235,7 @@ def educationLevelSchools():
         }
     )
 
+
 @main_api.route("/tutorData/leaderboard")
 def tutor_data_leaderboard():
     # Get request
@@ -257,9 +251,9 @@ def tutor_data_leaderboard():
 @main_api.route("/params")
 def paramsTest():
     # Create query
-    prefilledQuery = (
-        "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
-    )
+    # prefilledQuery = (
+    #     "select * from user_t where firstName like 'Ro%' and id > 300 limit 10;"
+    # )
     query = "select * from user_t where firstName like %s and id > %s limit 10;"
     params: List[Any] = ["%Ar%", 100]
 

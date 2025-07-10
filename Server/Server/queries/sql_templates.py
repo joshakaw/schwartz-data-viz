@@ -8,19 +8,6 @@ for MySQL.
 """
 
 from typing import Any, List, Tuple, TypeAlias
-from sqlalchemy import (
-    Engine,
-    Inspector,
-    MetaData,
-    Table,
-    case,
-    create_engine,
-    func,
-    inspect,
-    literal,
-    select,
-)
-from sqlalchemy.sql import and_
 
 from Server.dtos.dtos import (
     DetailedSignupRequestDTO,
@@ -152,7 +139,7 @@ def qSchoolTypes() -> str:
     """
     MIGRATED
     """
-    return f"SELECT DISTINCT schoolType FROM school_t;"
+    return "SELECT DISTINCT schoolType FROM school_t;"
 
 
 # Returns list of params, and str SQL query (with %s replacements)
@@ -193,7 +180,6 @@ def qDetailedSignups(dto: DetailedSignupRequestDTO) -> ParameterizedQueryReturn:
         whereContent += f"and {accountTypeCase} in %s "
         params.append(dto.accountType)
 
-        # TODO: Fix education level
     # if dto.educationLevel:
     #     educationLevelsList: List[str] = []
     #     if "K-12" in dto.educationLevel:

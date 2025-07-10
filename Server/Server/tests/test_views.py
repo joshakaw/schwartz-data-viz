@@ -18,7 +18,7 @@ class Test_test_views(unittest.TestCase):
 
     def test_detailedSignupsTable(self):
         response = self._client.get(
-            "/detailedSignupsDashboard/table?startDate=2021-10-01&endDate=2022-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral&accountType=Tutor"
+            "/detailedSignupsDashboard/table?startDate=2021-10-01&endDate=2025-01-01&signupMethodCategories=Physical%20Advertising&signupMethodCategories=Friend%20Referral&accountType=Tutor"
         )
         print(response.get_json())
         self.assertGreaterEqual(len(str(response.get_json())), 2)  # At minimum "[]"

@@ -8,10 +8,8 @@ switching between different database engines (MySQL, SQLite).
 
 """
 
-from sqlite3 import Row
 from typing import Any, Dict, List, Tuple, TypeAlias
 from sqlalchemy import (
-    Engine,
     Inspector,
     MetaData,
     Table,
@@ -23,9 +21,8 @@ from sqlalchemy import (
     literal,
     select,
 )
-from sqlalchemy.engine import RowMapping
-from sqlalchemy.orm import aliased
-from sqlalchemy.sql import and_
+from sqlalchemy.engine import Engine
+from sqlalchemy.sql import ColumnElement, and_
 from sqlalchemy.sql.elements import ColumnClause
 
 from Server.dtos.dtos import (
@@ -43,7 +40,7 @@ from Server.queries.sql_helper import (
 
 
 # SQLAlchemy Globals
-engine = None
+engine: Engine = None
 metadata = MetaData()
 
 
@@ -87,7 +84,7 @@ def DetailedSignupsQ(dto: DetailedSignupRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -135,7 +132,7 @@ def SignupsSummaryBoxQ(dto: SignupSummaryBoxRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -166,7 +163,9 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
     school_t = Table("School", metadata, autoload_with=engine)
 
     # Get the date grouping selection
-    selectedGrouping: ColumnClause = None
+    selectedGrouping: ColumnClause = get_first_sunday_of_week(
+        user_t, engine.dialect.name
+    )
     match dto.groupBy:
         case "week":
             selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
@@ -175,11 +174,10 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
         case "year":
             selectedGrouping = get_first_day_of_year(user_t, engine.dialect.name)
         case _:
-            # Unknown input
-            selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
+            pass
 
     # Build WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.signupMethodCategories:
         conditions.append(user_t.c.hearAboutUsDropdown.in_(dto.signupMethodCategories))
@@ -230,6 +228,7 @@ def SchoolsNameAndTypeQ() -> ResultAndQuery:
 
 
 def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
+    # TODO: Fix education level (moved todo from old sql_template)
     user_t = Table("User", metadata, autoload_with=engine)
     school_t = Table("School", metadata, autoload_with=engine)
     sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
@@ -320,7 +319,7 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
         .outerjoin(parent, parent.c.id == user_t.c.parentId)
     )
 
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if dto.accountType:
         conditions.append(account_type_case.in_(dto.accountType))
@@ -367,7 +366,7 @@ def SignupsByCategoryQ(startDate, endDate, categories) -> ResultAndQuery:
     user_t = Table("User", metadata, autoload_with=engine)
 
     # WHERE conditions
-    conditions = []
+    conditions: List[ColumnElement] = []
 
     if startDate:
         conditions.append(user_t.c.createdAt >= startDate[0])
@@ -402,18 +401,16 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
     sessionstudent_t = Table("SessionStudent", metadata, autoload_with=engine)
     subject_t = Table("Subject", metadata, autoload_with=engine)
 
-    conditions = []
+    conditions: List[ColumnElement] = []
     # tutor_user_conditions = []
 
     # Filters date of the tutoring session
 
     if dto.startDate:
         conditions.append(tutoringsession_t.c.date >= dto.startDate)
-        pass
 
     if dto.endDate:
         conditions.append(tutoringsession_t.c.date <= dto.startDate)
-        pass
 
     order_by_argument = func.count(tutoringsession_t.c.date)
 
@@ -432,12 +429,10 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
         print(
             "Subjects not implemented yet. Need to join subjects table and get subject name to be able to filter."
         )
-        pass
 
     if dto.locations:
         # Aka session Method
         conditions.append(tutoringsession_t.c.method.in_(dto.locations))
-        pass
 
     # Tutor-student pairings with more than one meetup (as to not count first meetup
     # as a recurring session with the JOIN, if HAVING were >= 0)

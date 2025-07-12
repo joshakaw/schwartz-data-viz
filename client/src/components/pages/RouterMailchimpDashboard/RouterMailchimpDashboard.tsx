@@ -40,7 +40,7 @@ const RouterMailchimpDashboard: FC = () => {
     // Pagination and filter settings
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsOfData, setMaxRows] = useState<number>(0);
-    const pageSize = 8;
+    const [pageSize, setPageSize] = useState<number>(10);
 
     // Builds request object based on current filter state
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
@@ -81,12 +81,12 @@ const RouterMailchimpDashboard: FC = () => {
     // Reset to first page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [sessionRange, accountTypes]);
+    }, [sessionRange, accountTypes, pageSize]);
 
     // Re-fetch all data on filter or rows change
     useEffect(() => {
         handleSubmit();
-    }, [currentPage, sessionRange, accountTypes, rowsOfData]);
+    }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize]);
 
     // Re-slice data for pagination when currentPage or fullData changes
     useEffect(() => {
@@ -224,27 +224,6 @@ const RouterMailchimpDashboard: FC = () => {
             <div className="filter-form mb-2">
                 <Row>
                     <Col xs={12} md={4} lg={2}>
-                        <Form.Group className="sessions-multi-select mb-2">
-                            <Form.Label>Num of Sessions</Form.Label>
-                            <CreatableSelect
-                                isClearable
-                                value={sessionRange ? { value: sessionRange, label: sessionRange } : null}
-                                onChange={(selected) => {
-                                    const val = selected?.value || '';
-                                    setSelectedSession(val);
-                                    setSessionRange(val);
-                                }}
-                                options={[
-                                    { value: '0', label: '0' },
-                                    { value: '1-2', label: '1-2' },
-                                    { value: '3+', label: '+3' }
-                                ]}
-                            />
-                        </Form.Group>
-
-                    </Col>
-
-                    <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
                             <Form.Label>Edu. Level</Form.Label>
                             <Form.Select
@@ -279,6 +258,41 @@ const RouterMailchimpDashboard: FC = () => {
                     </Col>
 
                     <Col xs={12} md={4} lg={2}>
+                        <Form.Group className="sessions-multi-select mb-2">
+                            <Form.Label>Num of Sessions</Form.Label>
+                            <CreatableSelect
+                                isClearable
+                                value={sessionRange ? { value: sessionRange, label: sessionRange } : null}
+                                onChange={(selected) => {
+                                    const val = selected?.value || '';
+                                    setSelectedSession(val);
+                                    setSessionRange(val);
+                                }}
+                                options={[
+                                    { value: '0', label: '0' },
+                                    { value: '1-2', label: '1-2' },
+                                    { value: '3+', label: '+3' }
+                                ]}
+                            />
+                        </Form.Group>
+
+                    </Col>
+
+                    <Col xs={12} md={4} lg={2}>
+                        <Form.Group className="mb-2">
+                            <Form.Label>Records Per Page</Form.Label>
+                            <Form.Select
+                                value={pageSize}
+                                onChange={(e) => setPageSize(Number(e.target.value))}
+                            >
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs={12} md={4} lg={2}>
                         <Form.Group controlId="minSessions" className="mb-2">
                             <Form.Label>Records Limit</Form.Label>
                             <Form.Control
@@ -290,7 +304,7 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    <Col xs={12} md={8} lg={2}>
+                    <Col xs={12} md={8} lg={2} className="d-flex align-items-center">
                         <CsvDownloadButton
                             className="export-button w-100"
                             delimiter=","

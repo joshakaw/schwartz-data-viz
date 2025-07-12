@@ -169,7 +169,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                         <Form.Control type="text" onChangeCapture={changeKeyword} />
                     </Form.Group>
                 </Col>
-                <Col>
+                <Col className="d-flex align-items-center">
                     <CsvDownloadButton
                         className="export-button w-100 align-items-center"
                         delimiter=","

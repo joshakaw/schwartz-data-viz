@@ -36,6 +36,10 @@ export const organizeOptions: Options<{ value: weekMonthYear, label: string }> =
     { value: 'year', label: 'By year' }
 ];
 
+export const subjectOptions: Options<{ value: string, label: string }> = [
+    { value: 'poop', label: 'Options to be added' },
+];
+
 export const School: Options<{ value: string, label: string }> = [
     { value: 'K-12', label: 'K-12' },
     { value: 'University', label: 'University' },

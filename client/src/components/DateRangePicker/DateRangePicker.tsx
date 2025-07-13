@@ -1,6 +1,7 @@
 import { FC, useRef, useState } from 'react';
 import { Button, ButtonGroup, Dropdown, Form, Overlay } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
+import "./DateRangePicker.css"
 
 // Preset date range dropdown options
 const rangeOptions = [
@@ -76,7 +77,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
     };
 
     return (
-        <>
+        <div className="DateRangePicker">
             <Form.Group className="mb-3">
                 <Form.Label className="w-100">Date Range:</Form.Label>
                 <Dropdown
@@ -89,7 +90,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
                         ref={datePickerTarget}
                         variant="primary"
                         onClick={handleCalendarToggle}
-                        style={{ backgroundColor: "#DC5E2C", borderColor: "transparent" }}
+                        className="button-section"
                     >
                         {value ? `${value.from?.toLocaleDateString()} - ${value.to?.toLocaleDateString()}` : "Select Date Range"}
                     </Button>
@@ -98,7 +99,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
                         split
                         variant="preset"
                         id="dropdown-split-basic"
-                        style={{ color: "white", backgroundColor: "#C25529" }}
+                        className="dropdown-section"
                     />
 
                     <Dropdown.Menu>
@@ -131,7 +132,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
                     )}
                 </Overlay>
             </Form.Group>
-        </>
+        </div>
     );
 };
 

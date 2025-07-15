@@ -23,7 +23,6 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
     const [resJson, setResJson] = useState<Array<DetailedSignupResponseDTO>>([]);
-    const [debounce, setDebounce] = useState(freeResponseSearchKeyword);
     const [loading, setLoading] = useState(true);
 
     // Wanna keep this here if there's a reason Tyler set this up seperately
@@ -56,7 +55,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
 
         const jsonReq: DetailedSignupRequestDTO = {
             signupMethodCategories: methodList,
-            freeResponseSearchKeyword: freeResponseSearchKeyword,
+            freeResponseSearchKeyword: freeResponseSearchKeyword ? freeResponseSearchKeyword : undefined,
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
             accountType: userList,
@@ -110,22 +109,16 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         if (educationLevel) getData();
     }, [educationLevel]);
 
-    // Debounce init
+    // Handle debounce for freeResponseSearchKeyword input
     useEffect(() => {
-        const debouncer = setTimeout(() => {
-            setDebounce(freeResponseSearchKeyword);
+        const debounceFunction = setTimeout(() => {
+            getData();
         }, 1000);
-
+        
         return () => {
-            clearTimeout(debouncer);
+            clearTimeout(debounceFunction); // Prevents previous from triggering
         };
     }, [freeResponseSearchKeyword]);
-
-
-    // Debounce done
-    useEffect(() => {
-        if (debounce) getData();
-    }, [debounce])
 
     return (
         <Container>

@@ -2,17 +2,17 @@
 
 }
 
-    .DateRangePicker .button-section {
-        background-color: #DC5E2C;
-        border: none;
-        --bs-btn-hover-bg: #9d4420
-    }
+.DateRangePicker .button-section {
+    background-color: #DC5E2C;
+    border: none;
+    --bs-btn-hover-bg: #9d4420
+}
 
-    .DateRangePicker .dropdown-section {
-        background-color: #C25529;
-        background-color: #DC5E2C;
-        color: white;
-        border-left: 1px solid white;
-        --bs-btn-hover-bg: #9d4420
-    }
+.DateRangePicker .dropdown-section {
+    background-color: #C25529;
+    background-color: #DC5E2C;
+    color: white;
+    border-left: 1px solid white;
+    --bs-btn-hover-bg: #9d4420
+}
 

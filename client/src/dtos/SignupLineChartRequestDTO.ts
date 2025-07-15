@@ -4,7 +4,7 @@ export interface SignupLineChartRequestDTO {
      * Specifies how the count of signups, per category,
      * in the response should be grouped.
      */
-    groupBy: "week" | "month" | "year";
+    groupBy: "day" | "week" | "month" | "year";
 
     /**
      * List of signup method categories to include in result. If undefined,

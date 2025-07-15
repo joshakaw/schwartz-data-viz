@@ -9,7 +9,7 @@ export type OptionType = {
     label: string;
 }
 
-export type weekMonthYear = 'week' | 'month' | 'year';
+export type weekMonthYear = 'day' | 'week' | 'month' | 'year';
 
 export const signupOptions: Options<{value: string, label: string}> = [
     { value: 'Social Media', label: 'Social Media' },
@@ -31,6 +31,7 @@ export const rangeOptions: Options<{ value: string, label: string }> = [
 ];
 
 export const organizeOptions: Options<{ value: weekMonthYear, label: string }> = [
+    { value: 'day', label: 'By day' },
     { value: 'week', label: 'By week' },
     { value: 'month', label: 'By month' },
     { value: 'year', label: 'By year' }

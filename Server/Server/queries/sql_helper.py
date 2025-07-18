@@ -9,6 +9,20 @@ from flask import current_app
 from sqlalchemy import literal_column
 from sqlalchemy.sql.elements import ColumnClause
 
+def get_day(u, dialect_name) -> ColumnClause:
+    """
+    Truncates a timestamp to the date for daily grouping.
+    """
+    if dialect_name == "mysql":
+        # For MySQL, DATE() extracts the date part of the timestamp.
+        return literal_column(f"DATE({u.c.createdAt.key})")
+
+    elif dialect_name == "sqlite":
+        # For SQLite, DATE() also extracts the date part.
+        return literal_column(f"DATE({u.c.createdAt.key})")
+        
+    else:
+        raise NotImplementedError(f"Unsupported dialect: {dialect_name}")
 
 def get_first_sunday_of_week(u, dialect_name) -> ColumnClause:
     if dialect_name == "mysql":

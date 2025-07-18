@@ -42,6 +42,8 @@ const RouterMailchimpDashboard: FC = () => {
     const [rowsOfData, setMaxRows] = useState<number>(0);
     const pageSize = 8;
 
+    const [loading, setLoading] = useState(true);
+
     // Builds request object based on current filter state
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
         limit,
@@ -56,6 +58,7 @@ const RouterMailchimpDashboard: FC = () => {
 
     // Fetch and store full data (used for pagination + CSV export)
     const handleSubmit = async () => {
+        setLoading(true);
         const fetchLimit = rowsOfData || 10000;
         const allParams = getRequestParams(0, fetchLimit, fetchLimit);
 
@@ -75,6 +78,8 @@ const RouterMailchimpDashboard: FC = () => {
             });
         } catch (err) {
             console.error("API error:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -303,7 +308,7 @@ const RouterMailchimpDashboard: FC = () => {
             {/* Data Table */}
             <Row>
                 <Col>
-                    <AccountDataTable data={resJson?.data || []} />
+                    <AccountDataTable data={resJson?.data || []} loading={loading} />
                 </Col>
             </Row>
 

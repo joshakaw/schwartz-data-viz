@@ -6,7 +6,7 @@ import './RouterMailchimpDashboard.css';
 import AccountDataTable from '../../accountDataTable/accountDataTable';
 
 // React component imports
-import { Form, Button, Col, Row, Container } from 'react-bootstrap';
+import { Form, Col, Row, Container } from 'react-bootstrap';
 import Select from 'react-select';
 import CsvDownloadButton from 'react-json-to-csv';
 import Pagination from 'react-bootstrap/Pagination';
@@ -27,52 +27,55 @@ const sessionOptions = [
 ];
 
 const RouterMailchimpDashboard: FC = () => {
-    // UI & filter state
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
     const [accountTypes, setAccountTypes] = useState<{ value: string, label: string }[]>([]);
-
-    // Data state
     const [resJson, setResJson] = useState<ApiPaginatedResponse<MailchimpUserResponseDTO>>();
     const [fullData, setFullData] = useState<MailchimpUserResponseDTO[]>([]);
     const [schoolJson, setSchoolJson] = useState<EducationLevelSchoolsResponseDTO>();
-
-    // Pagination and filter settings
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsOfData, setMaxRows] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10);
-
     const [loading, setLoading] = useState(true);
 
-    // Builds request object based on current filter state
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
         limit,
         pageIndex,
         pageSize,
         accountType: accountTypes.length > 0 ? accountTypes.map(opt => opt.label) : undefined,
-        minNumberOfSessions: sessionRange === '1-2' ? 1 : sessionRange === '3+' ? 3 : sessionRange === '0' ? 0 : undefined,
-        maxNumberOfSessions: sessionRange === '1-2' ? 2 : sessionRange === '0' ? 0 : undefined,
+        minNumberOfSessions: (() => {
+            if (!sessionRange) return undefined;
+            if (sessionRange === '0') return 0;
+            if (sessionRange === '1-2') return 1;
+            if (sessionRange === '3+') return 3;
+            if (!isNaN(Number(sessionRange))) return Number(sessionRange);
+            return undefined;
+        })(),
+        maxNumberOfSessions: (() => {
+            if (!sessionRange) return undefined;
+            if (sessionRange === '0') return 0;
+            if (sessionRange === '1-2') return 2;
+            return undefined;
+        })(),
         startDate: undefined,
         endDate: undefined
     });
 
-    // Fetch and store full data (used for pagination + CSV export)
     const handleSubmit = async () => {
         setLoading(true);
         const fetchLimit = rowsOfData || 10000;
         const allParams = getRequestParams(0, fetchLimit, fetchLimit);
 
         try {
-            // Recieves user account data.
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
+            const sortedData = [...receivedData.data].sort((a, b) => (b.numSessions ?? 0) - (a.numSessions ?? 0));
+            setFullData(sortedData);
 
-            setFullData(receivedData.data);
-
-            const paginatedSlice = receivedData.data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+            const paginatedSlice = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
             setResJson({
                 data: paginatedSlice,
-                totalItems: receivedData.data.length,
+                totalItems: sortedData.length,
                 pageIndex: currentPage - 1,
                 pageSize
             });
@@ -83,17 +86,14 @@ const RouterMailchimpDashboard: FC = () => {
         }
     };
 
-    // Reset to first page when filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [sessionRange, accountTypes, pageSize]);
 
-    // Re-fetch all data on filter or rows change
     useEffect(() => {
         handleSubmit();
     }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize]);
 
-    // Re-slice data for pagination when currentPage or fullData changes
     useEffect(() => {
         if (!fullData.length) return;
 
@@ -106,7 +106,6 @@ const RouterMailchimpDashboard: FC = () => {
         });
     }, [currentPage, fullData]);
 
-    // Prevent Enter key from submitting filter form
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter') {
@@ -123,28 +122,22 @@ const RouterMailchimpDashboard: FC = () => {
         };
     }, []);
 
-    // Loads the unique school data when the page loads
     useEffect(() => {
         const fetchSchools = async () => {
             try {
                 const schoolsResponse = await instance.get("/educationLevelSchools");
                 const uniqueSchools: EducationLevelSchoolsResponseDTO = schoolsResponse.data;
                 setSchoolJson(uniqueSchools);
-
-                // REMOVE **TEST**
                 console.log(uniqueSchools);
             } catch (error) {
                 console.error("Error fetching schools:", error);
             }
         };
-
         fetchSchools();
     }, []);
 
-    // Pagination controls
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
         if (typeof totalItems === "undefined" || !totalItems) return null;
-
         const totalPages = Math.ceil(totalItems / pageSizeNum);
         const items = [];
 
@@ -181,10 +174,7 @@ const RouterMailchimpDashboard: FC = () => {
                 );
             }
 
-            if (currentPage > 4) {
-                items.push(<Pagination.Ellipsis key="ellipsis-start" disabled />);
-            }
-
+            if (currentPage > 4) items.push(<Pagination.Ellipsis key="ellipsis-start" disabled />);
             if (currentPage > 2 && currentPage < totalPages - 1) {
                 items.push(
                     <Pagination.Item key={currentPage} active onClick={() => handlePageChange(currentPage)}>
@@ -192,10 +182,7 @@ const RouterMailchimpDashboard: FC = () => {
                     </Pagination.Item>
                 );
             }
-
-            if (currentPage < totalPages - 3) {
-                items.push(<Pagination.Ellipsis key="ellipsis-end" disabled />);
-            }
+            if (currentPage < totalPages - 3) items.push(<Pagination.Ellipsis key="ellipsis-end" disabled />);
 
             for (let number = totalPages - 1; number <= totalPages; number++) {
                 items.push(
@@ -225,7 +212,6 @@ const RouterMailchimpDashboard: FC = () => {
                 </div>
             </Row>
 
-            {/* Filter Form */}
             <div className="filter-form mb-2">
                 <Row>
                     <Col xs={12} md={4} lg={2}>
@@ -269,9 +255,21 @@ const RouterMailchimpDashboard: FC = () => {
                                 isClearable
                                 value={sessionRange ? { value: sessionRange, label: sessionRange } : null}
                                 onChange={(selected) => {
-                                    const val = selected?.value || '';
-                                    setSelectedSession(val);
-                                    setSessionRange(val);
+                                    const rawVal = selected?.value || '';
+                                    const isPredefined = ['0', '1-2', '3+'].includes(rawVal);
+                                    if (isPredefined) {
+                                        setSelectedSession(rawVal);
+                                        setSessionRange(rawVal);
+                                    } else {
+                                        const numericOnly = rawVal.replace(/\D/g, '');
+                                        if (numericOnly) {
+                                            setSelectedSession(`${numericOnly}+`);
+                                            setSessionRange(numericOnly);
+                                        } else {
+                                            setSelectedSession('');
+                                            setSessionRange(undefined);
+                                        }
+                                    }
                                 }}
                                 options={[
                                     { value: '0', label: '0' },
@@ -280,7 +278,6 @@ const RouterMailchimpDashboard: FC = () => {
                                 ]}
                             />
                         </Form.Group>
-
                     </Col>
 
                     <Col xs={12} md={4} lg={2}>
@@ -319,14 +316,12 @@ const RouterMailchimpDashboard: FC = () => {
                 </Row>
             </div>
 
-            {/* Data Table */}
             <Row>
                 <Col>
                     <AccountDataTable data={resJson?.data || []} loading={loading} />
                 </Col>
             </Row>
 
-            {/* Showing results count */}
             {resJson?.totalItems && (
                 <Row className="mb-2">
                     <Col className="text-center">
@@ -337,7 +332,6 @@ const RouterMailchimpDashboard: FC = () => {
                 </Row>
             )}
 
-            {/* Pagination */}
             <Row>
                 <Col>
                     <Pagination className="pagination">

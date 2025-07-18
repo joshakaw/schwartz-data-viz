@@ -33,6 +33,7 @@ from Server.dtos.dtos import (
     TutorLeaderboardRequestDTO,
 )
 from Server.queries.sql_helper import (
+    get_day,
     get_first_day_of_month,
     get_first_day_of_year,
     get_first_sunday_of_week,
@@ -167,6 +168,8 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
         user_t, engine.dialect.name
     )
     match dto.groupBy:
+        case "day":
+            selectedGrouping = get_day(user_t, engine.dialect.name)
         case "week":
             selectedGrouping = get_first_sunday_of_week(user_t, engine.dialect.name)
         case "month":

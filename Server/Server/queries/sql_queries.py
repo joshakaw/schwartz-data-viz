@@ -410,7 +410,7 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
         conditions.append(tutoringsession_t.c.date >= dto.startDate)
 
     if dto.endDate:
-        conditions.append(tutoringsession_t.c.date <= dto.startDate)
+        conditions.append(tutoringsession_t.c.date <= dto.endDate)
 
     order_by_argument = func.count(tutoringsession_t.c.date)
 
@@ -485,7 +485,7 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
         )
         .group_by(user_t.c.id)
         .where(and_(*conditions))
-        .order_by(order_by_argument.desc())
+        .order_by(desc(order_by_argument))
     )
 
     return getResults(stmt)

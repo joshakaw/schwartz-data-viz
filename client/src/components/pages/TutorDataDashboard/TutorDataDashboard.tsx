@@ -11,9 +11,7 @@ import { TutorLeaderboardResponseDTO } from '../../../dtos/TutorLeaderboardRespo
 import instance from '../../../utils/axios';
 
 // Will set to proper DTO when it is complete.
-interface TutorDataDashboardProps {
-    data: [];
-}
+interface TutorDataDashboardProps { }
 
 const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     const [tableData, setData] = useState<TutorLeaderboardResponseDTO[]>([]);
@@ -32,8 +30,8 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
             sortBy: 'hours',
-            subjects: ["Math", "Science"],
-            locations: ["In Person", "Online"]
+            subjects: undefined,
+            locations: undefined
         }
 
         const response: Array<TutorLeaderboardResponseDTO> = await instance.get("/tutorData/leaderboard", { params: req });
@@ -43,7 +41,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
     useEffect(() => {
         getData();
-    }, [])
+    }, [dateRange])
 
     return (
         <Container>

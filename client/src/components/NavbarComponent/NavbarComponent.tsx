@@ -64,6 +64,8 @@ const NavbarComponent: FC<NavbarComponentProps> = () => {
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/mailchimp")} eventKey="/mailchimp">Mailchimp</Nav.Link>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/accounts-receivable")} eventKey="/accounts-receivable">Accounts Receivable</Nav.Link>
                         <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/tutor-data")} eventKey="/tutor-data">Tutor Data</Nav.Link>
+                        <Nav.Link className="text-light" onClick={(e) => handleNavigation(e, "/tutordetail")} eventKey="/tutordetail">TUTOR DETAIL</Nav.Link>
+
                         {/*<NavDropdown title="Signups" id="basic-nav-dropdown">*/}
                         {/*    <NavDropdown.Item href="#action/3.1">*/}
                         {/*        <Nav.Link className="text-dark" onClick={(e) => handleNavigation(e, "/signups")} eventKey="signups">Limited</Nav.Link>*/}

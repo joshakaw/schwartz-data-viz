@@ -34,9 +34,8 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             locations: undefined
         }
 
-        const response: Array<TutorLeaderboardResponseDTO> = await instance.get("/tutorData/leaderboard", { params: req });
-        setData(response);
-        console.log(response);
+        const response = await instance.get<Array<TutorLeaderboardResponseDTO>>("/tutorData/leaderboard", { params: req });
+        setData(response.data);
     }
 
     useEffect(() => {
@@ -110,7 +109,15 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                         </tr>
                     </thead>
                     <tbody>
-
+                        {tableData.map((data) => (
+                            <tr key={data.tutorName}>
+                                <td>{data.numberOfSessions}</td>
+                                <td>{data.hours}</td>
+                                <td>{data.revenueGenerated}</td>
+                                <td>{data.numberOfRecurringStudents}</td>
+                                <td>{new Date(data.mostRecentSession).toLocaleDateString()}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </Table>
             </Row>

@@ -1,4 +1,4 @@
-interface TutorLeaderboardResponseDTO {
+export interface TutorLeaderboardResponseDTO {
     /**
      * Name of the tutor
      */

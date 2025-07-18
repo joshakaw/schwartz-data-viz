@@ -1,6 +1,6 @@
 type TutoringLocations = 'In Person' | 'Online' | 'Either Works';
 
-interface TutorLeaderboardRequestDTO {
+export interface TutorLeaderboardRequestDTO {
     /**
      * The start date (ISO 8601 format) for the signups query (inclusive).
      * If no, no start date filter.

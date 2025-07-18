@@ -197,6 +197,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                                 onChange={(newValue) => changeUser(newValue)}
                             />
                         </Form.Group>
+                        <Form.Label className="w-100">Date Range:</Form.Label>
                         <DateRangePicker value={dateRange} onChange={setDateRange} />
                     </Form>
                 </Col>

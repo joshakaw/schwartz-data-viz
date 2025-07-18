@@ -8,9 +8,7 @@ import { DateRange } from 'react-day-picker';
 import { School, subjectOptions } from '../../../utils/input-fields';
 
 // Will set to proper DTO when it is complete.
-interface AccountsReceivableDashboardProps {
-    data: [];
-}
+interface AccountsReceivableDashboardProps { }
 
 
 

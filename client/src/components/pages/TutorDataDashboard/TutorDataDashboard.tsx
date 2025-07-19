@@ -112,10 +112,10 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                         {tableData.map((data) => (
                             <tr key={data.tutorName}>
                                 <td>{data.numberOfSessions}</td>
-                                <td>{data.hours}</td>
-                                <td>{data.revenueGenerated}</td>
-                                <td>{data.numberOfRecurringStudents}</td>
                                 <td>{new Date(data.mostRecentSession).toLocaleDateString()}</td>
+                                <td>{data.hours}</td>
+                                <td>{data.numberOfRecurringStudents}</td>
+                                <td>{data.revenueGenerated}</td>
                             </tr>
                         ))}
                     </tbody>

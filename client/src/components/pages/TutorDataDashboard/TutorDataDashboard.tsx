@@ -111,6 +111,9 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                     <tbody>
                         {tableData.map((data) => (
                             <tr key={data.name}>
+
+                                {/*In the future, clicking the name will open 
+                                    TutorDetail modal with data.tutorId as an input*/}
                                 <td>{data.name}</td>
                                 <td>{data.numberOfSessions}</td>
                                 <td>{new Date(data.lastSession).toLocaleDateString()}</td>

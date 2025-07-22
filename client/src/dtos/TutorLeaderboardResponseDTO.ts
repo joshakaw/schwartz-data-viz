@@ -28,4 +28,9 @@ export interface TutorLeaderboardResponseDTO {
      * Most recent session date
      */
     lastSession: any;
+
+    /**
+     * The tutor's ID
+     */
+    tutorId: number;
 }

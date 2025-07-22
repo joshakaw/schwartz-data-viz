@@ -2,7 +2,7 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Name of the tutor
      */
-    tutorName: string;
+    name: string;
 
     /**
      * Total sessions (given the filters in the request)
@@ -12,7 +12,7 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Total hours
      */
-    hours: number
+    hoursTutored: number
 
     /**
      * Revenue generated
@@ -22,10 +22,10 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Number of recurring students
      */
-    numberOfRecurringStudents: number;
+    numRecurringSessions: number;
 
     /**
      * Most recent session date
      */
-    mostRecentSession: any;
+    lastSession: any;
 }

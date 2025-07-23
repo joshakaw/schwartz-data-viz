@@ -10,6 +10,7 @@ export type OptionType = {
 }
 
 export type weekMonthYear = 'day' | 'week' | 'month' | 'year';
+export type sortByOptionsType = 'hours' | 'sessions' | 'revenue' | 'recurringSessions' | 'avghours' | 'rescheduleRate';
 
 export const signupOptions: Options<{value: string, label: string}> = [
     { value: 'Social Media', label: 'Social Media' },
@@ -36,6 +37,15 @@ export const organizeOptions: Options<{ value: weekMonthYear, label: string }> =
     { value: 'month', label: 'By month' },
     { value: 'year', label: 'By year' }
 ];
+
+export const sortByOptions: Options<{ value: sortByOptionsType, label: string }> = [
+    { value: 'hours', label: 'Hours' },
+    { value: 'sessions', label: 'Sessions' },
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'recurringSessions', label: 'Recurring Sessions' },
+    { value: 'avghours', label: 'Average Hours' },
+    { value: 'rescheduleRate', label: 'Reschedule Rate' }
+]
 
 export const subjectOptions: Options<{ value: string, label: string }> = [
     { value: 'poop', label: 'Options to be added' },

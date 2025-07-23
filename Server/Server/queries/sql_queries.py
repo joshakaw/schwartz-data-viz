@@ -21,6 +21,7 @@ from sqlalchemy import (
     literal,
     select,
 )
+from datetime import datetime, timedelta
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import ColumnElement, and_
 from sqlalchemy.sql.elements import ColumnClause
@@ -407,6 +408,11 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
     conditions: List[ColumnElement] = []
     # tutor_user_conditions = []
 
+    founding_date = datetime(2017, 9, 14)
+    start_date = datetime.fromisoformat(dto.startDate.replace("Z", "")) if dto.startDate else founding_date
+    end_date = datetime.fromisoformat(dto.endDate.replace("Z", "")) if dto.endDate else datetime.now()
+    weeks_in_range = max((end_date - start_date).days / 7.0, 1.0)
+
     # Filters date of the tutoring session
 
     if dto.startDate:
@@ -466,6 +472,7 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
                 "numRecurringSessions"
             ),
             literal(0).label("revenueGenerated"),
+            (func.coalesce(func.sum(tutoringsession_t.c.length), 0) / literal(weeks_in_range)).label("avgHoursPerWeek"),
         )
         .select_from(
             user_t.outerjoin(

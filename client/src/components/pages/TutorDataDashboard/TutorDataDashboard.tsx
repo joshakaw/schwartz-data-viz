@@ -121,7 +121,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                                 <td>{data.hoursTutored}</td>
                                 <td>{data.numRecurringSessions}</td>
                                 <td>{data.revenueGenerated}</td>
-                                <td>{data.avgHoursPerWeek.toFixed(2)}</td> {/*Will need to change this to average hours per week when done implementing backend */}
+                                <td>{data.avgHoursPerWeek.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>

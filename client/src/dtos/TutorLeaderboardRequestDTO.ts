@@ -17,7 +17,7 @@ export interface TutorLeaderboardRequestDTO {
     /**
      * Sort by. If undefined, it will default to hours.
      */
-    sortBy?: "hours" | "sessions" | "revenue" | "recurringSessions";
+    sortBy?: "hours" | "sessions" | "revenue" | "recurringSessions" | "avghours" | "rescheduleRate";
 
     /**
      * Subjects to return in the results. If undefined, all subjects 

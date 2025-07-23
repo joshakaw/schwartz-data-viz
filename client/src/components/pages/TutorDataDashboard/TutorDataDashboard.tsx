@@ -1,11 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import './TutorDataDashboard.css';
 import { Col, Container, Row, Table, Form } from 'react-bootstrap';
-import Select from 'react-select';
-import CreatableSelect from 'react-select/creatable';
+import Select, { SingleValue } from 'react-select';
 import DateRangePicker from '../../DateRangePicker/DateRangePicker';
 import { DateRange } from 'react-day-picker';
-import { School, subjectOptions } from '../../../utils/input-fields';
+import { School, subjectOptions, sortByOptions, sortByOptionsType } from '../../../utils/input-fields';
 import { TutorLeaderboardRequestDTO } from '../../../dtos/TutorLeaderboardRequestDTO';
 import { TutorLeaderboardResponseDTO } from '../../../dtos/TutorLeaderboardResponseDTO';
 import instance from '../../../utils/axios';
@@ -15,8 +14,7 @@ interface TutorDataDashboardProps { }
 
 const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     const [tableData, setData] = useState<TutorLeaderboardResponseDTO[]>([]);
-    const [selectedOwedFilter, setSelectedOwedFilter] = useState<string>('');
-    const [owedFilter, setOwedFilter] = useState<string | undefined>(undefined);
+    const [sortBy, setSortBy] = useState<SingleValue<{value: string, label: string}>>();
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         to: new Date(),
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
@@ -25,14 +23,21 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
 
+    const changeSortBy = (selected: SingleValue<{ value: sortByOptionsType, label: string }>) => {
+        setSortBy(selected);
+    }
+
     async function getData() {
         const req: TutorLeaderboardRequestDTO = {
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
-            sortBy: 'hours',
+            sortBy: sortBy == null ? 'hours' : sortBy.value as sortByOptionsType, // lineSetup == null ? 'week' : lineSetup.value as weekMonthYear,
             subjects: undefined,
             locations: undefined
         }
+
+        // Leave this here for further debugging purposes
+        // console.log(req);
 
         const response = await instance.get<Array<TutorLeaderboardResponseDTO>>("/tutorData/leaderboard", { params: req });
         setData(response.data);
@@ -42,6 +47,12 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         getData();
     }, [dateRange])
 
+    useEffect(() => {
+        if (sortBy) {
+            getData();
+        }
+    }, [sortBy])
+
     return (
         <Container>
             <Row>
@@ -49,47 +60,11 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                 <p>Welcome to the Tutor Data Dashboard. *put description here*</p>
             </Row>
             <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
-                <Col style={{ paddingTop: 10 }}>
-                    <Form.Control type="text" placeholder="Name" />
-                </Col>
-                <Col style={{ paddingTop: 10 }}>
-                    <Form.Control type="text" placeholder="Email" />
-                </Col>
-                <Col style={{ paddingTop: 10 }}>
-                    <Form.Control type="text" placeholder="Tutor" />
-                </Col>
-                <Col style={{ paddingTop: 10 }}>
-                    <CreatableSelect
-                        isClearable
-                        value={owedFilter ? { value: owedFilter, label: owedFilter } : null}
-                        onChange={(selected) => {
-                            const val = selected?.value || '';
-                            setOwedFilter(val);
-                        }}
-                        options={[
-                            { value: '$10', label: '$10' },
-                            { value: '$20', label: '$20' },
-                            { value: '$30', label: '$30' },
-                            { value: '$40', label: '$40' },
-                        ]}
-                        placeholder='Filter by amount of sessions...'
-                    />
-                </Col>
-                <Col style={{ paddingTop: 10 }}>
-                    <CreatableSelect
-                        isClearable
-                        value={owedFilter ? { value: owedFilter, label: owedFilter } : null}
-                        onChange={(selected) => {
-                            const val = selected?.value || '';
-                            setOwedFilter(val);
-                        }}
-                        options={[
-                            { value: '$10', label: '$10' },
-                            { value: '$20', label: '$20' },
-                            { value: '$30', label: '$30' },
-                            { value: '$40', label: '$40' },
-                        ]}
-                        placeholder='Filter by owed amount...'
+                <Col style={{ paddingTop: 10 }} md={9}>
+                    <Select
+                        placeholder='Sort by...'
+                        options={sortByOptions}
+                        onChange={setSortBy}
                     />
                 </Col>
                 <Col>

@@ -33,4 +33,9 @@ export interface TutorLeaderboardResponseDTO {
      * The tutor's ID
      */
     tutorId: number;
+
+    /**
+     * The average number of hours tutored per week in the given date range.
+     */
+    avgHoursPerWeek: number;
 }

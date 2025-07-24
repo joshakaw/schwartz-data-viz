@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import './TutorDataDashboard.css';
-import { Col, Container, Row, Table, Form } from 'react-bootstrap';
+import { Col, Container, Row, Table, Form, Modal, Button } from 'react-bootstrap';
 import Select, { SingleValue } from 'react-select';
 import DateRangePicker from '../../DateRangePicker/DateRangePicker';
 import { DateRange } from 'react-day-picker';
@@ -8,6 +8,7 @@ import { School, subjectOptions, sortByOptions, sortByOptionsType } from '../../
 import { TutorLeaderboardRequestDTO } from '../../../dtos/TutorLeaderboardRequestDTO';
 import { TutorLeaderboardResponseDTO } from '../../../dtos/TutorLeaderboardResponseDTO';
 import instance from '../../../utils/axios';
+import TutorDetailComponent from '../../TutorDetailComponent/TutorDetailComponent'
 
 // Will set to proper DTO when it is complete.
 interface TutorDataDashboardProps { }
@@ -22,6 +23,9 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
+
+    const [showModal, setShowModal] = useState(false);
+    const [currTutorID, setTutorID] = useState<number>(0);
 
     const changeSortBy = (selected: SingleValue<{ value: sortByOptionsType, label: string }>) => {
         setSortBy(selected);
@@ -53,8 +57,22 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         }
     }, [sortBy])
 
+    const handleModalOpen = (id: number) => {
+        setTutorID(id);
+        setShowModal(true);
+    }
+    const handleModalClose = () => setShowModal(false);
+
     return (
         <Container>
+            <Modal show={showModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                    Tutor Details
+                </Modal.Header>
+                <Modal.Body>
+                    <TutorDetailComponent tutorId={currTutorID} />
+                </Modal.Body>
+            </Modal>
             <Row>
                 <h1>Tutor Data Dashboard</h1>
                 <p>Welcome to the Tutor Data Dashboard. *put description here*</p>
@@ -90,7 +108,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
                                 {/*In the future, clicking the name will open 
                                     TutorDetail modal with data.tutorId as an input*/}
-                                <td>{data.name}</td>
+                                <td><u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(data.tutorId)}>{data.name}</u></td>
                                 <td>{data.numberOfSessions}</td>
                                 <td>{new Date(data.lastSession).toLocaleDateString()}</td>
                                 <td>{data.hoursTutored}</td>

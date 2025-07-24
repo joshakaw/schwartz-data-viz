@@ -124,7 +124,7 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
         <Container>
             <h1>Signups Dashboard</h1>
             <p>Welcome to your Signup Dashboard. Here you can view performance of certain advertising and compare them.</p>
-            <Row style={{ paddingBottom: '2rem' }}>
+            <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
                 <Col md={2}>
                     <Form.Label>Signup Methods:</Form.Label>
                     <Select

@@ -350,6 +350,9 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
     if dto.endDate:
         conditions.append(tutoringsession_t.c.date <= dto.endDate[0])
 
+    if dto.schoolsIncluded:
+        conditions.append(school_t.c.name.in_(dto.schoolsIncluded))
+
     if conditions:
         stmt = stmt.where(and_(*conditions))
 

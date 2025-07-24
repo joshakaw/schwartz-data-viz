@@ -64,4 +64,10 @@ export interface MailchimpUsersRequestDTO extends ApiPaginatedRequest {
      * If undefined, no filter is applied.
      */
     endDate?: string;
+
+    /**
+     * The school names that should be included in the
+     * results. If undefined, no filter is applied.
+     */
+    schoolsIncluded?: Array<string>;
 }

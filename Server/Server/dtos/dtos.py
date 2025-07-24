@@ -44,6 +44,7 @@ class MailchimpUsersRequestDTO(BaseModel):
     accountType: Union[List[str], None] = None
     startDate: Union[SingleItemList[str], None] = None
     endDate: Union[SingleItemList[str], None] = None
+    schoolsIncluded: Union[List[str], None] = None
 
 
 class SignupsByCategoryRequestDTO(BaseModel):

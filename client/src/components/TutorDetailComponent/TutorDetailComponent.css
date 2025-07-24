@@ -1,0 +1,26 @@
+/*.TutorDetailComponent {
+
+}
+*/
+.TutorDetailComponent .title {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.TutorDetailComponent .subtitle {
+    color: gray;
+    margin-bottom: 20px;
+}
+
+.TutorDetailComponent .stat {
+    font-size: 40px;
+}
+
+.agg-opts .agg-btn {
+    color: lightgray;
+    text-decoration: none
+}
+
+    .agg-opts .agg-btn.active {
+        color: black;
+    }

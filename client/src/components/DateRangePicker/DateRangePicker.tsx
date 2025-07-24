@@ -1,28 +1,36 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Button, ButtonGroup, Dropdown, Form, Overlay } from 'react-bootstrap';
 import { DateRange, DayPicker } from 'react-day-picker';
 import "./DateRangePicker.css"
 
 // Preset date range dropdown options
 const rangeOptions = [
-    { value: 'today',      label: 'Today' },
-    { value: 'yesterday',  label: 'Yesterday' },
-    { value: '7',          label: 'Last 7 Days' },
-    { value: '14',         label: 'Last 14 Days' },
-    { value: 'thisMonth',  label: 'This Month' },
-    { value: '30',         label: 'Last 30 Days' }, 
-    { value: 'allTime',    label: 'All Time' },
+    { value: 'today', label: 'Today' },
+    { value: 'yesterday', label: 'Yesterday' },
+    { value: '7', label: 'Last 7 Days' },
+    { value: '14', label: 'Last 14 Days' },
+    { value: 'thisMonth', label: 'This Month' },
+    { value: '30', label: 'Last 30 Days' },
+    { value: 'allTime', label: 'All Time' },
 ];
 
 // Defines the properties this component expects from its parent.
 interface DateRangePickerProps {
     value: DateRange | undefined;
-    onChange: (dateRange: DateRange | undefined) => void;
+    onChange: (dateRange: DateRange) => void;
+    defaultOption?: string;
 }
 
-const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
+const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOption }) => {
     const [openMenu, setOpenMenu] = useState<'calendar' | 'presets' | null>(null);
     const datePickerTarget = useRef(null);
+
+    // Select defaultOption preset on mount, if defined
+    useEffect(() => {
+        if (defaultOption) {
+            presetDateRangeSelected(defaultOption)
+        }
+    }, [])
 
     const presetDateRangeSelected = (selected: string | null) => {
         const option = rangeOptions.find(opt => opt.value === selected);
@@ -73,13 +81,16 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
     };
 
     const changeDates = (range: DateRange | undefined) => {
-        onChange(range);
+        if (typeof range == "undefined") {
+            onChange({ to: undefined, from: undefined })
+        } else {
+            onChange(range);
+        }
     };
 
     return (
         <div className="DateRangePicker">
             <Form.Group className="mb-3">
-                <Form.Label className="w-100">Date Range:</Form.Label>
                 <Dropdown
                     as={ButtonGroup}
                     onSelect={presetDateRangeSelected}
@@ -92,7 +103,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange }) => {
                         onClick={handleCalendarToggle}
                         className="button-section"
                     >
-                        {value ? `${value.from?.toLocaleDateString()} - ${value.to?.toLocaleDateString()}` : "Select Date Range"}
+                        {value && typeof value.to != "undefined" ? `${value.from?.toLocaleDateString()} - ${value.to?.toLocaleDateString()}` : "Select Date Range"}
                     </Button>
 
                     <Dropdown.Toggle

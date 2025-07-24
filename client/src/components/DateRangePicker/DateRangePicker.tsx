@@ -11,7 +11,10 @@ const rangeOptions = [
     { value: '14', label: 'Last 14 Days' },
     { value: 'thisMonth', label: 'This Month' },
     { value: '30', label: 'Last 30 Days' },
-    { value: 'allTime', label: 'All Time' },
+    { value: 'fallSemester', label: 'Fall Semester' },
+    { value: 'springSemester', label: 'Spring Semester' },
+    { value: 'lastYear', label: 'Last 365 Days' },
+    { value: 'allTime', label: 'All Time' }
 ];
 
 // Defines the properties this component expects from its parent.
@@ -31,6 +34,10 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOpt
             presetDateRangeSelected(defaultOption)
         }
     }, [])
+
+    function isDateBefore(currDate: Date, targetDate: Date) {
+        return currDate < targetDate;
+    }
 
     const presetDateRangeSelected = (selected: string | null) => {
         const option = rangeOptions.find(opt => opt.value === selected);
@@ -54,6 +61,34 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOpt
                 case 'thisMonth':
                     // Range from the first day of the month to the current date
                     from = new Date(to.getFullYear(), to.getMonth(), 1);
+                    to = new Date();
+                    break;
+
+                case 'fallSemester':
+                    // Range from August 15 to December 15 of the year
+                    if (isDateBefore(new Date(), new Date(new Date().getFullYear(), 7, 15))) {
+                        from = new Date(to.getFullYear() - 1, 7, 15);
+                        to = new Date(to.getFullYear() - 1, 11, 15);
+                    } else {
+                        from = new Date(to.getFullYear(), 7, 15);
+                        to = new Date(to.getFullYear(), 11, 15);
+                    }
+                    break;
+
+                case 'springSemester':
+                    // Range from January 15 to May 15 of the year
+                    if (isDateBefore(new Date(), new Date(new Date().getFullYear(), 0, 15))) {
+                        from = new Date(to.getFullYear() - 1, 0, 15);
+                        to = new Date(to.getFullYear() - 1, 4, 15);
+                    } else {
+                        from = new Date(to.getFullYear(), 0, 15);
+                        to = new Date(to.getFullYear(), 4, 15);
+                    }
+                    break;
+
+                case 'lastYear':
+                    // Range from the first day of the month to the current date
+                    from.setDate(new Date().getDate() - 365);
                     to = new Date();
                     break;
 

@@ -77,7 +77,7 @@ class Test_test_queries(unittest.TestCase):
         print(query)
 
     def test_mailchimp_users_q(self):
-        dto = MailchimpUsersRequestDTO(pageIndex=[0], pageSize=[3])
+        dto = MailchimpUsersRequestDTO(pageIndex=[0], pageSize=[3], schoolsIncluded=["Greggside Elementary"])
         (results, query) = MailchimpUsersQ(dto)
         print(results)
         print(query)

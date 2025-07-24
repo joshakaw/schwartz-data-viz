@@ -65,7 +65,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
     return (
         <Container>
-            <Modal show={showModal} onHide={handleModalClose}>
+            <Modal show={showModal} onHide={handleModalClose} size='lg'>
                 <Modal.Header closeButton>
                     Tutor Details
                 </Modal.Header>

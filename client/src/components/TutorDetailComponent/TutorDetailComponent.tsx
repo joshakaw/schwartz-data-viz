@@ -3,7 +3,7 @@ import './TutorDetailComponent.css';
 import instance from '../../utils/axios';
 import DateRangePicker from '../DateRangePicker/DateRangePicker';
 import { DateRange } from 'react-day-picker';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Nav, Row } from 'react-bootstrap';
 import { Chart as ChartJS } from 'chart.js'
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -88,12 +88,26 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
         },
     };
 
+    function isActiveAggregationOption(option: string): boolean {
+
+        switch (option) {
+            case "day":
+                return true;
+            case "week":
+                return false;
+            case "month":
+                return false;
+            default:
+                throw new Error("Aggregation option not found!");
+        }
+    }
+
     return (
         <div className="TutorDetailComponent container">
 
             {/*Title and date filter*/}
             <Row>
-                <Col sm={6 }>
+                <Col sm={4 }>
                     <div className="title">
                         Tutor Name
                     </div>
@@ -101,9 +115,19 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
                         Performance Report
                     </div>
                 </Col>
-                <Col sm={6} className="d-flex justify-content-sm-end">
-                    <DateRangePicker value={dateRange} onChange={(dr) => setDateRange(dr)} defaultOption="thisMonth" />
-
+                <Col sm={8} >
+                    <Row>
+                        <Col className="d-flex justify-content-sm-end">
+                            <DateRangePicker value={dateRange} onChange={(dr) => setDateRange(dr)} defaultOption="thisMonth" />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="agg-opts d-flex justify-content-sm-end">
+                            <Button variant="link" active={isActiveAggregationOption("day")} className="agg-btn">By Day</Button>
+                            <Button variant="link" active={isActiveAggregationOption("week")} className="agg-btn">By Week</Button>
+                            <Button variant="link" active={isActiveAggregationOption("month")} className="agg-btn">By Month</Button>
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
 

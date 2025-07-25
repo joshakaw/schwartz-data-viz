@@ -65,7 +65,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
     return (
         <Container>
-            <Modal show={showModal} onHide={handleModalClose}>
+            <Modal show={showModal} onHide={handleModalClose} size="lg">
                 <Modal.Header closeButton>
                     Tutor Details
                 </Modal.Header>
@@ -112,7 +112,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                                 <td>{data.numberOfSessions}</td>
                                 <td>{new Date(data.lastSession).toLocaleDateString()}</td>
                                 <td>{data.hoursTutored}</td>
-                                <td>{data.numRecurringSessions}</td>
+                                <td>{data.numRecurringSessions ? data.numRecurringSessions : "-"}</td>
                                 <td>{data.revenueGenerated}</td>
                                 <td>{data.avgHoursPerWeek.toFixed(2)}</td>
                             </tr>

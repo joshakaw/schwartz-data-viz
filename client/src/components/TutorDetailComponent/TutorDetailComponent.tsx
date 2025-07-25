@@ -92,9 +92,9 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
 
         switch (option) {
             case "day":
-                return true;
-            case "week":
                 return false;
+            case "week":
+                return true;
             case "month":
                 return false;
             default:
@@ -109,7 +109,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
             <Row>
                 <Col sm={4 }>
                     <div className="title">
-                        Tutor Name
+                        Tutor Name {tutorId }
                     </div>
                     <div className="subtitle">
                         Performance Report
@@ -140,27 +140,35 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
             <br></br>
             {/*Stats*/}
             <Row>
-                <Col sm={4}>
-                    <Card style={{ width: "100%", textAlign: "center" }}>
+                <Col sm={3}>
+                    <Card style={{ width: "100%", height: "100%",  textAlign: "center" }}>
                         <Card.Body className="align-items-center">
                             <div className="stat">6.2</div>
                             Average Hours Per Week
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col sm={4}>
-                    <Card style={{ width: "100%", textAlign: "center" }}>
+                <Col sm={3}>
+                    <Card style={{ width: "100%", height: "100%",  textAlign: "center" }}>
+                        <Card.Body className="align-items-center">
+                            <div className="stat">12</div>
+                            Total Number of Sessions
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col sm={3}>
+                    <Card style={{ width: "100%", height: "100%", textAlign: "center" }}>
                         <Card.Body className="align-items-center">
                             <div className="stat">84%</div>
                             Reschedule Rate
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col sm={4}>
-                    <Card style={{ width: "100%", textAlign: "center" }}>
+                <Col sm={3}>
+                    <Card style={{ width: "100%", height: "100%", textAlign: "center" }}>
                         <Card.Body className="align-items-center">
-                            <div className="stat">$820</div>
-                            Revenue Generated
+                            <div className="stat">8</div>
+                            Number of Unique Students
                         </Card.Body>
                     </Card>
                 </Col>

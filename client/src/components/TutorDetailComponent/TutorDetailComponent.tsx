@@ -20,6 +20,10 @@ interface TestResponseDTO {
 }
 
 const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
+    // Handles the showing of the line as well as where the line is placed, alongside UI active elements
+    const [activeButton, setActiveButton] = useState<number>(2);
+    const [avgLine, setAvgLine] = useState<number>(2);
+    const [showLine, setShowLine] = useState<boolean>(true);
 
     const [testState, setTestState] = useState<TestResponseDTO>({ value: false });
     const [dateRange, setDateRange] = useState<DateRange>({
@@ -62,8 +66,8 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
                 annotations: {
                     line1: {
                         type: 'line',
-                        yMin: 4, // The y-value where the line should be drawn
-                        yMax: 4,
+                        yMin: avgLine, // The y-value where the line should be drawn
+                        yMax: avgLine,
                         borderColor: 'rgb(255, 99, 132)',
                         borderWidth: 4,
                         label: {
@@ -76,7 +80,8 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
                                 weight: 'bold'
                             },
                             padding: 6
-                        }
+                        },
+                        display: showLine
                     },
                 }
             }
@@ -92,10 +97,18 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
 
         switch (option) {
             case "day":
+                setShowLine(false);
+                setActiveButton(1);
                 return false;
             case "week":
+                setAvgLine(2);
+                setShowLine(true);
+                setActiveButton(2);
                 return true;
             case "month":
+                setAvgLine(8.7);
+                setShowLine(true);
+                setActiveButton(3);
                 return false;
             default:
                 throw new Error("Aggregation option not found!");
@@ -123,9 +136,9 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
                     </Row>
                     <Row>
                         <Col className="agg-opts d-flex justify-content-sm-end">
-                            <Button variant="link" active={isActiveAggregationOption("day")} className="agg-btn">By Day</Button>
-                            <Button variant="link" active={isActiveAggregationOption("week")} className="agg-btn">By Week</Button>
-                            <Button variant="link" active={isActiveAggregationOption("month")} className="agg-btn">By Month</Button>
+                            <Button variant="link" onClick={() => isActiveAggregationOption("day")} className={`agg-btn ${activeButton === 1 ? "active" : ""}`}>By Day</Button>
+                            <Button variant="link" onClick={() => isActiveAggregationOption("week")} className={`agg-btn ${activeButton === 2 ? "active" : ""}`}>By Week</Button>
+                            <Button variant="link" onClick={() => isActiveAggregationOption("month")} className={`agg-btn ${activeButton === 3 ? "active" : ""}`}>By Month</Button>
                         </Col>
                     </Row>
                 </Col>

@@ -67,22 +67,22 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOpt
                 case 'fallSemester':
                     // Range from August 15 to December 15 of the year
                     if (isDateBefore(new Date(), new Date(new Date().getFullYear(), 7, 15))) {
-                        from = new Date(to.getFullYear() - 1, 7, 15);
-                        to = new Date(to.getFullYear() - 1, 11, 15);
+                        from = new Date(to.getFullYear() - 1, 7, 20);
+                        to = new Date(to.getFullYear() - 1, 11, 20);
                     } else {
-                        from = new Date(to.getFullYear(), 7, 15);
-                        to = new Date(to.getFullYear(), 11, 15);
+                        from = new Date(to.getFullYear(), 7, 20);
+                        to = new Date(to.getFullYear(), 11, 20);
                     }
                     break;
 
                 case 'springSemester':
                     // Range from January 15 to May 15 of the year
                     if (isDateBefore(new Date(), new Date(new Date().getFullYear(), 0, 15))) {
-                        from = new Date(to.getFullYear() - 1, 0, 15);
-                        to = new Date(to.getFullYear() - 1, 4, 15);
+                        from = new Date(to.getFullYear() - 1, 0, 20);
+                        to = new Date(to.getFullYear() - 1, 4, 20);
                     } else {
-                        from = new Date(to.getFullYear(), 0, 15);
-                        to = new Date(to.getFullYear(), 4, 15);
+                        from = new Date(to.getFullYear(), 0, 20);
+                        to = new Date(to.getFullYear(), 4, 20);
                     }
                     break;
 

@@ -227,10 +227,10 @@ def mailchimp_users():
 @main_api.route("/educationLevelSchools")
 def education_level_schools():
     # Execute first query
-    school_names_dict = SchoolsNameAndTypeQ()
+    (school_names_dict, query) = SchoolsNameAndTypeQ()
 
     # Execute second query
-    school_types_dict = SchoolTypesQ()
+    (school_types_dict, query) = SchoolTypesQ()
 
     return jsonify(
         {

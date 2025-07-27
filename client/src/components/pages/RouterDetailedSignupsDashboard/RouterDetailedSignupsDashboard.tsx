@@ -126,16 +126,6 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
             <p>Welcome to your Signup Dashboard. Here you can view performance of certain advertising and compare them.</p>
             <Row style={{ paddingBottom: '2rem' }}>
                 <Col md={2}>
-                    <Form.Label>Signup Methods:</Form.Label>
-                    <Select
-                        isMulti
-                        options={signupOptions}
-                        placeholder='Select...'
-                        className='inner-select'
-                        onChange={changeSignupMethods}
-                    />
-                </Col>
-                <Col md={2}>
                     <Form.Label>Account Types:</Form.Label>
                     <Select
                         isMulti
@@ -146,6 +136,22 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                     />
                 </Col>
                 <Col md={2}>
+                    <Form.Label>Signup Methods:</Form.Label>
+                    <Select
+                        isMulti
+                        options={signupOptions}
+                        placeholder='Select...'
+                        className='inner-select'
+                        onChange={changeSignupMethods}
+                    />
+                </Col>
+                <Col md={4}>
+                    <Form.Group>
+                        <Form.Label>Keyword: </Form.Label>
+                        <Form.Control type="text" onChangeCapture={changeKeyword} />
+                    </Form.Group>
+                </Col>
+                <Col md={2}>
                     <Form.Label>Education Level: </Form.Label>
                     <Select
                         isMulti
@@ -154,12 +160,6 @@ const RouterDetailedSignupsDashboard: FC<RouterDetailedSignupsDashboardProps> = 
                         className='inner-select'
                         onChange={changeEducationLevel}
                     />
-                </Col>
-                <Col md={4}>
-                    <Form.Group>
-                        <Form.Label>Keyword: </Form.Label>
-                        <Form.Control type="text" onChangeCapture={changeKeyword} />
-                    </Form.Group>
                 </Col>
                 <Col className="d-flex align-items-center">
                     <CsvDownloadButton

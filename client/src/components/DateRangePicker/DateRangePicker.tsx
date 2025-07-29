@@ -22,9 +22,10 @@ interface DateRangePickerProps {
     value: DateRange | undefined;
     onChange: (dateRange: DateRange) => void;
     defaultOption?: string;
+    zIndex?: number | 100;
 }
 
-const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOption }) => {
+const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOption, zIndex }) => {
     const [openMenu, setOpenMenu] = useState<'calendar' | 'presets' | null>(null);
     const datePickerTarget = useRef(null);
 
@@ -166,7 +167,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOpt
                         <div
                             {...props}
                             style={{
-                                zIndex: 10000,
+                                zIndex: zIndex,
                                 position: 'absolute',
                                 backgroundColor: 'white',
                                 padding: '2px 10px',

@@ -136,7 +136,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                 <Col sm={8} >
                     <Row>
                         <Col className="d-flex justify-content-sm-end">
-                            <DateRangePicker value={dateRange} onChange={changeDates} />
+                            <DateRangePicker value={dateRange} onChange={changeDates} zIndex={10000} />
                         </Col>
                     </Row>
                     <Row>

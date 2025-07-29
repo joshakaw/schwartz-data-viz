@@ -13,13 +13,14 @@ ChartJS.register(annotationPlugin)
 
 interface TutorDetailComponentProps {
     tutorId: number;
+    datesPicked: DateRange;
 }
 
 interface TestResponseDTO {
     value: boolean
 }
 
-const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
+const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPicked }) => {
     // Handles the showing of the line as well as where the line is placed, alongside UI active elements
     const [activeButton, setActiveButton] = useState<number>(2);
     const [avgLine, setAvgLine] = useState<number>(2);
@@ -27,9 +28,13 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
 
     const [testState, setTestState] = useState<TestResponseDTO>({ value: false });
     const [dateRange, setDateRange] = useState<DateRange>({
-        to: undefined,
-        from: undefined
+        to: datesPicked.to,
+        from: datesPicked.from
     })
+
+    const changeDates = (selected: DateRange) => {
+        setDateRange(selected);
+    }
 
     useEffect(function () {
         instance.get("/tutor-detail/test")
@@ -131,7 +136,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId }) => {
                 <Col sm={8} >
                     <Row>
                         <Col className="d-flex justify-content-sm-end">
-                            <DateRangePicker value={dateRange} onChange={(dr) => setDateRange(dr)} defaultOption="thisMonth" />
+                            <DateRangePicker value={dateRange} onChange={changeDates} />
                         </Col>
                     </Row>
                     <Row>

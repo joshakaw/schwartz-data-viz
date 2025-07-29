@@ -166,6 +166,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({ value, onChange, defaultOpt
                         <div
                             {...props}
                             style={{
+                                zIndex: 10000,
                                 position: 'absolute',
                                 backgroundColor: 'white',
                                 padding: '2px 10px',

@@ -16,7 +16,7 @@ interface TutorDataDashboardProps { }
 const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     const [tableData, setData] = useState<TutorLeaderboardResponseDTO[]>([]);
     const [sortBy, setSortBy] = useState<SingleValue<{value: string, label: string}>>();
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    const [dateRange, setDateRange] = useState<DateRange>({
         to: new Date(),
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
@@ -70,7 +70,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                     Tutor Details
                 </Modal.Header>
                 <Modal.Body>
-                    <TutorDetailComponent tutorId={currTutorID} />
+                    <TutorDetailComponent tutorId={currTutorID} datesPicked={dateRange} />
                 </Modal.Body>
             </Modal>
             <Row>

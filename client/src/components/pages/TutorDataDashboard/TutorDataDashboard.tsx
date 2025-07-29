@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, FormEvent, useEffect, useState } from 'react';
 import './TutorDataDashboard.css';
 import { Col, Container, Row, Table, Form, Modal, Button } from 'react-bootstrap';
 import Select, { SingleValue } from 'react-select';
@@ -26,9 +26,10 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [currTutorID, setTutorID] = useState<number>(0);
+    const [name, setName] = useState<string>('');
 
-    const changeSortBy = (selected: SingleValue<{ value: sortByOptionsType, label: string }>) => {
-        setSortBy(selected);
+    const changeName = (selected: FormEvent<HTMLInputElement>) => {
+        setName(selected.currentTarget.value);
     }
 
     async function getData() {
@@ -36,6 +37,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
             sortBy: sortBy == null ? 'hours' : sortBy.value as sortByOptionsType, // lineSetup == null ? 'week' : lineSetup.value as weekMonthYear,
+            tutorNameSearch: name.length > 0 ? name : undefined,
             subjects: undefined,
             locations: undefined
         }
@@ -56,6 +58,18 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             getData();
         }
     }, [sortBy])
+
+    // Handle debounce for freeResponseSearchKeyword input
+    useEffect(() => {
+        const debounceFunction = setTimeout(() => {
+            console.log('hi');
+            getData();
+        }, 1000);
+
+        return () => {
+            clearTimeout(debounceFunction); // Prevents previous from triggering
+        };
+    }, [name]);
 
     const handleModalOpen = (id: number) => {
         setTutorID(id);
@@ -78,14 +92,20 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                 <p>Welcome to the Tutor Data Dashboard. *put description here*</p>
             </Row>
             <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
-                <Col style={{ paddingTop: 10 }} md={9}>
+                <Col style={{ paddingTop: 10 }} md={4}>
+                    <Form.Label>Sort by:</Form.Label>
                     <Select
-                        placeholder='Sort by...'
+                        placeholder='Select...'
                         options={sortByOptions}
                         onChange={setSortBy}
                     />
                 </Col>
-                <Col>
+                <Col style={{ paddingTop: 10 }} md={4}>
+                    <Form.Label>Name Search:</Form.Label>
+                    <Form.Control type="text" onChangeCapture={changeName} />
+                </Col>
+                <Col style={{ paddingTop: 10 }} md={4}>
+                    <Form.Label>Date Range:</Form.Label>
                     <DateRangePicker value={dateRange} onChange={setDateRange} />
                 </Col>
             </Row>

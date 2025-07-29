@@ -1,6 +1,7 @@
 // React and styling imports
 import { FC, useState, useEffect } from 'react';
 import './RouterMailchimpDashboard.css';
+import 'react-dropdown-tree-select/dist/styles.css';
 
 // Custom component imports
 import AccountDataTable from '../../accountDataTable/accountDataTable';
@@ -8,6 +9,8 @@ import AccountDataTable from '../../accountDataTable/accountDataTable';
 // React component imports
 import { Form, Col, Row, Container } from 'react-bootstrap';
 import Select from 'react-select';
+import ReactSelect from 'react-select';
+import DropdownTreeSelect from "react-dropdown-tree-select";
 import CsvDownloadButton from 'react-json-to-csv';
 import Pagination from 'react-bootstrap/Pagination';
 import CreatableSelect from 'react-select/creatable';
@@ -18,6 +21,9 @@ import { MailchimpUsersRequestDTO } from "../../../dtos/MailchimpUsersRequestDTO
 import { MailchimpUserResponseDTO } from '../../../dtos/MailchimpUsersResponseDTO.ts';
 import { ApiPaginatedResponse } from '../../../dtos/ApiPaginatedResponse.ts';
 import { EducationLevelSchoolsResponseDTO } from '../../../dtos/EducationLevelSchoolsResponseDTO.ts';
+import { OptionType } from '../../../utils/input-fields.ts';
+import { getDefaultClassNames } from 'react-day-picker';
+import { defaultProps } from 'react-select/base';
 
 // Options for multi-select (account types)
 const sessionOptions = [
@@ -75,14 +81,6 @@ const RouterMailchimpDashboard: FC = () => {
             // Does not work with session Range because of this
             // Must clear school in order to make session range work
             let data = receivedData.data;
-
-            if (selectedSchool) {
-                data = data.filter((row) => row.school === selectedSchool);
-            }
-
-            if (sessionRange) {
-                data = data.filter((row) => row.school === sessionRange);
-            }
 
             // If there is no value in the sessionRange filter, it won't sort the data by the sessionRange
             if (sessionRange === undefined) {
@@ -174,10 +172,47 @@ const RouterMailchimpDashboard: FC = () => {
                 schoolNames: flattenedSchoolNames,
                 schoolTypes: data.schoolTypes,
             });
+
+            console.log(schoolJson);
         }
 
         fetchSchools();
     }, []);
+
+    const schoolTreeData = [
+        {
+            label: 'Elementary Schools',
+            value: 'elementary',
+            children: [
+                { label: 'James Elementary', value: 'james' },
+                { label: 'Main Elementary', value: 'main' },
+            ],
+        },
+        {
+            label: 'Middle Schools',
+            value: 'middle',
+            children: [
+                { label: `St. Mary's Middle`, value: 'stmarys' },
+                { label: 'Oakwood Middle', value: 'oakwood' },
+            ],
+        },
+        {
+            label: 'High Schools',
+            value: 'high',
+            children: [
+                { label: 'Lincoln High', value: 'lincoln' },
+                { label: 'Jefferson High', value: 'jefferson' },
+            ],
+        },
+        {
+            label: 'College',
+            value: 'college',
+            children: [
+                { label: 'Miami University', value: 'miami' },
+                { label: 'University if Cincinati', value: 'cincinati' },
+            ],
+        },
+    ];
 
     // Sets up the pagination based on the total amount of data and the set pages size
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
@@ -263,25 +298,35 @@ const RouterMailchimpDashboard: FC = () => {
             <div className="filter-form mb-2">
                 <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
                     {/* Education Level Filter */}
-                    <Col xs={12} md={4} lg={2}>
+                    <Col xs={12} md={4} lg={2}> 
                         <Form.Group className="mb-2">
                             <Form.Label>School</Form.Label>
-                            <Form.Select
-                                value={selectedSchool}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSelectedSchool(val);
-                                }}
-                            >
-                                <option value="">Select...</option>
-                                {schoolJson?.schoolNames?.map((school) => (
-                                    <option key={`${school.schoolName}`} value={school.schoolName}>
-                                        {school.schoolName}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <DropdownTreeSelect
+                                data={schoolTreeData}
+                                className="bootstrap-demo"
+                            />
                         </Form.Group>
                     </Col>
+
+                    {/*<Col xs={12} md={4} lg={2}>*/}
+                    {/*    <Form.Group className="mb-2">*/}
+                    {/*        <Form.Label>School</Form.Label>*/}
+                    {/*        <Form.Select*/}
+                    {/*            value={selectedSchool}*/}
+                    {/*            onChange={(e) => {*/}
+                    {/*                const val = e.target.value;*/}
+                    {/*                setSelectedSchool(val);*/}
+                    {/*            }}*/}
+                    {/*        >*/}
+                    {/*            <option value="">Select...</option>*/}
+                    {/*            {schoolJson?.schoolNames?.map((school) => (*/}
+                    {/*                <option key={`${school.schoolName}`} value={school.schoolName}>*/}
+                    {/*                    {school.schoolName}*/}
+                    {/*                </option>*/}
+                    {/*            ))}*/}
+                    {/*        </Form.Select>*/}
+                    {/*    </Form.Group>*/}
+                    {/*</Col>*/}
 
                     {/* Account Type Filter */}
                     <Col xs={12} md={4} lg={2}>

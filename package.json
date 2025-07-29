@@ -1,9 +1,13 @@
 {
   "dependencies": {
+    "array.partial": "^1.0.5",
+    "react-dropdown-tree-select": "^2.8.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-json-to-csv": "^1.2.0",
     "react-loading-skeleton": "^3.5.0",
     "react-router": "^7.6.1",
-    "react-select": "^5.10.1"
+    "react-select": "^5.10.1",
+    "throttle-debounce": "^5.0.2"
   },
   "devDependencies": {
     "@types/react-json-to-csv": "^1.2.4"

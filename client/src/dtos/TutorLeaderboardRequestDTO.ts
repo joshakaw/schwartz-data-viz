@@ -20,6 +20,12 @@ export interface TutorLeaderboardRequestDTO {
     sortBy?: "hours" | "sessions" | "revenue" | "recurringSessions" | "avghours" | "rescheduleRate";
 
     /**
+     * Specific name to return in the results. If undefined, all subjects
+     * will be returned in the results.
+     */
+    tutorNameSearch?: string;
+
+    /**
      * Subjects to return in the results. If undefined, all subjects 
      * will be returned in the results.
      */

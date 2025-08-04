@@ -15,7 +15,6 @@ import './index.css'
 
 
 import RouterDetailedSignupsDashboard from "./components/pages/RouterDetailedSignupsDashboard/RouterDetailedSignupsDashboard.tsx";
-import TutorDetailComponent from "./components/TutorDetailComponent/TutorDetailComponent.tsx";
 
 //const router = createBrowserRouter([
 //    { path: "/", Component: App },
@@ -37,7 +36,6 @@ ReactDOM.createRoot(root).render(
                 <Route path="/tutor-data" element={<TutorDataDashboard />} />
                 <Route path="/signups" element={<RouterSignupsDashboard />} />
                 <Route path="/detailedsignups" element={<RouterDetailedSignupsDashboard />} />
-                <Route path="/tutordetail" element={<TutorDetailComponent tutorId={123} />} />
             </Route>
         </Routes>
     </BrowserRouter>

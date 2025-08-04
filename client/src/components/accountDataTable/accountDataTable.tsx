@@ -16,7 +16,8 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data, loading }) =>
                 <Table striped bordered hover responsive>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>School</th>
@@ -57,7 +58,8 @@ const AccountDataTable: React.FC<AccountDataTableProps> = ({ data, loading }) =>
                             // Case 3: If not loading and we have data, show the data.
                             data.map((account) => (
                                 <tr key={account.studentId}>
-                                    <td>{account.firstName + ' ' + account.lastName}</td>
+                                    <td>{account.firstName}</td>
+                                    <td>{account.lastName}</td>
                                     <td>{account.email}</td>
                                     <td>{`(${account.phone.substring(0, 3)})-${account.phone.substring(3, 6)}-${account.phone.substring(6)}`}</td>
                                     <td>{account.school}</td>

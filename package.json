@@ -1,15 +1,9 @@
 {
   "dependencies": {
-    "array.partial": "^1.0.5",
-    "primeicons": "^7.0.0",
-    "primereact": "^10.9.6",
-    "rc-tree-select": "^5.27.0",
-    "react-infinite-scroll-component": "^6.1.0",
     "react-json-to-csv": "^1.2.0",
     "react-loading-skeleton": "^3.5.0",
     "react-router": "^7.6.1",
-    "react-select": "^5.10.1",
-    "throttle-debounce": "^5.0.2"
+    "react-select": "^5.10.1"
   },
   "devDependencies": {
     "@types/react-json-to-csv": "^1.2.4"

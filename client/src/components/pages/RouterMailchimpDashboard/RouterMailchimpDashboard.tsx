@@ -1,7 +1,6 @@
 // React and styling imports
 import { FC, useState, useEffect } from 'react';
 import './RouterMailchimpDashboard.css';
-import 'react-dropdown-tree-select/dist/styles.css';
 
 // Custom component imports
 import AccountDataTable from '../../accountDataTable/accountDataTable';
@@ -9,8 +8,6 @@ import AccountDataTable from '../../accountDataTable/accountDataTable';
 // React component imports
 import { Form, Col, Row, Container } from 'react-bootstrap';
 import Select from 'react-select';
-import ReactSelect from 'react-select';
-import DropdownTreeSelect from "react-dropdown-tree-select";
 import CsvDownloadButton from 'react-json-to-csv';
 import Pagination from 'react-bootstrap/Pagination';
 import CreatableSelect from 'react-select/creatable';
@@ -20,10 +17,15 @@ import instance from "../../../utils/axios";
 import { MailchimpUsersRequestDTO } from "../../../dtos/MailchimpUsersRequestDTO";
 import { MailchimpUserResponseDTO } from '../../../dtos/MailchimpUsersResponseDTO.ts';
 import { ApiPaginatedResponse } from '../../../dtos/ApiPaginatedResponse.ts';
-import { EducationLevelSchoolsResponseDTO } from '../../../dtos/EducationLevelSchoolsResponseDTO.ts';
-import { OptionType } from '../../../utils/input-fields.ts';
-import { getDefaultClassNames } from 'react-day-picker';
-import { defaultProps } from 'react-select/base';
+
+// ** tree-select import and styles **
+import { TreeSelect } from 'primereact/treeselect';
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { TreeSelectSelectionKeysType } from 'primereact/treeselect';
+import { TreeSelectChangeEvent } from 'primereact/treeselect';
+
 
 // Options for multi-select (account types)
 const sessionOptions = [
@@ -32,18 +34,39 @@ const sessionOptions = [
     { value: '2', label: 'Tutor' }
 ];
 
+interface SchoolName {
+    schoolName: string;
+    schoolType: string;
+}
+
+interface SchoolType {
+    schoolType: string;
+}
+
 const RouterMailchimpDashboard: FC = () => {
-    const [selectedSchool, setSelectedSchool] = useState<string>('');
+    // Un-comment useStates if needed
+
+    // Add 'setSelectedSchool' if used
+    const [selectedSchool] = useState<string>('');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
     const [accountTypes, setAccountTypes] = useState<{ value: string, label: string }[]>([]);
     const [resJson, setResJson] = useState<ApiPaginatedResponse<MailchimpUserResponseDTO>>();
     const [fullData, setFullData] = useState<MailchimpUserResponseDTO[]>([]);
-    const [schoolJson, setSchoolJson] = useState<EducationLevelSchoolsResponseDTO>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsOfData, setMaxRows] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10);
     const [loading, setLoading] = useState(true);
+    //const [schoolJson, setSchoolJson] = useState<{
+    //    schoolNames: SchoolName[];
+    //    schoolTypes: SchoolType[];
+    //}>({ schoolNames: [], schoolTypes: [] });
+    const [selectedSchools, setSelectedSchools] = useState<TreeSelectSelectionKeysType>({});
+    const [treeData, setTreeData] = useState<any[]>([]);
+    //const [nodes, setNodes] = useState(null);
+    //const [selectedNodeKey, setSelectedNodeKey] = useState(null);
 
+
+    // Params for the data that will go into the table
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
         limit,
         pageIndex,
@@ -67,6 +90,7 @@ const RouterMailchimpDashboard: FC = () => {
         endDate: undefined
     });
 
+    // Handles changing data based on filters to give to the table
     const handleSubmit = async () => {
         setLoading(true);
         const fetchLimit = rowsOfData || 10000;
@@ -76,13 +100,15 @@ const RouterMailchimpDashboard: FC = () => {
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
 
-            // Apply local filtering for selectedSchool
-            // Currently filtering via client-side due to no request in dto
-            // Does not work with session Range because of this
-            // Must clear school in order to make session range work
             let data = receivedData.data;
 
-            // If there is no value in the sessionRange filter, it won't sort the data by the sessionRange
+            // Filter by selected schools if any are selected
+            if (Object.keys(selectedSchools).length > 0) {
+                data = data.filter(user =>
+                    selectedSchools[slugify(user.school || '')]
+                );
+            }
+
             if (sessionRange === undefined) {
                 setFullData(data);
 
@@ -94,7 +120,6 @@ const RouterMailchimpDashboard: FC = () => {
                     pageSize
                 });
             } else {
-                // Sorts the data by ascending order from the min value of the sessionRange value
                 const sortedData = [...data].sort((a, b) => (a.numSessions ?? 0) - (b.numSessions ?? 0));
                 setFullData(sortedData);
 
@@ -114,6 +139,12 @@ const RouterMailchimpDashboard: FC = () => {
         }
     };
 
+    //type DropdownNode = {
+    //    label: string;
+    //    value: string;
+    //    children?: DropdownNode[];
+    //};
+
     // Sets the pagination to page one every time the page loads or refreshes
     useEffect(() => {
         setCurrentPage(1);
@@ -122,7 +153,7 @@ const RouterMailchimpDashboard: FC = () => {
     // Handles the submit after any of the filters change
     useEffect(() => {
         handleSubmit();
-    }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize, selectedSchool]);
+    }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize, selectedSchool, selectedSchools]);
 
     // Sets the data of the current paginated page
     useEffect(() => {
@@ -163,56 +194,56 @@ const RouterMailchimpDashboard: FC = () => {
             const data = res.data;
 
             // Flatten schoolNames if it's nested
-            // Helps with mapping to the select
             const flattenedSchoolNames = Array.isArray(data.schoolNames?.[0])
                 ? data.schoolNames[0]
                 : data.schoolNames;
 
-            setSchoolJson({
-                schoolNames: flattenedSchoolNames,
-                schoolTypes: data.schoolTypes,
-            });
+            // Save original raw data if needed
+            //setSchoolJson({
+            //    schoolNames: flattenedSchoolNames,
+            //    schoolTypes: data.schoolTypes,
+            //});
 
-            console.log(schoolJson);
+            // Transform to rc-tree-select format
+            const transformed = data.schoolTypes.map(({ schoolType }: SchoolType) => ({
+                label: capitalizeWords(`${schoolType} schools`), // changed from title
+                value: schoolType,
+                key: schoolType,
+                children: flattenedSchoolNames
+                    .filter((school: SchoolName) => school.schoolType === schoolType)
+                    .map((school: SchoolName) => ({
+                        label: school.schoolName, // changed from title
+                        value: slugify(school.schoolName),
+                        key: slugify(school.schoolName),
+                    })),
+            }));
+
+            setTreeData(transformed);
+            console.log("Transformed Tree Data:", transformed);
+
         }
 
         fetchSchools();
+        
     }, []);
 
-    const schoolTreeData = [
-        {
-            label: 'Elementary Schools',
-            value: 'elementary',
-            children: [
-                { label: 'James Elementary', value: 'james' },
-                { label: 'Main Elementary', value: 'main' },
-            ],
-        },
-        {
-            label: 'Middle Schools',
-            value: 'middle',
-            children: [
-                { label: `St. Mary's Middle`, value: 'stmarys' },
-                { label: 'Oakwood Middle', value: 'oakwood' },
-            ],
-        },
-        {
-            label: 'High Schools',
-            value: 'high',
-            children: [
-                { label: 'Lincoln High', value: 'lincoln' },
-                { label: 'Jefferson High', value: 'jefferson' },
-            ],
-        },
-        {
-            label: 'College',
-            value: 'college',
-            children: [
-                { label: 'Miami University', value: 'miami' },
-                { label: 'University if Cincinati', value: 'cincinati' },
-            ],
-        },
-    ];
+    // Helper function to capitalize words
+    function capitalizeWords(str: string) {
+        if (typeof str !== 'string') return '';
+        return str.replace(/\b\w/g, l => l.toUpperCase());
+    }
+     
+    // Helper function that removes spaces, uppercase characters, and special characters.
+    // It then adds hyphens in between words.
+    // Creates a browser friendly version of a string (eg. Hello World! -> hello-world)
+    function slugify(str: string) {
+        if (typeof str !== 'string') return '';
+        return str
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-]/g, '');
+    }
+
 
     // Sets up the pagination based on the total amount of data and the set pages size
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
@@ -286,6 +317,16 @@ const RouterMailchimpDashboard: FC = () => {
         return items;
     };
 
+    const handleTreeChange = (e: TreeSelectChangeEvent) => {
+        // Ensure we only set the value if it's the correct type (object)
+        if (e.value && typeof e.value === 'object' && !Array.isArray(e.value)) {
+            setSelectedSchools(e.value);
+        } else {
+            setSelectedSchools({});
+        }
+    };
+
+
     return (
         <Container>
             <Row>
@@ -298,35 +339,19 @@ const RouterMailchimpDashboard: FC = () => {
             <div className="filter-form mb-2">
                 <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
                     {/* Education Level Filter */}
-                    <Col xs={12} md={4} lg={2}> 
+                    <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
                             <Form.Label>School</Form.Label>
-                            <DropdownTreeSelect
-                                data={schoolTreeData}
-                                className="bootstrap-demo"
+                            <TreeSelect
+                                value={selectedSchools}
+                                onChange={handleTreeChange}
+                                options={treeData}
+                                placeholder="Select schools"
+                                selectionMode="checkbox"
+                                display="chip"
                             />
                         </Form.Group>
                     </Col>
-
-                    {/*<Col xs={12} md={4} lg={2}>*/}
-                    {/*    <Form.Group className="mb-2">*/}
-                    {/*        <Form.Label>School</Form.Label>*/}
-                    {/*        <Form.Select*/}
-                    {/*            value={selectedSchool}*/}
-                    {/*            onChange={(e) => {*/}
-                    {/*                const val = e.target.value;*/}
-                    {/*                setSelectedSchool(val);*/}
-                    {/*            }}*/}
-                    {/*        >*/}
-                    {/*            <option value="">Select...</option>*/}
-                    {/*            {schoolJson?.schoolNames?.map((school) => (*/}
-                    {/*                <option key={`${school.schoolName}`} value={school.schoolName}>*/}
-                    {/*                    {school.schoolName}*/}
-                    {/*                </option>*/}
-                    {/*            ))}*/}
-                    {/*        </Form.Select>*/}
-                    {/*    </Form.Group>*/}
-                    {/*</Col>*/}
 
                     {/* Account Type Filter */}
                     <Col xs={12} md={4} lg={2}>

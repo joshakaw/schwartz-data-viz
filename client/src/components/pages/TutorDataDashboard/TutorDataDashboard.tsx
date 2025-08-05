@@ -9,8 +9,9 @@ import { TutorLeaderboardRequestDTO } from '../../../dtos/TutorLeaderboardReques
 import { TutorLeaderboardResponseDTO } from '../../../dtos/TutorLeaderboardResponseDTO';
 import instance from '../../../utils/axios';
 import TutorDetailComponent from '../../TutorDetailComponent/TutorDetailComponent'
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { FaSort } from 'react-icons/fa';
 
-// Will set to proper DTO when it is complete.
 interface TutorDataDashboardProps { }
 
 const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
@@ -21,6 +22,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         from: new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 6)
     });
 
+    // What is this for?
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
 
@@ -49,6 +51,44 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         setData(response.data);
     }
 
+    // For react-data-table-component
+    const cols: TableColumn<TutorLeaderboardResponseDTO>[] = [
+        {
+            name: 'Name',
+            selector: row => row.name,
+            format: (cell) => <u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(cell.tutorId)}>{cell.name}</u>
+        },
+        {
+            name: '# of Sessions',
+            selector: row => row.numberOfSessions,
+            sortable: true,
+        },
+        {
+            name: 'Last Session',
+            selector: row => row.lastSession
+        },
+        {
+            name: 'Hrs Tutored',
+            selector: row => row.hoursTutored,
+            sortable: true
+        },
+        {
+            name: '# of Recurring Sessions',
+            selector: row => row.numRecurringSessions,
+            sortable: true
+        },
+        {
+            name: 'Revenue Generated',
+            selector: row => row.revenueGenerated,
+            sortable: true
+        },
+        {
+            name: 'Avg Hrs/WK',
+            selector: row => row.avgHoursPerWeek.toFixed(2),
+            sortable: true
+        }
+    ]
+
     useEffect(() => {
         getData();
     }, [dateRange])
@@ -62,7 +102,6 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     // Handle debounce for freeResponseSearchKeyword input
     useEffect(() => {
         const debounceFunction = setTimeout(() => {
-            console.log('hi');
             getData();
         }, 1000);
 
@@ -71,6 +110,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         };
     }, [name]);
 
+    // Makes sure the modal opens and closes as needed
     const handleModalOpen = (id: number) => {
         setTutorID(id);
         setShowModal(true);
@@ -89,18 +129,10 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             </Modal>
             <Row>
                 <h1>Tutor Data Dashboard</h1>
-                <p>Welcome to the Tutor Data Dashboard. *put description here*</p>
+                <p>Welcome to the Tutor Data Dashboard. Here you can view the performance of tutors and review specific tutor metrics.</p>
             </Row>
             <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
-                <Col style={{ paddingTop: 10 }} md={4}>
-                    <Form.Label>Sort by:</Form.Label>
-                    <Select
-                        placeholder='Select...'
-                        options={sortByOptions}
-                        onChange={setSortBy}
-                    />
-                </Col>
-                <Col style={{ paddingTop: 10 }} md={4}>
+                <Col style={{ paddingTop: 10 }} md={6}>
                     <Form.Label>Name Search:</Form.Label>
                     <Form.Control type="text" onChangeCapture={changeName} />
                 </Col>
@@ -110,35 +142,11 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                 </Col>
             </Row>
             <Row>
-                <Table striped bordered responsive>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th># of Sessions</th>
-                            <th>Last Session</th>
-                            <th>Hrs Tutored</th>
-                            <th># of Recurring Sessions</th>
-                            <th>Revenue Generated</th>
-                            <th>Avg Hrs/WK</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tableData.map((data) => (
-                            <tr key={data.name}>
-
-                                {/*In the future, clicking the name will open 
-                                    TutorDetail modal with data.tutorId as an input*/}
-                                <td><u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(data.tutorId)}>{data.name}</u></td>
-                                <td>{data.numberOfSessions}</td>
-                                <td>{new Date(data.lastSession).toLocaleDateString()}</td>
-                                <td>{data.hoursTutored}</td>
-                                <td>{data.numRecurringSessions ? data.numRecurringSessions : "-"}</td>
-                                <td>{data.revenueGenerated}</td>
-                                <td>{data.avgHoursPerWeek.toFixed(2)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                <DataTable
+                    columns={cols}
+                    data={tableData}
+                    pagination
+                />
             </Row>
         </Container>
     );

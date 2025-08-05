@@ -17,13 +17,7 @@ export interface TutorLeaderboardRequestDTO {
     /**
      * Sort by. If undefined, it will default to hours.
      */
-    sortBy?: "hours" | "sessions" | "revenue" | "recurringSessions" | "avghours" | "rescheduleRate";
-
-    /**
-     * Specific name to return in the results. If undefined, all subjects
-     * will be returned in the results.
-     */
-    tutorNameSearch?: string;
+    sortBy?: "hours" | "sessions" | "revenue" | "recurringSessions";
 
     /**
      * Subjects to return in the results. If undefined, all subjects 

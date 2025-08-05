@@ -119,7 +119,9 @@ const RouterMailchimpDashboard: FC = () => {
                     pageSize
                 });
             } else {
+
                 // Sorts the data by ascending order from the min value of the sessionRange value
+
                 const sortedData = [...data].sort((a, b) => (a.numSessions ?? 0) - (b.numSessions ?? 0));
                 setFullData(sortedData);
 
@@ -138,6 +140,7 @@ const RouterMailchimpDashboard: FC = () => {
             setLoading(false);
         }
     };
+
 
     // Sets the pagination to page one every time the page loads or refreshes
     useEffect(() => {
@@ -200,7 +203,8 @@ const RouterMailchimpDashboard: FC = () => {
 
             // Transform to rc-tree-select format
             const transformed = data.schoolTypes.map(({ schoolType }: SchoolType) => ({
-                label: capitalizeWords(`${schoolType} schools`), 
+
+                label: capitalizeWords(`${schoolType} schools`),
                 value: schoolType,
                 key: schoolType,
                 children: flattenedSchoolNames
@@ -211,8 +215,6 @@ const RouterMailchimpDashboard: FC = () => {
                         key: slugify(school.schoolName),
                     })),
             }));
-
-
             setTreeData(transformed);
             console.log(treeData);
         }

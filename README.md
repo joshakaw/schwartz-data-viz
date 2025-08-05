@@ -1,30 +1,15 @@
-![Data Visualization Project In Collaboration With Schwartz Tutoring LLC](./datavisualizationprojectitle.png)
-![Examples of work 7/27/25](./datavisexamples.png)
+# **Schwartz Tutoring: Data Visualization Project**
 
-Our team will develop a website for Schwartz Tutoring to visualize company data on multiple dashboards, including signup, customer, and tutor metrics. 
-The project will take place from _May 26, 2025_ to _August 15, 2025_ (12 weeks).
-
-## The Team
-
-**Joshua Miller**, PM
-
-**Tyler Magoteaux**
-
-**Tarik Salispahic**
-
-**Trevor Coppess**
-
-_With strategic input and vision from **Dylan Fall**, CEO of Schwartz Tutoring._
-
+Our team will develop a website for Schwartz Tutoring to visualize company data on multiple dashboards, including signup, customer, and tutor metrics. This README will guide you through getting the project up and running.
 
 ---
 
 ## **Technologies Used**
 
-* **Database:** MySQL, SQLite
-* **Backend:** Python 3.11 with Flask, Pandas, SQLAlchemy, Typing
-* **Frontend:** React.js, Axios, Chart.js, React Bootstrap
-* **Development Environment:** Visual Studio Community 2022 IDE
+* **Database:** MySQL, hosted on Microsoft Azure
+* **Backend:** Python 3.11 with Flask, Pandas, mysqlclient
+* **Frontend:** React.js, Axios
+* **Development Environment:** Visual Studio Community IDE
 
 ---
 

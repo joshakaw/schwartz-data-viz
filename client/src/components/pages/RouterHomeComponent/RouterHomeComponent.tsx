@@ -1,9 +1,8 @@
-import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import './RouterHomeComponent.css';
-import { Card, Col, Container, Row } from 'react-bootstrap';
-import { useLocation, useNavigate } from 'react-router';
 
 interface RouterHomeComponentProps { }
+
 
 const RouterHomeComponent: FC<RouterHomeComponentProps> = () => {
 

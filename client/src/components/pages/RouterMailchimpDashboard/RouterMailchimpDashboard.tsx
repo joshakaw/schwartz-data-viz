@@ -99,7 +99,6 @@ const RouterMailchimpDashboard: FC = () => {
         try {
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
-
             let data = receivedData.data;
 
             // Filter by selected schools if any are selected
@@ -120,6 +119,9 @@ const RouterMailchimpDashboard: FC = () => {
                     pageSize
                 });
             } else {
+
+                // Sorts the data by ascending order from the min value of the sessionRange value
+
                 const sortedData = [...data].sort((a, b) => (a.numSessions ?? 0) - (b.numSessions ?? 0));
                 setFullData(sortedData);
 
@@ -139,11 +141,6 @@ const RouterMailchimpDashboard: FC = () => {
         }
     };
 
-    //type DropdownNode = {
-    //    label: string;
-    //    value: string;
-    //    children?: DropdownNode[];
-    //};
 
     // Sets the pagination to page one every time the page loads or refreshes
     useEffect(() => {
@@ -206,18 +203,18 @@ const RouterMailchimpDashboard: FC = () => {
 
             // Transform to rc-tree-select format
             const transformed = data.schoolTypes.map(({ schoolType }: SchoolType) => ({
-                title: capitalizeWords(`${schoolType } schools`),
+
+                label: capitalizeWords(`${schoolType} schools`),
                 value: schoolType,
                 key: schoolType,
                 children: flattenedSchoolNames
                     .filter((school: SchoolName) => school.schoolType === schoolType)
                     .map((school: SchoolName) => ({
-                        title: school.schoolName,
+                        label: school.schoolName, 
                         value: slugify(school.schoolName),
                         key: slugify(school.schoolName),
                     })),
             }));
-
             setTreeData(transformed);
             console.log(treeData);
         }
@@ -242,7 +239,6 @@ const RouterMailchimpDashboard: FC = () => {
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9\-]/g, '');
     }
-
 
     // Sets up the pagination based on the total amount of data and the set pages size
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {

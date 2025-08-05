@@ -108,6 +108,7 @@ const RouterMailchimpDashboard: FC = () => {
                 );
             }
 
+            // Sorting by session range
             if (sessionRange === undefined) {
                 setFullData(data);
 
@@ -119,9 +120,6 @@ const RouterMailchimpDashboard: FC = () => {
                     pageSize
                 });
             } else {
-
-                // Sorts the data by ascending order from the min value of the sessionRange value
-
                 const sortedData = [...data].sort((a, b) => (a.numSessions ?? 0) - (b.numSessions ?? 0));
                 setFullData(sortedData);
 
@@ -133,13 +131,13 @@ const RouterMailchimpDashboard: FC = () => {
                     pageSize
                 });
             }
-
         } catch (err) {
             console.error("API error:", err);
         } finally {
             setLoading(false);
         }
     };
+
 
 
     // Sets the pagination to page one every time the page loads or refreshes
@@ -186,42 +184,62 @@ const RouterMailchimpDashboard: FC = () => {
     // Grabs all of the unique school names from the account data
     // used for school select filter
     useEffect(() => {
-        async function fetchSchools() {
-            const res = await instance.get("/educationLevelSchools");
-            const data = res.data;
-
-            // Flatten schoolNames if it's nested
-            const flattenedSchoolNames = Array.isArray(data.schoolNames?.[0])
-                ? data.schoolNames[0]
-                : data.schoolNames;
-
-            // Save original raw data if needed
-            //setSchoolJson({
-            //    schoolNames: flattenedSchoolNames,
-            //    schoolTypes: data.schoolTypes,
-            //});
-
-            // Transform to rc-tree-select format
-            const transformed = data.schoolTypes.map(({ schoolType }: SchoolType) => ({
-
-                label: capitalizeWords(`${schoolType} schools`),
-                value: schoolType,
-                key: schoolType,
-                children: flattenedSchoolNames
-                    .filter((school: SchoolName) => school.schoolType === schoolType)
-                    .map((school: SchoolName) => ({
-                        label: school.schoolName, 
-                        value: slugify(school.schoolName),
-                        key: slugify(school.schoolName),
-                    })),
-            }));
-            setTreeData(transformed);
-            console.log(treeData);
+        interface SchoolName {
+            schoolName: string;
+            schoolType: string;
         }
+
+        interface SchoolType {
+            schoolType: string;
+        }
+
+        const fetchSchools = async () => {
+            try {
+                const res = await instance.get("/educationLevelSchools");
+                const data = res.data;
+
+                // Clean up the schoolNames and schoolTypes to remove the SQL query and extract the data
+                const schoolNames: SchoolName[] = Array.isArray(data.schoolNames) ? data.schoolNames[0] : [];
+                const schoolTypes: SchoolType[] = Array.isArray(data.schoolTypes) ? data.schoolTypes[0] : [];
+
+                if (!schoolNames.length || !schoolTypes.length) {
+                    console.error("Error: School data is incomplete");
+                    return;
+                }
+
+                // Sort schoolTypes and schoolNames before mapping
+                const transformed = schoolTypes
+                    .sort((a, b) => a.schoolType.localeCompare(b.schoolType))  // Sort schoolTypes alphabetically
+                    .map(({ schoolType }: SchoolType) => {
+                        const children = schoolNames
+                            .filter((school: SchoolName) => school.schoolType === schoolType)
+                            .sort((a, b) => a.schoolName.localeCompare(b.schoolName))  // Sort schoolNames alphabetically
+                            .map((school: SchoolName) => ({
+                                label: school.schoolName,
+                                value: slugify(school.schoolName),
+                                key: `${schoolType}-${slugify(school.schoolName)}`,
+                            }));
+
+                        return {
+                            label: capitalizeWords(`${schoolType} schools`),
+                            value: schoolType,
+                            key: schoolType,
+                            children: children
+                        };
+                    });
+
+                // Set the transformed data to state
+                setTreeData(transformed);
+            } catch (error) {
+                console.error('Error fetching schools:', error);
+            }
+        };
+
 
         fetchSchools();
 
     }, []);
+
 
     // Helper function to capitalize words
     function capitalizeWords(str: string) {
@@ -236,9 +254,11 @@ const RouterMailchimpDashboard: FC = () => {
         if (typeof str !== 'string') return '';
         return str
             .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9\-]/g, '');
+            .replace(/\s+/g, '-')  // Replace spaces with hyphens
+            .replace(/[^a-z0-9\-]/g, '')  // Remove non-alphanumeric characters
+            .replace(/-+/g, '-');  // Replace consecutive hyphens with a single one
     }
+
 
     // Sets up the pagination based on the total amount of data and the set pages size
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
@@ -322,6 +342,7 @@ const RouterMailchimpDashboard: FC = () => {
     };
 
 
+
     return (
         <Container>
             <Row>
@@ -340,10 +361,11 @@ const RouterMailchimpDashboard: FC = () => {
                             <TreeSelect
                                 value={selectedSchools}
                                 onChange={handleTreeChange}
-                                options={treeData}
+                                options={treeData}  // Ensure this is in the correct format
                                 placeholder="Select schools"
                                 selectionMode="checkbox"
                                 display="chip"
+                                className="w-100"
                             />
                         </Form.Group>
                     </Col>

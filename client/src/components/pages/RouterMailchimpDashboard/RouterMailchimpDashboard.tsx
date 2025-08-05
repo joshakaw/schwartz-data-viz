@@ -17,7 +17,15 @@ import instance from "../../../utils/axios";
 import { MailchimpUsersRequestDTO } from "../../../dtos/MailchimpUsersRequestDTO";
 import { MailchimpUserResponseDTO } from '../../../dtos/MailchimpUsersResponseDTO.ts';
 import { ApiPaginatedResponse } from '../../../dtos/ApiPaginatedResponse.ts';
-import { EducationLevelSchoolsResponseDTO } from '../../../dtos/EducationLevelSchoolsResponseDTO.ts';
+
+// ** tree-select import and styles **
+import { TreeSelect } from 'primereact/treeselect';
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { TreeSelectSelectionKeysType } from 'primereact/treeselect';
+import { TreeSelectChangeEvent } from 'primereact/treeselect';
+
 
 // Options for multi-select (account types)
 const sessionOptions = [
@@ -26,18 +34,39 @@ const sessionOptions = [
     { value: '2', label: 'Tutor' }
 ];
 
+interface SchoolName {
+    schoolName: string;
+    schoolType: string;
+}
+
+interface SchoolType {
+    schoolType: string;
+}
+
 const RouterMailchimpDashboard: FC = () => {
-    const [selectedSession, setSelectedSession] = useState<string>('Sessions');
+    // Un-comment useStates if needed
+
+    // Add 'setSelectedSchool' if used
+    const [selectedSchool] = useState<string>('');
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
     const [accountTypes, setAccountTypes] = useState<{ value: string, label: string }[]>([]);
     const [resJson, setResJson] = useState<ApiPaginatedResponse<MailchimpUserResponseDTO>>();
     const [fullData, setFullData] = useState<MailchimpUserResponseDTO[]>([]);
-    const [schoolJson, setSchoolJson] = useState<EducationLevelSchoolsResponseDTO>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsOfData, setMaxRows] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10);
     const [loading, setLoading] = useState(true);
+    //const [schoolJson, setSchoolJson] = useState<{
+    //    schoolNames: SchoolName[];
+    //    schoolTypes: SchoolType[];
+    //}>({ schoolNames: [], schoolTypes: [] });
+    const [selectedSchools, setSelectedSchools] = useState<TreeSelectSelectionKeysType>({});
+    const [treeData, setTreeData] = useState<any[]>([]);
+    //const [nodes, setNodes] = useState(null);
+    //const [selectedNodeKey, setSelectedNodeKey] = useState(null);
 
+
+    // Params for the data that will go into the table
     const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
         limit,
         pageIndex,
@@ -61,6 +90,7 @@ const RouterMailchimpDashboard: FC = () => {
         endDate: undefined
     });
 
+    // Handles changing data based on filters to give to the table
     const handleSubmit = async () => {
         setLoading(true);
         const fetchLimit = rowsOfData || 10000;
@@ -69,16 +99,38 @@ const RouterMailchimpDashboard: FC = () => {
         try {
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
             const receivedData: ApiPaginatedResponse<MailchimpUserResponseDTO> = response.data;
-            const sortedData = [...receivedData.data].sort((a, b) => (b.numSessions ?? 0) - (a.numSessions ?? 0));
-            setFullData(sortedData);
+            let data = receivedData.data;
 
-            const paginatedSlice = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-            setResJson({
-                data: paginatedSlice,
-                totalItems: sortedData.length,
-                pageIndex: currentPage - 1,
-                pageSize
-            });
+            // Filter by selected schools if any are selected
+            if (Object.keys(selectedSchools).length > 0) {
+                data = data.filter(user =>
+                    selectedSchools[slugify(user.school || '')]
+                );
+            }
+
+            // Sorting by session range
+            if (sessionRange === undefined) {
+                setFullData(data);
+
+                const paginatedSlice = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+                setResJson({
+                    data: paginatedSlice,
+                    totalItems: data.length,
+                    pageIndex: currentPage - 1,
+                    pageSize
+                });
+            } else {
+                const sortedData = [...data].sort((a, b) => (a.numSessions ?? 0) - (b.numSessions ?? 0));
+                setFullData(sortedData);
+
+                const paginatedSlice = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+                setResJson({
+                    data: paginatedSlice,
+                    totalItems: sortedData.length,
+                    pageIndex: currentPage - 1,
+                    pageSize
+                });
+            }
         } catch (err) {
             console.error("API error:", err);
         } finally {
@@ -86,14 +138,19 @@ const RouterMailchimpDashboard: FC = () => {
         }
     };
 
+
+
+    // Sets the pagination to page one every time the page loads or refreshes
     useEffect(() => {
         setCurrentPage(1);
-    }, [sessionRange, accountTypes, pageSize]);
+    }, [sessionRange, accountTypes, pageSize, selectedSchool]);
 
+    // Handles the submit after any of the filters change
     useEffect(() => {
         handleSubmit();
-    }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize]);
+    }, [currentPage, sessionRange, accountTypes, rowsOfData, pageSize, selectedSchool, selectedSchools]);
 
+    // Sets the data of the current paginated page
     useEffect(() => {
         if (!fullData.length) return;
 
@@ -106,6 +163,8 @@ const RouterMailchimpDashboard: FC = () => {
         });
     }, [currentPage, fullData]);
 
+    // Makes sure that the form objects can't be submited via key press
+    // The page would refresh and clear filters if enabled
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter') {
@@ -122,30 +181,100 @@ const RouterMailchimpDashboard: FC = () => {
         };
     }, []);
 
+    // Grabs all of the unique school names from the account data
+    // used for school select filter
     useEffect(() => {
+        interface SchoolName {
+            schoolName: string;
+            schoolType: string;
+        }
+
+        interface SchoolType {
+            schoolType: string;
+        }
+
         const fetchSchools = async () => {
             try {
-                const schoolsResponse = await instance.get("/educationLevelSchools");
-                const uniqueSchools: EducationLevelSchoolsResponseDTO = schoolsResponse.data;
-                setSchoolJson(uniqueSchools);
-                console.log(uniqueSchools);
+                const res = await instance.get("/educationLevelSchools");
+                const data = res.data;
+
+                // Clean up the schoolNames and schoolTypes to remove the SQL query and extract the data
+                const schoolNames: SchoolName[] = Array.isArray(data.schoolNames) ? data.schoolNames[0] : [];
+                const schoolTypes: SchoolType[] = Array.isArray(data.schoolTypes) ? data.schoolTypes[0] : [];
+
+                if (!schoolNames.length || !schoolTypes.length) {
+                    console.error("Error: School data is incomplete");
+                    return;
+                }
+
+                // Sort schoolTypes and schoolNames before mapping
+                const transformed = schoolTypes
+                    .sort((a, b) => a.schoolType.localeCompare(b.schoolType))  // Sort schoolTypes alphabetically
+                    .map(({ schoolType }: SchoolType) => {
+                        const children = schoolNames
+                            .filter((school: SchoolName) => school.schoolType === schoolType)
+                            .sort((a, b) => a.schoolName.localeCompare(b.schoolName))  // Sort schoolNames alphabetically
+                            .map((school: SchoolName) => ({
+                                label: school.schoolName,
+                                value: slugify(school.schoolName),
+                                key: `${schoolType}-${slugify(school.schoolName)}`,
+                            }));
+
+                        return {
+                            label: capitalizeWords(`${schoolType} schools`),
+                            value: schoolType,
+                            key: schoolType,
+                            children: children
+                        };
+                    });
+
+                // Set the transformed data to state
+                setTreeData(transformed);
             } catch (error) {
-                console.error("Error fetching schools:", error);
+                console.error('Error fetching schools:', error);
             }
         };
+
+
         fetchSchools();
+
     }, []);
 
+
+    // Helper function to capitalize words
+    function capitalizeWords(str: string) {
+        if (typeof str !== 'string') return '';
+        return str.replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    // Helper function that removes spaces, uppercase characters, and special characters.
+    // It then adds hyphens in between words.
+    // Creates a browser friendly version of a string (eg. Hello World! -> hello-world)
+    function slugify(str: string) {
+        if (typeof str !== 'string') return '';
+        return str
+            .toLowerCase()
+            .replace(/\s+/g, '-')  // Replace spaces with hyphens
+            .replace(/[^a-z0-9\-]/g, '')  // Remove non-alphanumeric characters
+            .replace(/-+/g, '-');  // Replace consecutive hyphens with a single one
+    }
+
+
+    // Sets up the pagination based on the total amount of data and the set pages size
     const loadPagination = (totalItems: number | undefined, pageSizeNum: number) => {
         if (typeof totalItems === "undefined" || !totalItems) return null;
         const totalPages = Math.ceil(totalItems / pageSizeNum);
+
+        // Array for all buttons in the pagination page selection bar
         const items = [];
 
+        // Changes the page dynamically whenever a new option in the pagination bar is clicked
         const handlePageChange = (page: number) => {
             if (page < 1 || page > totalPages) return;
             setCurrentPage(page);
         };
 
+        // Adds all of the buttons to the items array. (inludes: first, prev, all of the numbered pages, next, last)
         items.push(<Pagination.First key="first" onClick={() => handlePageChange(1)} />);
         items.push(<Pagination.Prev key="prev" onClick={() => handlePageChange(currentPage - 1)} />);
 
@@ -203,6 +332,17 @@ const RouterMailchimpDashboard: FC = () => {
         return items;
     };
 
+    const handleTreeChange = (e: TreeSelectChangeEvent) => {
+        // Ensure we only set the value if it's the correct type (object)
+        if (e.value && typeof e.value === 'object' && !Array.isArray(e.value)) {
+            setSelectedSchools(e.value);
+        } else {
+            setSelectedSchools({});
+        }
+    };
+
+
+
     return (
         <Container>
             <Row>
@@ -213,28 +353,24 @@ const RouterMailchimpDashboard: FC = () => {
             </Row>
 
             <div className="filter-form mb-2">
-                <Row>
+                <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
+                    {/* Education Level Filter */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
-                            <Form.Label>Edu. Level</Form.Label>
-                            <Form.Select
-                                value={selectedSession}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSelectedSession(val);
-                                    setSessionRange(val);
-                                }}
-                            >
-                                <option value="" disabled hidden>Select...</option>
-                                {schoolJson?.schoolNames?.map((school, index) => (
-                                    <option key={`${index}-${school.schoolName}-${school.schoolType}`} value={school.schoolName}>
-                                        {school.schoolName}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <Form.Label>School</Form.Label>
+                            <TreeSelect
+                                value={selectedSchools}
+                                onChange={handleTreeChange}
+                                options={treeData}  // Ensure this is in the correct format
+                                placeholder="Select schools"
+                                selectionMode="checkbox"
+                                display="chip"
+                                className="w-100"
+                            />
                         </Form.Group>
                     </Col>
 
+                    {/* Account Type Filter */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="mb-2">
                             <Form.Label>Account Type</Form.Label>
@@ -248,6 +384,7 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
+                    {/* Session Range Filter */}
                     <Col xs={12} md={4} lg={2}>
                         <Form.Group className="sessions-multi-select mb-2">
                             <Form.Label>Num of Sessions</Form.Label>
@@ -258,15 +395,12 @@ const RouterMailchimpDashboard: FC = () => {
                                     const rawVal = selected?.value || '';
                                     const isPredefined = ['0', '1-2', '3+'].includes(rawVal);
                                     if (isPredefined) {
-                                        setSelectedSession(rawVal);
                                         setSessionRange(rawVal);
                                     } else {
                                         const numericOnly = rawVal.replace(/\D/g, '');
                                         if (numericOnly) {
-                                            setSelectedSession(`${numericOnly}+`);
                                             setSessionRange(numericOnly);
                                         } else {
-                                            setSelectedSession('');
                                             setSessionRange(undefined);
                                         }
                                     }
@@ -280,7 +414,8 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    <Col xs={12} md={4} lg={2}>
+                    {/* Page Size Filter */}
+                    <Col xs={12} md={6} lg={2}>
                         <Form.Group className="mb-2">
                             <Form.Label>Records Per Page</Form.Label>
                             <Form.Select
@@ -294,7 +429,8 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    <Col xs={12} md={4} lg={2}>
+                    {/* Record/Data Limit Filter */}
+                    <Col xs={12} md={6} lg={2}>
                         <Form.Group controlId="minSessions" className="mb-2">
                             <Form.Label>Records Limit</Form.Label>
                             <Form.Control
@@ -306,7 +442,8 @@ const RouterMailchimpDashboard: FC = () => {
                         </Form.Group>
                     </Col>
 
-                    <Col xs={12} md={8} lg={2} className="d-flex align-items-center">
+                    {/* CSV Export Button */}
+                    <Col xs={12} md={12} lg={2} className="d-flex align-items-center">
                         <CsvDownloadButton
                             className="export-button w-100"
                             delimiter=","
@@ -322,6 +459,7 @@ const RouterMailchimpDashboard: FC = () => {
                 </Col>
             </Row>
 
+            {/* Adds text to show witch results are currently being shown on the paginated page */}
             {resJson?.totalItems && (
                 <Row className="mb-2">
                     <Col className="text-center">
@@ -332,6 +470,7 @@ const RouterMailchimpDashboard: FC = () => {
                 </Row>
             )}
 
+            {/* adds the pagination to the page by calling the loadPagination function from above */}
             <Row>
                 <Col>
                     <Pagination className="pagination">

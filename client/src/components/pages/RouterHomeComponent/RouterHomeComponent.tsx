@@ -1,9 +1,10 @@
-import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Card } from 'react-bootstrap'; 
 import './RouterHomeComponent.css';
-import { Card, Col, Container, Row } from 'react-bootstrap';
-import { useLocation, useNavigate } from 'react-router';
 
 interface RouterHomeComponentProps { }
+
 
 const RouterHomeComponent: FC<RouterHomeComponentProps> = () => {
 

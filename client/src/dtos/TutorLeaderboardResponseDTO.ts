@@ -2,7 +2,7 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Name of the tutor
      */
-    name: string;
+    tutorName: string;
 
     /**
      * Total sessions (given the filters in the request)
@@ -12,7 +12,7 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Total hours
      */
-    hoursTutored: number
+    hours: number
 
     /**
      * Revenue generated
@@ -22,20 +22,10 @@ export interface TutorLeaderboardResponseDTO {
     /**
      * Number of recurring students
      */
-    numRecurringSessions: number;
+    numberOfRecurringStudents: number;
 
     /**
      * Most recent session date
      */
-    lastSession: any;
-
-    /**
-     * The tutor's ID
-     */
-    tutorId: number;
-
-    /**
-     * The average number of hours tutored per week in the given date range.
-     */
-    avgHoursPerWeek: number;
+    mostRecentSession: any;
 }

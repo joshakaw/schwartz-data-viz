@@ -12,6 +12,9 @@ from Server.dtos.dtos import (
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
     SignupsByCategoryRequestDTO,
+    TutorDetailChartRequestDTO,
+    TutorDetailKpiRequestDTO,
+    TutorInfoRequestDTO,
     TutorLeaderboardRequestDTO,
 )
 from flask import Blueprint, jsonify, request
@@ -28,6 +31,9 @@ from Server.queries.sql_queries import (
     SignupsByCategoryQ,
     SignupsLineChartQ,
     SignupsSummaryBoxQ,
+    TutorDetailChartQ,
+    TutorDetailKpiQ,
+    TutorInfoQ,
     TutorLeaderboardQ,
     makeEngine,
 )
@@ -257,6 +263,35 @@ def tutor_data_test():
         "value": True    
     })
 
+@main_api.route("/tutorDetail/info")
+def tutor_detail_info():
+    # Make DTO
+    dto = TutorInfoRequestDTO(**request.args.to_dict(flat=False))
+    
+    # Run query
+    (result, query) = TutorInfoQ(dto)
+
+    return jsonify(result)
+
+@main_api.route("/tutorDetail/kpis")
+def tutor_detail_kpis():
+    # Make DTO
+    dto = TutorDetailKpiRequestDTO(**request.args.to_dict(flat=False))
+
+    # Run query
+    (result, query) = TutorDetailKpiQ(dto)
+
+    return jsonify(result)
+
+@main_api.route("/tutorDetail/chart")
+def tutor_detail_chart():
+    # Make DTO
+    dto = TutorDetailChartRequestDTO(**request.args.to_dict(flat=False))
+
+    # Run query
+    (result, query) = TutorDetailChartQ(dto)
+
+    return jsonify(result)
 
 @main_api.route("/params")
 def params_test():

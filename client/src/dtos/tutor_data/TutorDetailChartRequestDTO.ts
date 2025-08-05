@@ -1,4 +1,7 @@
 
+/**
+ * GET /tutorDetail/chart
+ */
 interface TutorDetailChartRequestDTO {
 
     /**

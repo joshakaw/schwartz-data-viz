@@ -31,6 +31,9 @@ from Server.dtos.dtos import (
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
+    TutorDetailChartRequestDTO,
+    TutorDetailKpiRequestDTO,
+    TutorInfoRequestDTO,
     TutorLeaderboardRequestDTO,
 )
 from Server.queries.sql_helper import (
@@ -472,7 +475,7 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
                 "numRecurringSessions"
             ),
             literal(0).label("revenueGenerated"),
-            (func.coalesce(func.sum(tutoringsession_t.c.length), 0) / literal(weeks_in_range)).label("avgHoursPerWeek"),
+            (func.coalesce(func.sum(tutoringsession_t.c.length), 0) / literal(weeks_in_range)).label("avgHoursPerWeek")
         )
         .select_from(
             user_t.outerjoin(
@@ -499,3 +502,12 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
     )
 
     return getResults(stmt)
+
+def TutorInfoQ(dto: TutorInfoRequestDTO) -> ResultAndQuery:
+    pass
+
+def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
+    pass
+
+def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
+    pass

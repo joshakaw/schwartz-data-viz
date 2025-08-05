@@ -2,6 +2,8 @@
 /**
  * Request for metrics about a tutor
  * KPI = Key Performance Indicator
+ * 
+ * GET /tutorDetail/kpis
  */
 interface TutorDetailKpiRequestDTO {
     /**

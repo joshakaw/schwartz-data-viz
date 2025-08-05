@@ -200,17 +200,18 @@ const RouterMailchimpDashboard: FC = () => {
 
             // Transform to rc-tree-select format
             const transformed = data.schoolTypes.map(({ schoolType }: SchoolType) => ({
-                title: capitalizeWords(`${schoolType } schools`),
+                label: capitalizeWords(`${schoolType} schools`), 
                 value: schoolType,
                 key: schoolType,
                 children: flattenedSchoolNames
                     .filter((school: SchoolName) => school.schoolType === schoolType)
                     .map((school: SchoolName) => ({
-                        title: school.schoolName,
+                        label: school.schoolName, 
                         value: slugify(school.schoolName),
                         key: slugify(school.schoolName),
                     })),
             }));
+
 
             setTreeData(transformed);
             console.log(treeData);

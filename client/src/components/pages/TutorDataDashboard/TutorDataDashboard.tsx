@@ -59,7 +59,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             format: (cell) => <u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(cell.tutorId)}>{cell.name}</u>
         },
         {
-            name: '# of Sessions',
+            name: '# of Sessions*',
             selector: row => row.numberOfSessions,
             sortable: true,
         },
@@ -68,22 +68,22 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             selector: row => row.lastSession
         },
         {
-            name: 'Hrs Tutored',
+            name: 'Hrs Tutored*',
             selector: row => row.hoursTutored,
             sortable: true
         },
         {
-            name: '# of Recurring Sessions',
+            name: '# of Recurring Sessions*',
             selector: row => row.numRecurringSessions,
             sortable: true
         },
         {
-            name: 'Revenue Generated',
+            name: 'Revenue Generated*',
             selector: row => row.revenueGenerated,
             sortable: true
         },
         {
-            name: 'Avg Hrs/WK',
+            name: 'Avg Hrs/WK*',
             selector: row => row.avgHoursPerWeek.toFixed(2),
             sortable: true
         }
@@ -134,7 +134,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             <Row style={{ background: 'linear-gradient(to bottom, #F5F5F5, #FFFFFF)', paddingBottom: '2rem' }} className="rounded">
                 <Col style={{ paddingTop: 10 }} md={6}>
                     <Form.Label>Name Search:</Form.Label>
-                    <Form.Control type="text" onChangeCapture={changeName} />
+                    <Form.Control type="text" onChangeCapture={changeName} placeholder='Type Name Here...'/>
                 </Col>
                 <Col style={{ paddingTop: 10 }} md={4}>
                     <Form.Label>Date Range:</Form.Label>
@@ -142,6 +142,7 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
                 </Col>
             </Row>
             <Row>
+                <p style={{ fontSize:'12px', color:'gray'}}>* indicates sortable.</p>
                 <DataTable
                     columns={cols}
                     data={tableData}

@@ -9,48 +9,49 @@ from flask import current_app
 from sqlalchemy import literal_column
 from sqlalchemy.sql.elements import ColumnClause
 
-def get_day(u, dialect_name) -> ColumnClause:
+def get_day(dialect_name: str, column: ColumnClause) -> ColumnClause:
     """
     Truncates a timestamp to the date for daily grouping.
     """
+    column_key = column.key
     if dialect_name == "mysql":
-        # For MySQL, DATE() extracts the date part of the timestamp.
-        return literal_column(f"DATE({u.c.createdAt.key})")
-
+        return literal_column(f"DATE({column_key})")
     elif dialect_name == "sqlite":
-        # For SQLite, DATE() also extracts the date part.
-        return literal_column(f"DATE({u.c.createdAt.key})")
-        
+        return literal_column(f"DATE({column_key})")
     else:
         raise NotImplementedError(f"Unsupported dialect: {dialect_name}")
 
-def get_first_sunday_of_week(u, dialect_name) -> ColumnClause:
+
+def get_first_sunday_of_week(dialect_name: str, column: ColumnClause) -> ColumnClause:
+    column_key = column.key
     if dialect_name == "mysql":
         return literal_column(
-            f"DATE(DATE_SUB(DATE({u.c.createdAt.key}), INTERVAL DAYOFWEEK({u.c.createdAt.key}) - 1 DAY))"
+            f"DATE(DATE_SUB(DATE({column_key}), INTERVAL DAYOFWEEK({column_key}) - 1 DAY))"
         )
     elif dialect_name == "sqlite":
-        return literal_column(f"DATE({u.c.createdAt.key}, 'weekday 0', '-6 days')")
+        return literal_column(f"DATE({column_key}, 'weekday 0', '-6 days')")
     else:
         raise NotImplementedError(f"Unsupported dialect: {dialect_name}")
 
 
-def get_first_day_of_month(u, dialect_name) -> ColumnClause:
+def get_first_day_of_month(dialect_name: str, column: ColumnClause) -> ColumnClause:
+    column_key = column.key
     if dialect_name == "mysql":
         return literal_column(
-            f"DATE(CONCAT(year(DATE({u.c.createdAt.key})), '-', MONTH(DATE({u.c.createdAt.key})), '-1'))"
+            f"DATE(CONCAT(YEAR(DATE({column_key})), '-', MONTH(DATE({column_key})), '-1'))"
         )
     elif dialect_name == "sqlite":
-        return literal_column(f"DATE({u.c.createdAt.key}, 'start of month')")
+        return literal_column(f"DATE({column_key}, 'start of month')")
     else:
         raise NotImplementedError(f"Unsupported dialect: {dialect_name}")
 
 
-def get_first_day_of_year(u, dialect_name) -> ColumnClause:
+def get_first_day_of_year(dialect_name: str, column: ColumnClause) -> ColumnClause:
+    column_key = column.key
     if dialect_name == "mysql":
-        return literal_column(f"DATE(CONCAT(year(DATE({u.c.createdAt.key})), '-1-1'))")
+        return literal_column(f"DATE(CONCAT(YEAR(DATE({column_key})), '-1-1'))")
     elif dialect_name == "sqlite":
-        return literal_column(f"DATE({u.c.createdAt.key}, 'start of year')")
+        return literal_column(f"DATE({column_key}, 'start of year')")
     else:
         raise NotImplementedError(f"Unsupported dialect: {dialect_name}")
 

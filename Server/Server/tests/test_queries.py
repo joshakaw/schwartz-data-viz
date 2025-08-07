@@ -5,6 +5,8 @@ from Server.dtos.dtos import (
     MailchimpUsersRequestDTO,
     SignupLineChartRequestDTO,
     SignupSummaryBoxRequestDTO,
+    TutorDetailChartRequestDTO,
+    TutorDetailKpiRequestDTO,
     TutorLeaderboardRequestDTO,
 )
 from Server.queries.sql_queries import (
@@ -15,9 +17,13 @@ from Server.queries.sql_queries import (
     SignupsByCategoryQ,
     SignupsLineChartQ,
     SignupsSummaryBoxQ,
+    TutorDetailChartQ,
+    TutorDetailKpiQ,
+    TutorInfoQ,
     TutorLeaderboardQ,
     makeEngine,
 )
+from Server.views import TutorInfoRequestDTO
 
 
 class Test_test_queries(unittest.TestCase):
@@ -94,6 +100,30 @@ class Test_test_queries(unittest.TestCase):
         dto = TutorLeaderboardRequestDTO(subjects=["MMG 222"])
 
         (results, query) = TutorLeaderboardQ(dto)
+        print(results)
+        print(len(results))
+        print(query)
+
+    def test_tutor_info_q(self):
+        dto = TutorInfoRequestDTO(id=13);
+
+        (results, query) = TutorInfoQ(dto)
+        print(results)
+        print(len(results))
+        print(query)
+
+    def test_tutor_detail_kpi_q(self):
+        dto = TutorDetailKpiRequestDTO(id=13);
+
+        (results, query) = TutorDetailKpiQ(dto)
+        print(results)
+        print(len(results))
+        print(query)
+
+    def test_tutor_detail_chart_q(self):
+        dto = TutorDetailChartRequestDTO(id=13, groupBy="month");
+
+        (results, query) = TutorDetailChartQ(dto)
         print(results)
         print(len(results))
         print(query)

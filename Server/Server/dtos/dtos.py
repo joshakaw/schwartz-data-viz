@@ -95,3 +95,19 @@ class TutorLeaderboardRequestDTO(BaseModel):
     sortBy: Union[Single[str], None] = None
     subjects: Union[List[str], None] = None
     locations: Union[List[str], None] = None
+
+class TutorInfoRequestDTO(BaseModel):
+    id: Single[int]
+
+class TutorDetailKpiRequestDTO(BaseModel):
+    id: Single[int]
+    startDate: Union[Single[str], None] = None
+    endDate: Union[Single[str], None] = None
+    pass
+
+class TutorDetailChartRequestDTO(BaseModel):
+    id: Single[int]
+    groupBy: Single[str]
+    startDate: Union[Single[str], None] = None
+    endDate: Union[Single[str], None] = None
+    pass

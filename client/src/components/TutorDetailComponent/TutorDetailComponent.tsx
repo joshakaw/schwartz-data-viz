@@ -13,6 +13,7 @@ import { TutorDetailKpiRequestDTO } from '../../dtos/tutor_data/TutorDetailKpiRe
 import { TutorDetailKpiResponseDTO } from '../../dtos/tutor_data/TutorDetailKpiResponseDTO'
 import { TutorDetailChartRequestDTO } from '../../dtos/tutor_data/TutorDetailChartRequestDTO'
 import { TutorDetailChartResponseDTO } from '../../dtos/tutor_data/TutorDetailChartResponseDTO'
+import { dayWeekMonth } from '../../utils/input-fields'
 
 
 // Register annotation
@@ -21,10 +22,6 @@ ChartJS.register(annotationPlugin)
 interface TutorDetailComponentProps {
     tutorId: number;
     datesPicked: DateRange;
-}
-
-interface TutorDetailChartProps {
-    sData: Array<TutorDetailChartResponseDTO>;
 }
 
 interface TestResponseDTO {
@@ -41,6 +38,9 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     const [avgHrs, setAvgHrs] = useState<number>(0);
     const [numOfSessions, setNumOfSessions] = useState<number>(0);
     const [uniqueStudents, setUniqueStudents] = useState<number>(0);
+    const [rescheduleRate, setRescheduleRate] = useState<number>(0);
+    const [repeats, setRepeats] = useState<number>(0);
+    const [total, setTotal] = useState<number>(0);
 
     const [lineData, setLineData] = useState<TutorDetailChartResponseDTO>({ data: [] });
 
@@ -70,6 +70,10 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
             {
                 label: "Hours",
                 data: lineData?.data?.map(item => item.sessionHours),
+                borderColor: 'rgba(75,192,192,1)',
+                backgroundColor: 'rgba(75,192,192,0.2)',
+                fill: true,
+                tension: 0.4, // Smooth curve
             }
         ]
     }
@@ -112,24 +116,29 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     };
 
     function isActiveAggregationOption(option: string): boolean {
+        // console.log(option);
         switch (option) {
             case "day":
                 setShowLine(false);
                 setActiveButton(1);
+                getChart('day');
                 return false;
             case "week":
                 setAvgLine(2);
                 setShowLine(true);
                 setActiveButton(2);
+                getChart('week');
                 return true;
             case "month":
                 setAvgLine(8.7);
                 setShowLine(true);
                 setActiveButton(3);
+                getChart('month');
                 return false;
             default:
                 throw new Error("Aggregation option not found!");
         }
+
     }
 
     async function getName() {
@@ -152,12 +161,16 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
         setAvgHrs(response.data.avgHoursPerWeek);
         setNumOfSessions(response.data.totalSessions);
         setUniqueStudents(response.data.uniqueStudents);
+        setRepeats(response.data.repeatSessionCount);
+        setTotal(response.data.totalSessions);
+        setRescheduleRate(response.data.repeatSessionCount / response.data.totalSessions);
     }
 
-    async function getChart() {
+    async function getChart(grouper: string) {
+        console.log(grouper);
         const req: TutorDetailChartRequestDTO = {
             id: tutorId,
-            groupBy: 'week',
+            groupBy: grouper as dayWeekMonth,
             startDate: datesPicked.from?.toISOString(),
             endDate: datesPicked.to?.toISOString()
         }
@@ -168,13 +181,14 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     }
 
     function getData() {
-        getChart();
+        getChart('week');
         getName();
         getKPIs();
     }
 
     useEffect(() => {
         getData();
+        isActiveAggregationOption('week');
     }, [])
 
     return (
@@ -234,8 +248,11 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                 <Col sm={3}>
                     <Card style={{ width: "100%", height: "100%", textAlign: "center" }}>
                         <Card.Body className="align-items-center">
-                            <div className="stat">84%</div>
+                            <div className="stat">{ rescheduleRate.toFixed(2) }%</div>
                             Reschedule Rate
+                            <Row>
+                                <p style={{ fontSize: '12px', color: 'gray' }}>{ repeats } / { total }</p>
+                            </Row>
                         </Card.Body>
                     </Card>
                 </Col>

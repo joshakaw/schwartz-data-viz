@@ -19,3 +19,8 @@ body {
     display: flex;
     justify-content: center;
 }
+
+.p-treenode-toggler {
+    font-size: 1.2rem;
+    color: #333;
+}

@@ -373,6 +373,9 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
     if dto.pageSize:
         stmt = stmt.limit(dto.pageSize[0]).offset(dto.pageIndex[0] * dto.pageSize[0])
 
+    if dto.schools:
+        conditions.append(school_t.c.name.in_(dto.schools))
+
     return getResults(stmt)
 
 

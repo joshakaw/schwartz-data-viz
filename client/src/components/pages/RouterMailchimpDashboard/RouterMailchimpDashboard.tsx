@@ -52,7 +52,7 @@ const RouterMailchimpDashboard: FC = () => {
 
 
     // Params for the data that will go into the table
-    const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined): MailchimpUsersRequestDTO => ({
+    const getRequestParams = (pageIndex: number, pageSize: number, limit: number | undefined, schools: Set<string>): MailchimpUsersRequestDTO => ({
         limit,
         pageIndex,
         pageSize,
@@ -72,14 +72,16 @@ const RouterMailchimpDashboard: FC = () => {
             return undefined;
         })(),
         startDate: undefined,
-        endDate: undefined
+        endDate: undefined,
+        schools: Array.from(schools)
     });
 
     // Handles changing data based on filters to give to the table
     const handleSubmit = async () => {
         setLoading(true);
         const fetchLimit = rowsOfData || 10000;
-        const allParams = getRequestParams(0, fetchLimit, fetchLimit);
+        const selectedLeafKeys = getSelectedLeafKeys(treeData, selectedSchools);
+        const allParams = getRequestParams(0, fetchLimit, fetchLimit, selectedLeafKeys);
 
         try {
             const response = await instance.get("mailchimpDashboard/users", { params: allParams });
@@ -87,14 +89,13 @@ const RouterMailchimpDashboard: FC = () => {
             let data = receivedData.data;
 
             // Filter by selected schools if any are selected
-            const selectedLeafKeys = getSelectedLeafKeys(treeData, selectedSchools);
-
-            if (selectedLeafKeys.size > 0) {
-                data = data.filter((user: MailchimpUserResponseDTO) => {
-                    const school = user.school || '';
-                    return selectedLeafKeys.has(school);
-                });
-            }
+            
+            //if (selectedLeafKeys.size > 0) {
+            //    data = data.filter((user: MailchimpUserResponseDTO) => {
+            //        const school = user.school || '';
+            //        return selectedLeafKeys.has(school);
+            //    });
+            //}
 
             // Sorting by session range (if needed)
             if (sessionRange === undefined) {

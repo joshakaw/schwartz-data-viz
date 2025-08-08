@@ -5,7 +5,7 @@
  * 
  * GET /tutorDetail/kpis
  */
-interface TutorDetailKpiRequestDTO {
+export interface TutorDetailKpiRequestDTO {
     /**
      * Tutor ID
      */

@@ -1,5 +1,5 @@
 
-interface TutorInfoResponseDTO {
+export interface TutorInfoResponseDTO {
     /**
      * The name of the tutor (e.g. "John Doe")
      */

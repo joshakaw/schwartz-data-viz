@@ -212,7 +212,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                                 <h2 style={{ paddingLeft: '0.5rem' }}>Graphs:</h2>
                             </Col>
                             <Col className="d-flex align-items-center justify-content-end">
-                                <Form.Group>
+                                <Form.Group style={{ paddingRight: '.25rem' }}>
                                     <Select
                                         options={organizeOptions}
                                         className='input-select'

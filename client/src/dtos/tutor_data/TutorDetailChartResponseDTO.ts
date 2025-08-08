@@ -1,18 +1,17 @@
 type TutorDetailChartCoord = {
-
     /**
      * Date of aggregated period
      * (For example, in case of "week" groupBy, 
      * '7/1/25', '7/8/25', '7/15/25', etc)
      */
-    x: string,
+    date: string,
 
     /**
      * Number of session hours hosted by this
      * tutor in the aggregated period
      */
-    y: number
-}
+    sessionHours: number
+} 
 
 
 /**

@@ -2,7 +2,7 @@
 /**
  * GET /tutorDetail/chart
  */
-interface TutorDetailChartRequestDTO {
+export interface TutorDetailChartRequestDTO {
 
     /**
      * Tutor ID

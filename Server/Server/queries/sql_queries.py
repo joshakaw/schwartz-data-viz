@@ -360,6 +360,9 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
     if dto.endDate:
         conditions.append(tutoringsession_t.c.date <= dto.endDate[0])
 
+    if dto.schools:
+        conditions.append(school_t.c.name.in_(dto.schools))
+
     if conditions:
         stmt = stmt.where(and_(*conditions))
 
@@ -372,9 +375,6 @@ def MailchimpUsersQ(dto: MailchimpUsersRequestDTO) -> ResultAndQuery:
 
     if dto.pageSize:
         stmt = stmt.limit(dto.pageSize[0]).offset(dto.pageIndex[0] * dto.pageSize[0])
-
-    if dto.schools:
-        conditions.append(school_t.c.name.in_(dto.schools))
 
     return getResults(stmt)
 

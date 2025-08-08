@@ -54,9 +54,10 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     // For react-data-table-component
     const cols: TableColumn<TutorLeaderboardResponseDTO>[] = [
         {
-            name: 'Name',
+            name: 'Name*',
             selector: row => row.name,
-            format: (cell) => <u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(cell.tutorId)}>{cell.name}</u>
+            format: (cell) => <u style={{ color: '#0000EE', cursor: 'pointer' }} onClick={() => handleModalOpen(cell.tutorId)}>{cell.name}</u>,
+            sortable: true
         },
         {
             name: '# of Sessions*',
@@ -64,8 +65,9 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             sortable: true,
         },
         {
-            name: 'Last Session',
-            selector: row => row.lastSession
+            name: 'Last Session*',
+            selector: row => row.lastSession,
+            sortable: true
         },
         {
             name: 'Hrs Tutored*',

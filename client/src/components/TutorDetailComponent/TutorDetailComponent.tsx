@@ -163,7 +163,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
         setUniqueStudents(response.data.uniqueStudents);
         setRepeats(response.data.repeatSessionCount);
         setTotal(response.data.totalSessions);
-        setRescheduleRate(response.data.repeatSessionCount / response.data.totalSessions);
+        setRescheduleRate((response.data.repeatSessionCount / response.data.totalSessions) * 100); // Prevents percentages from being displayed as 0.whatever
     }
 
     async function getChart(grouper: string) {

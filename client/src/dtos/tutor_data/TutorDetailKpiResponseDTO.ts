@@ -1,4 +1,4 @@
-interface TutorDetailKpiResponseDTO {
+export interface TutorDetailKpiResponseDTO {
     /**
      * Average hours tutored per week
      * in the period

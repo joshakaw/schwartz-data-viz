@@ -10,6 +10,7 @@ export type OptionType = {
 }
 
 export type weekMonthYear = 'day' | 'week' | 'month' | 'year';
+export type dayWeekMonth = 'day' | 'week' | 'month';
 export type sortByOptionsType = 'hours' | 'sessions' | 'revenue' | 'recurringSessions' | 'avghours' | 'rescheduleRate';
 
 export const signupOptions: Options<{value: string, label: string}> = [

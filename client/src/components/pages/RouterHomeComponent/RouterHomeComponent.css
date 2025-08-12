@@ -1,1 +1,20 @@
+
 .RouterHomeComponent {}
+
+.card {
+    background: linear-gradient(to bottom, #F5F5F5, #FFFFFF);
+    padding-bottom: 1rem;
+    cursor: pointer;
+    display: flex;
+    text-align: center;
+    user-select: none;
+    transition: all .3s ease;
+}
+
+    .card:hover {
+        filter: brightness(90%); /* Darkens the card */
+    }
+
+h3 {
+    padding-top: 1rem;
+}

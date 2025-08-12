@@ -1,5 +1,6 @@
 .NavbarComponent {
     color: white;
+    user-select: none;
 }
 
 .app-navbar-schwartz-bg {

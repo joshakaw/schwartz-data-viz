@@ -214,6 +214,7 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
                             <Col className="d-flex align-items-center justify-content-end">
                                 <Form.Group style={{ paddingRight: '.25rem' }}>
                                     <Select
+                                        value={organizeOptions[0]}
                                         options={organizeOptions}
                                         className='input-select'
                                         placeholder='Organize line chart data by...'

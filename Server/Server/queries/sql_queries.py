@@ -84,7 +84,10 @@ def getResults(stmt) -> ResultAndQuery:
 
 def getOneResult(rq: ResultAndQuery) -> ResultAndQuery:
     (resultList, query) = rq
-    return (resultList[0], query)
+    if (resultList):
+        return (resultList[0], query)
+    else:
+        return (None, query);
 
 
 def DetailedSignupsQ(dto: DetailedSignupRequestDTO) -> ResultAndQuery:

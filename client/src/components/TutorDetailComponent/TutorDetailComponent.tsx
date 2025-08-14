@@ -33,6 +33,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     const [activeButton, setActiveButton] = useState<number>(2);
     const [avgLine, setAvgLine] = useState<number>(2);
     const [showLine, setShowLine] = useState<boolean>(true);
+    const [savedOption, setSavedOption] = useState<dayWeekMonth>('week');
 
     const [name, setName] = useState<string>('Fetching...');
     const [avgHrs, setAvgHrs] = useState<number>(0);
@@ -115,25 +116,29 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
         },
     };
 
+    // Handles showing average lines, option chosen, and reruns getData() to get data in accordance with current options
     function isActiveAggregationOption(option: string): boolean {
         // console.log(option);
         switch (option) {
             case "day":
                 setShowLine(false);
+                setSavedOption(option as dayWeekMonth);
                 setActiveButton(1);
-                getChart('day');
+                getData(option);
                 return false;
             case "week":
                 setAvgLine(2);
                 setShowLine(true);
+                setSavedOption(option as dayWeekMonth);
                 setActiveButton(2);
-                getChart('week');
+                getData(option);
                 return true;
             case "month":
                 setAvgLine(8.7);
                 setShowLine(true);
+                setSavedOption(option as dayWeekMonth);
                 setActiveButton(3);
-                getChart('month');
+                getData(option);
                 return false;
             default:
                 throw new Error("Aggregation option not found!");
@@ -153,8 +158,8 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     async function getKPIs() {
         const req: TutorDetailKpiRequestDTO = {
             id: tutorId,
-            startDate: datesPicked.from?.toISOString(),
-            endDate: datesPicked.to?.toISOString()
+            startDate: dateRange?.from ? dateRange.from?.toISOString() : undefined,
+            endDate: dateRange?.to ? dateRange.to?.toISOString() : undefined
         }
 
         const response = await instance.get<TutorDetailKpiResponseDTO>("/tutorDetail/kpis", { params: req });
@@ -167,12 +172,11 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     }
 
     async function getChart(grouper: string) {
-        console.log(grouper);
         const req: TutorDetailChartRequestDTO = {
             id: tutorId,
             groupBy: grouper as dayWeekMonth,
-            startDate: datesPicked.from?.toISOString(),
-            endDate: datesPicked.to?.toISOString()
+            startDate: dateRange?.from ? dateRange.from?.toISOString() : undefined,
+            endDate: dateRange?.to ?dateRange.to?.toISOString() : undefined
         }
 
         // For some reason, this actually converts the data.
@@ -180,16 +184,26 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
         setLineData(response);
     }
 
-    function getData() {
-        getChart('week');
-        getName();
+    function getData(grouper: string) {
+        getChart(grouper);
         getKPIs();
     }
 
+    // Onload
     useEffect(() => {
-        getData();
+        getName();
+        getData('week');
         isActiveAggregationOption('week');
     }, [])
+
+    useEffect(() => {
+        getData(savedOption);
+    }, [dateRange])
+
+    // This only does getChart() as KPIs do not use the savedOption value
+    useEffect(() => {
+        getChart(savedOption);
+    }, [savedOption])
 
     return (
         <div className="TutorDetailComponent container">

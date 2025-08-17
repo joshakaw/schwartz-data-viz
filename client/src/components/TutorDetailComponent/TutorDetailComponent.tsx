@@ -1,12 +1,14 @@
+// @ts-ignore
 import React, { FC, useEffect, useState } from 'react';
 import './TutorDetailComponent.css';
 import instance from '../../utils/axios';
 import DateRangePicker from '../DateRangePicker/DateRangePicker';
 import { DateRange } from 'react-day-picker';
+// @ts-ignore
 import { Button, Card, Col, Nav, Row } from 'react-bootstrap';
-import { Chart as ChartJS } from 'chart.js'
+import { Chart as ChartJS, ChartOptions } from 'chart.js'
 import { Line } from 'react-chartjs-2';
-import annotationPlugin from 'chartjs-plugin-annotation';
+import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { TutorInfoRequestDTO } from '../../dtos/tutor_data/TutorInfoRequestDTO'
 import { TutorInfoResponseDTO } from '../../dtos/tutor_data/TutorInfoResponseDTO'
 import { TutorDetailKpiRequestDTO } from '../../dtos/tutor_data/TutorDetailKpiRequestDTO'
@@ -45,6 +47,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
 
     const [lineData, setLineData] = useState<TutorDetailChartResponseDTO>({ data: [] });
 
+    // @ts-ignore
     const [testState, setTestState] = useState<TestResponseDTO>({ value: false });
     const [dateRange, setDateRange] = useState<DateRange>({
         to: datesPicked.to,
@@ -106,7 +109,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                         },
                         display: showLine
                     },
-                }
+                } satisfies Record<string, AnnotationOptions<'line'>>, 
             }
         },
         scales: {
@@ -114,7 +117,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                 beginAtZero: true,
             },
         },
-    };
+    } satisfies ChartOptions<'line'>;
 
     // Handles showing average lines, option chosen, and reruns getData() to get data in accordance with current options
     function isActiveAggregationOption(option: string): boolean {
@@ -265,7 +268,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                             <div className="stat">{ rescheduleRate.toFixed(2) }%</div>
                             Reschedule Rate
                             <Row>
-                                <p style={{ fontSize: '12px', color: 'gray' }}>{ repeats } / { total }</p>
+                                <p style={{ fontSize: '12px', color: 'gray' }}>{repeats} <span>&divide;</span> { total }</p>
                             </Row>
                         </Card.Body>
                     </Card>

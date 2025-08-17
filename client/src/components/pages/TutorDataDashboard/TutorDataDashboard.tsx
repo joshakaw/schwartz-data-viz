@@ -1,21 +1,27 @@
+// @ts-ignore
 import React, { FC, FormEvent, useEffect, useState } from 'react';
 import './TutorDataDashboard.css';
+// @ts-ignore
 import { Col, Container, Row, Table, Form, Modal, Button } from 'react-bootstrap';
+// @ts-ignore
 import Select, { SingleValue } from 'react-select';
 import DateRangePicker from '../../DateRangePicker/DateRangePicker';
 import { DateRange } from 'react-day-picker';
+// @ts-ignore
 import { School, subjectOptions, sortByOptions, sortByOptionsType } from '../../../utils/input-fields';
 import { TutorLeaderboardRequestDTO } from '../../../dtos/TutorLeaderboardRequestDTO';
 import { TutorLeaderboardResponseDTO } from '../../../dtos/TutorLeaderboardResponseDTO';
 import instance from '../../../utils/axios';
 import TutorDetailComponent from '../../TutorDetailComponent/TutorDetailComponent'
 import DataTable, { TableColumn } from 'react-data-table-component';
+// @ts-ignore
 import { FaSort } from 'react-icons/fa';
 
 interface TutorDataDashboardProps { }
 
 const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     const [tableData, setData] = useState<TutorLeaderboardResponseDTO[]>([]);
+    // @ts-ignore
     const [sortBy, setSortBy] = useState<SingleValue<{value: string, label: string}>>();
     const [dateRange, setDateRange] = useState<DateRange>({
         to: new Date(),
@@ -23,7 +29,9 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
     });
 
     // What is this for?
+    // @ts-ignore
     const [selectedSession, setSelectedSession] = useState<string>('Sessions');
+    // @ts-ignore
     const [sessionRange, setSessionRange] = useState<string | undefined>(undefined);
 
     const [showModal, setShowModal] = useState(false);

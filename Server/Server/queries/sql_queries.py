@@ -13,6 +13,7 @@ from sqlalchemy import (
     Inspector,
     MetaData,
     Table,
+    asc,
     case,
     create_engine,
     desc,
@@ -654,10 +655,10 @@ def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
     conditions.append(user_t.c.id == dto.id)
 
     if dto.startDate:
-        conditions.append(user_t.c.createdAt >= dto.startDate)
+        conditions.append(tutoringsession_t.c.date >= dto.startDate)
 
     if dto.endDate:
-        conditions.append(user_t.c.createdAt <= dto.endDate)
+        conditions.append(tutoringsession_t.c.date <= dto.endDate)
 
     stmt = (
         select(
@@ -668,13 +669,14 @@ def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
             user_t.outerjoin(
                 tutoringsession_t, tutoringsession_t.c.tutorId == user_t.c.id
             )
+            # Enabling this multiplies the session length by the number of students
             .outerjoin(
                 sessionstudent_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id
             )
         )
         .where(and_(*conditions))
         .group_by(selectedGrouping)
-        .order_by(desc("date"))
+        .order_by(asc("date"))
     )
 
 

@@ -670,9 +670,9 @@ def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
                 tutoringsession_t, tutoringsession_t.c.tutorId == user_t.c.id
             )
             # Enabling this multiplies the session length by the number of students
-            # .outerjoin(
-            #     sessionstudent_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id
-            # )
+            .outerjoin(
+                sessionstudent_t, sessionstudent_t.c.sessionId == tutoringsession_t.c.id
+            )
         )
         .where(and_(*conditions))
         .group_by(selectedGrouping)

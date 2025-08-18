@@ -121,7 +121,7 @@ class Test_test_queries(unittest.TestCase):
         print(query)
 
     def test_tutor_detail_chart_q(self):
-        dto = TutorDetailChartRequestDTO(id=13, groupBy="month");
+        dto = TutorDetailChartRequestDTO(id=13, groupBy="day");
 
         (results, query) = TutorDetailChartQ(dto)
         print(results)

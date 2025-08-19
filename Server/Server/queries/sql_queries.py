@@ -460,6 +460,10 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
         # Aka session Method
         conditions.append(tutoringsession_t.c.method.in_(dto.locations))
 
+    if dto.tutorNameSearch:
+        full_name = user_t.c.firstName + " " + user_t.c.lastName
+        conditions.append(full_name.ilike(f"%{dto.tutorNameSearch}%"))
+
     # Tutor-student pairings with more than one meetup (as to not count first meetup
     # as a recurring session with the JOIN, if HAVING were >= 0)
     student_tutor_recurring_pairings = (

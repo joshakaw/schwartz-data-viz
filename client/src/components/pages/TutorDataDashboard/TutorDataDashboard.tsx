@@ -75,6 +75,14 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
         {
             name: 'Last Session*',
             selector: row => row.lastSession,
+            format: (row) => {
+                // Return a placeholder if the date is null or invalid
+                if (!row.lastSession) {
+                    return 'N/A';
+                }
+                // Format the date string to a readable local format
+                return new Date(row.lastSession).toLocaleDateString();
+            },
             sortable: true
         },
         {

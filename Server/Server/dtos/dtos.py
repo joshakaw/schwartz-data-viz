@@ -96,6 +96,7 @@ class TutorLeaderboardRequestDTO(BaseModel):
     sortBy: Union[Single[str], None] = None
     subjects: Union[List[str], None] = None
     locations: Union[List[str], None] = None
+    tutorNameSearch: Union[Single[str], None] = None
 
 class TutorInfoRequestDTO(BaseModel):
     id: Single[int]

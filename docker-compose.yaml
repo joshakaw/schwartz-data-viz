@@ -1,0 +1,29 @@
+version: "3.9"
+
+# Build/rebuild with 'docker compose up --build'
+# Update this file with 'docker compose up'
+
+# TODO: Allow user to specify port to forward for client & server, database details (os.env on python prob.)
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: flask-backend
+    ports:
+      - "${BACKEND_PORT}:5555"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_RUN_PORT=5555
+      - SERVER_HOST=0.0.0.0
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: react-frontend
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - backend

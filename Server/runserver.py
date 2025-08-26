@@ -12,7 +12,7 @@ from flask_cors import CORS
 # https://pypika.readthedocs.io/en/latest/
 
 if __name__ == "__main__":
-    HOST = environ.get("SERVER_HOST", "localhost")
+    HOST = environ.get("SERVER_HOST", "0.0.0.0")
     PORT = 5555
 
     app = create_app()

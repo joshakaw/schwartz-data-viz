@@ -15,8 +15,14 @@ services:
       - "${BACKEND_PORT}:5555"
     environment:
       - FLASK_ENV=development
-      - FLASK_RUN_PORT=5555
-      - SERVER_HOST=0.0.0.0
+      - USE_SQLITE_TEST_SERVER=${USE_SQLITE_TEST_SERVER}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_NAME=${MYSQL_NAME} # This is the database schema to navigate to
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASS=${MYSQL_PASS}
+    # depends_on:
+    #   - database
 
   frontend:
     build:
@@ -27,3 +33,17 @@ services:
       - "${FRONTEND_PORT}:80"
     depends_on:
       - backend
+
+  # database:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.database
+  #   container_name: mysql-db
+  #   ports:
+  #     - "${TEST_DB_PORT}:3306"
+  #   environment:
+  #     - MYSQL_TCP_PORT=3306
+  #     - MYSQL_DATABASE=test
+  #     - MYSQL_USER=testuser
+  #     - MYSQL_PASSWORD=testpass
+  #     - MYSQL_ROOT_PASSWORD=testrootpass

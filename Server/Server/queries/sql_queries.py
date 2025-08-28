@@ -8,6 +8,7 @@ switching between different database engines (MySQL, SQLite).
 
 """
 
+from os import environ
 from typing import Any, Dict, List, Tuple, TypeAlias
 from sqlalchemy import (
     Inspector,
@@ -54,7 +55,37 @@ metadata = MetaData()
 
 def makeEngine():
     global engine
-    engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=False)
+
+    isUsingSqliteTestDb = (
+        True if environ.get("USE_SQLITE_TEST_SERVER") == "true" else False
+    )
+
+    mySqlConnectionString = (
+        "mysql+mysqldb://"
+        + environ.get("MYSQL_USER", "")
+        + ":"
+        + environ.get("MYSQL_PASS", "")
+        + "@"
+        + environ.get("MYSQL_HOST", "")
+        + ":"
+        + environ.get("MYSQL_PORT", "")
+        + "/"
+        + environ.get("MYSQL_NAME", "")
+    )
+
+    if isUsingSqliteTestDb:
+        engine = create_engine("sqlite:///Server/schwartz_test_db.db", echo=False)
+    else:
+        print("MAKING MYSQL DB...")
+        try:
+            engine = create_engine(mySqlConnectionString, echo=True)
+            # Test connection immediately to catch errors early
+            with engine.connect() as conn:
+                pass
+        except Exception as e:
+            print(f"Error connecting to MySQL: {e}")
+            raise
+
     metadata.create_all(engine)
 
     inspector: Inspector = inspect(engine)
@@ -83,12 +114,13 @@ def getResults(stmt) -> ResultAndQuery:
 
         return (resultList, sql)
 
+
 def getOneResult(rq: ResultAndQuery) -> ResultAndQuery:
     (resultList, query) = rq
-    if (resultList):
+    if resultList:
         return (resultList[0], query)
     else:
-        return (None, query);
+        return (None, query)
 
 
 def DetailedSignupsQ(dto: DetailedSignupRequestDTO) -> ResultAndQuery:
@@ -179,18 +211,25 @@ def SignupsLineChartQ(dto: SignupLineChartRequestDTO) -> ResultAndQuery:
 
     # Get the date grouping selection
     selectedGrouping: ColumnClause = get_first_sunday_of_week(
-        engine.dialect.name, user_t.c.createdAt, 
+        engine.dialect.name,
+        user_t.c.createdAt,
     )
 
     match dto.groupBy:
         case "day":
             selectedGrouping = get_day(engine.dialect.name, user_t.c.createdAt)
         case "week":
-            selectedGrouping = get_first_sunday_of_week(engine.dialect.name, user_t.c.createdAt)
+            selectedGrouping = get_first_sunday_of_week(
+                engine.dialect.name, user_t.c.createdAt
+            )
         case "month":
-            selectedGrouping = get_first_day_of_month(engine.dialect.name, user_t.c.createdAt)
+            selectedGrouping = get_first_day_of_month(
+                engine.dialect.name, user_t.c.createdAt
+            )
         case "year":
-            selectedGrouping = get_first_day_of_year(engine.dialect.name, user_t.c.createdAt)
+            selectedGrouping = get_first_day_of_year(
+                engine.dialect.name, user_t.c.createdAt
+            )
         case _:
             pass
 
@@ -426,8 +465,16 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
     # tutor_user_conditions = []
 
     founding_date = datetime(2017, 9, 14)
-    start_date = datetime.fromisoformat(dto.startDate.replace("Z", "")) if dto.startDate else founding_date
-    end_date = datetime.fromisoformat(dto.endDate.replace("Z", "")) if dto.endDate else datetime.now()
+    start_date = (
+        datetime.fromisoformat(dto.startDate.replace("Z", ""))
+        if dto.startDate
+        else founding_date
+    )
+    end_date = (
+        datetime.fromisoformat(dto.endDate.replace("Z", ""))
+        if dto.endDate
+        else datetime.now()
+    )
     weeks_in_range = max((end_date - start_date).days / 7.0, 1.0)
 
     # Filters date of the tutoring session
@@ -493,7 +540,10 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
                 "numRecurringSessions"
             ),
             literal(0).label("revenueGenerated"),
-            (func.coalesce(func.sum(tutoringsession_t.c.length), 0) / literal(weeks_in_range)).label("avgHoursPerWeek")
+            (
+                func.coalesce(func.sum(tutoringsession_t.c.length), 0)
+                / literal(weeks_in_range)
+            ).label("avgHoursPerWeek"),
         )
         .select_from(
             user_t.outerjoin(
@@ -521,15 +571,17 @@ def TutorLeaderboardQ(dto: TutorLeaderboardRequestDTO) -> ResultAndQuery:
 
     return getResults(stmt)
 
+
 def TutorInfoQ(dto: TutorInfoRequestDTO) -> ResultAndQuery:
 
-    user_t = Table("User", metadata, autoload_with=engine);
+    user_t = Table("User", metadata, autoload_with=engine)
 
     stmt = select(
         (user_t.c.firstName + literal(" ") + user_t.c.lastName).label("name")
     ).where(user_t.c.id == dto.id)
 
     return getOneResult(getResults(stmt))
+
 
 def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
 
@@ -541,8 +593,16 @@ def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
     conditions: List[ColumnElement] = []
 
     founding_date = datetime(2017, 9, 14)
-    start_date = datetime.fromisoformat(dto.startDate.replace("Z", "")) if dto.startDate else founding_date
-    end_date = datetime.fromisoformat(dto.endDate.replace("Z", "")) if dto.endDate else datetime.now()
+    start_date = (
+        datetime.fromisoformat(dto.startDate.replace("Z", ""))
+        if dto.startDate
+        else founding_date
+    )
+    end_date = (
+        datetime.fromisoformat(dto.endDate.replace("Z", ""))
+        if dto.endDate
+        else datetime.now()
+    )
     weeks_in_range = max((end_date - start_date).days / 7.0, 1.0)
 
     conditions.append(user_t.c.id == dto.id)
@@ -562,7 +622,9 @@ def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
             literal(1).label("isRecurringPairing"),
         )
         .select_from(
-            tutoringsession_t.join(sessionstudent_t, tutoringsession_t.c.id == sessionstudent_t.c.sessionId)
+            tutoringsession_t.join(
+                sessionstudent_t, tutoringsession_t.c.id == sessionstudent_t.c.sessionId
+            )
         )
         .group_by(tutoringsession_t.c.tutorId, sessionstudent_t.c.studentId)
         .having(func.count() > 1)
@@ -573,33 +635,34 @@ def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
         select(
             user_t.c.id.label("tutorId"),
             (user_t.c.firstName + literal(" ") + user_t.c.lastName).label("name"),
-
             # Total number of unique sessions (student-tutor pairings)
             func.count(sessionstudent_t.c.studentId).label("totalSessions"),
-
             # Repeat sessions only (student is in recurring pair)
             func.sum(
                 case(
                     (
                         sessionstudent_t.c.studentId.in_(
                             select(student_tutor_recurring_pairings.c.studentId)
-                            .where(student_tutor_recurring_pairings.c.tutorId == user_t.c.id)
+                            .where(
+                                student_tutor_recurring_pairings.c.tutorId
+                                == user_t.c.id
+                            )
                             .correlate(user_t)
                         ),
-                        1
+                        1,
                     ),
-                    else_=0
+                    else_=0,
                 )
             ).label("repeatSessionCount"),
-
             # Number of unique students taught
             func.count(distinct(sessionstudent_t.c.studentId)).label("uniqueStudents"),
-
             # Total student count (not unique)
             func.count(sessionstudent_t.c.studentId).label("totalStudentCount"),
-
             # Average hours per week
-            (func.coalesce(func.sum(tutoringsession_t.c.length), 0) / literal(weeks_in_range)).label("avgHoursPerWeek"),
+            (
+                func.coalesce(func.sum(tutoringsession_t.c.length), 0)
+                / literal(weeks_in_range)
+            ).label("avgHoursPerWeek"),
         )
         .select_from(
             user_t.outerjoin(
@@ -611,8 +674,10 @@ def TutorDetailKpiQ(dto: TutorDetailKpiRequestDTO) -> ResultAndQuery:
             .outerjoin(
                 student_tutor_recurring_pairings,
                 and_(
-                    student_tutor_recurring_pairings.c.tutorId == tutoringsession_t.c.tutorId,
-                    student_tutor_recurring_pairings.c.studentId == sessionstudent_t.c.studentId,
+                    student_tutor_recurring_pairings.c.tutorId
+                    == tutoringsession_t.c.tutorId,
+                    student_tutor_recurring_pairings.c.studentId
+                    == sessionstudent_t.c.studentId,
                 ),
             )
         )
@@ -637,18 +702,25 @@ def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
 
     # Get the date grouping selection
     selectedGrouping: ColumnClause = get_first_sunday_of_week(
-        engine.dialect.name, user_t.c.createdAt, 
+        engine.dialect.name,
+        user_t.c.createdAt,
     )
 
     match dto.groupBy:
         case "day":
             selectedGrouping = get_day(engine.dialect.name, tutoringsession_t.c.date)
         case "week":
-            selectedGrouping = get_first_sunday_of_week(engine.dialect.name, tutoringsession_t.c.date)
+            selectedGrouping = get_first_sunday_of_week(
+                engine.dialect.name, tutoringsession_t.c.date
+            )
         case "month":
-            selectedGrouping = get_first_day_of_month(engine.dialect.name, tutoringsession_t.c.date)
+            selectedGrouping = get_first_day_of_month(
+                engine.dialect.name, tutoringsession_t.c.date
+            )
         case "year":
-            selectedGrouping = get_first_day_of_year(engine.dialect.name, tutoringsession_t.c.date)
+            selectedGrouping = get_first_day_of_year(
+                engine.dialect.name, tutoringsession_t.c.date
+            )
         case _:
             pass
 
@@ -682,6 +754,5 @@ def TutorDetailChartQ(dto: TutorDetailChartRequestDTO) -> ResultAndQuery:
         .group_by(selectedGrouping)
         .order_by(asc("date"))
     )
-
 
     return getResults(stmt)

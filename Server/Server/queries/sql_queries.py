@@ -57,7 +57,7 @@ def makeEngine():
     global engine
 
     isUsingSqliteTestDb = (
-        True if environ.get("USE_SQLITE_TEST_SERVER") == "true" else False
+        True if environ.get("USE_SQLITE_TEST_SERVER", "true") == "true" else False
     )
 
     mySqlConnectionString = (

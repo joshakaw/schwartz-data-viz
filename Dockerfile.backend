@@ -1,0 +1,17 @@
+FROM python:3.11
+
+# Set working dir
+WORKDIR /app
+
+# Install dependencies
+COPY Server/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY Server/ .
+
+# Expose Flask port
+EXPOSE 5555
+
+# Run the app
+CMD ["python", "runserver.py"]

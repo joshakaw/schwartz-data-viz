@@ -18,6 +18,10 @@ export const signupOptions: Options<{value: string, label: string}> = [
     { value: 'Physical Advertising', label: 'Physical Advertising' },
     { value: 'Friend Referral', label: 'Friend Referral' },
     { value: 'Email Campaign', label: 'Email Campaign' },
+    { value: 'Parent', label: 'Parent' },
+    { value: 'ACE Program', label: 'ACE Program' },
+    { value: 'Google', label: 'Google' },
+    { value: 'Other', label: 'Other' }
 ];
 
 export const userOptions: Options<{ value: string, label: string }> = [

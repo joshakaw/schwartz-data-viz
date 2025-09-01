@@ -96,11 +96,6 @@ const TutorDataDashboard: FC<TutorDataDashboardProps> = () => {
             sortable: true
         },
         {
-            name: 'Revenue Generated*',
-            selector: row => row.revenueGenerated,
-            sortable: true
-        },
-        {
             name: 'Avg Hrs/WK*',
             selector: row => row.avgHoursPerWeek.toFixed(2),
             sortable: true

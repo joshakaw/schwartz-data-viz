@@ -266,7 +266,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
                     <Card style={{ width: "100%", height: "100%", textAlign: "center" }}>
                         <Card.Body className="align-items-center">
                             <div className="stat">{ rescheduleRate.toFixed(2) }%</div>
-                            Reschedule Rate
+                            Repeat Rate
                             <Row>
                                 <p style={{ fontSize: '12px', color: 'gray' }}>{repeats} <span>&divide;</span> { total }</p>
                             </Row>

@@ -69,7 +69,7 @@ const TutorDetailComponent: FC<TutorDetailComponentProps> = ({ tutorId, datesPic
     }, [tutorId])
 
     const lineChartData = {
-        labels: lineData?.data?.map(item => item.date),
+        labels: lineData?.data?.map(item => new Date(item.date).toLocaleDateString()),
         datasets: [
             {
                 label: "Hours",

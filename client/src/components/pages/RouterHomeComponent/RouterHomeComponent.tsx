@@ -40,19 +40,19 @@ const RouterHomeComponent: FC<RouterHomeComponentProps> = () => {
             </Row>
             <Row>
                 <Col md={4}>
-                    <Card onClick={(e) => handleNavigation(e, "/signups")} className="rounded card">
+                    <Card onClick={(e) => handleNavigation(e, "/signups")} className="rounded homeCard">
                         <h3>Signups Summary</h3>
                         <p>View performance of advertising types used by Schwartz Tutoring</p>
                     </Card>
                 </Col>
                 <Col md={4}>
-                    <Card onClick={(e) => handleNavigation(e, "/detailedsignups")} className="rounded card">
+                    <Card onClick={(e) => handleNavigation(e, "/detailedsignups")} className="rounded homeCard">
                         <h3>Detailed Signups Summary</h3>
                         <p>View how users of Schwartz Tutoring began using our services, and which school they're from</p>
                     </Card>
                 </Col>
                 <Col md={4}>
-                    <Card onClick={(e) => handleNavigation(e, "/mailchimp")} className="rounded card">
+                    <Card onClick={(e) => handleNavigation(e, "/mailchimp")} className="rounded homeCard">
                         <h3>Mailchimp</h3>
                         <p>View effectiveness of advertising campaigns and manage subscribers for our services</p>
                     </Card>
@@ -60,13 +60,13 @@ const RouterHomeComponent: FC<RouterHomeComponentProps> = () => {
             </Row>
             <Row style={{ paddingTop: '2rem' }}>
                 <Col md={4}>
-                    <Card onClick={(e) => handleNavigation(e, "/tutor-data")} className="rounded card">
+                    <Card onClick={(e) => handleNavigation(e, "/tutor-data")} className="rounded homeCard">
                         <h3>Tutor Details</h3>
                         <p>View performance of tutors working at Schwartz Tutoring</p>
                     </Card>
                 </Col>
                 <Col md={4}>
-                    <Card onClick={() => window.open('https://github.com/joshakaw/schwartz-data-viz', '_blank')} className="rounded card">
+                    <Card onClick={() => window.open('https://github.com/joshakaw/schwartz-data-viz', '_blank')} className="rounded homeCard">
                         <h3>GitHub Repository</h3>
                         <p>Look under the hood of the Schwartz Tutoring data analytics dashboard</p>
                     </Card>

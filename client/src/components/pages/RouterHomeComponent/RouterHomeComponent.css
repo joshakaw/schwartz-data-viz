@@ -1,7 +1,7 @@
 
 .RouterHomeComponent {}
 
-.card {
+.homeCard {
     background: linear-gradient(to bottom, #F5F5F5, #FFFFFF);
     padding-bottom: 1rem;
     cursor: pointer;
@@ -11,7 +11,7 @@
     transition: all .3s ease;
 }
 
-    .card:hover {
+    .homeCard:hover {
         filter: brightness(90%); /* Darkens the card */
     }
 

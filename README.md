@@ -38,10 +38,12 @@ Before you begin, ensure you have the following installed:
     * Download from [python.org/downloads/release/python-3110/](https://www.python.org/downloads/release/python-3110/)
 * **Node.js & npm:**
     * Download from [nodejs.org/en/download](https://nodejs.org/en/download)
+* **Docker Desktop:**
+    * Download from [https://www.docker.com/products/docker-desktop/](https://https://www.docker.com/products/docker-desktop)
 
 ---
 
-## **Setup Instructions**
+## **Setup Instructions (React+Vite)**
 
 Follow these steps to get the project running on your local machine.
 
@@ -75,6 +77,40 @@ If you don't have Visual Studio Community installed:
     * **`Client` (React Frontend):** This project contains the JavaScript code that runs in your web browser. React is a library for building user interfaces. It's responsible for what you see and interact with, and it communicates with the Flask backend to get and send data.
 * These two parts work together: the `Client` (what the user sees) makes requests to the `Server` (where the data and logic reside) to perform actions and retrieve information.
 
+## **Setup Instructions (Docker)**
+
+### **1. Install Visual Studio Community**
+
+If you don't have Visual Studio Community installed:
+
+1.  **Download and Run Installer:**
+    * Go to [visualstudio.microsoft.com/vs/community/](https://visualstudio.microsoft.com/vs/community/) and download the Visual Studio Community installer.
+    * Run the installer.
+2.  **Install:** Follow the installer prompts to complete the installation. Make sure to install the `Python development` workload and select the optional component `Python Web Support`.
+
+### **2. Install Docker Desktop**
+
+If you don't have Docker Desktop downloaded and installed:
+
+1.  **Download and Run Installer:**
+    * Go to [https://www.docker.com/products/docker-desktop/](https://https://www.docker.com/products/docker-desktop) and download the Docker Desktop installer for your respective device.
+    * Run the installer.
+2.  **Install:** Follow the installer prompts to complete the installation.
+
+### **3. Open the Project in Visual Studio**
+
+1.  **Open Visual Studio Community.**
+2.  When Visual Studio first starts, you'll often see a "Get started" or "Start window." Look for an option like **"Open a project or solution"** or **"Clone a repository."**
+3.  If you have the project files already downloaded (e.g., from a zip file or a previous clone), choose **"Open a project or solution..."** and navigate to the root directory of your project (`schwartz-data-viz`). Select the `.sln` (solution) file.
+4.  If you need to clone the repository directly from Visual Studio, choose **"Clone a repository."** You'll be prompted to enter the repository URL: `https://github.com/joshakaw/schwartz-data-viz.git` and a local path where you want to save it. Visual Studio will then clone the repository and open the solution.
+5.  Inside the solution explorer, click the solution view button (list icon with VS logo). Click the solution with the folder icon and open the file named "docker-compose.yaml".
+
+<img width="472" height="91" alt="image" src="https://github.com/user-attachments/assets/d5dbc933-a275-4e5c-86e6-3174569321c9" />
+
+6. Make sure that your Docker Desktop application is running in the background. Then go into your root folder of the solution (where "docker-compose.yaml" is located) and run the following command inside the Visual Studio terminal:
+   docker compose up --build
+
+This will build your Docker container and run your instance of the application.
 ---
 
 ## Project Structure Overview
@@ -82,7 +118,7 @@ If you don't have Visual Studio Community installed:
 This document provides a concise overview of the project's architecture, ideal for those new to full-stack development.
 
 ### **`Server/` (Python Flask Backend)**
-This directory holds all the code that runs on the server. **Flask**, a Python web framework, acts as the core of the application. It handles incoming requests from the frontend, processes data—which often involves interacting with a database—and sends back responses. The backend exposes **API (Application Programming Interface) endpoints**, which are specific URLs that the frontend uses to request data or trigger actions.
+This directory holds all the code that runs on the server. **Flask**, a Python web framework, acts as the core of the application. It handles incoming requests from the frontend, processes dataâ€”which often involves interacting with a databaseâ€”and sends back responses. The backend exposes **API (Application Programming Interface) endpoints**, which are specific URLs that the frontend uses to request data or trigger actions.
 
 ### **`Client/` (React Frontend)**
 This directory contains all the code that runs in your web browser. **React**, a JavaScript library, is used to build the user interface (UI). It's responsible for the website's look, feel, and how users interact with it. The frontend makes **API calls** to the Flask backend to fetch data for display or to send user-entered data.

@@ -50,8 +50,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         const userList = user.map(opt => opt.value);
 
         const reqJson: SignupsByCategoryRequestDTO = {
-            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
-            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            signupMethodCategories: methodList.length > 0 ? methodList : undefined, // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : undefined,
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
@@ -71,8 +71,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
         const lineJson: SignupLineChartRequestDTO = {
             groupBy: lineSetup == null ? 'week' : lineSetup.value as weekMonthYear,
-            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
-            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            signupMethodCategories: methodList.length > 0 ? methodList : undefined, // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : undefined,
             startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
             endDate: dateRange?.to ? dateRange.to.toISOString() : undefined
         }
@@ -92,8 +92,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
 
 
         const summaryBoxJsonLastWk: SignupSummaryBoxRequestDTO = {
-            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
-            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            signupMethodCategories: methodList.length > 0 ? methodList : undefined, // real value of select. also default values to fill graph onload.
+            accountType: userList.length > 0 ? userList : undefined,
             startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString(),
             endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString()
         }
@@ -104,8 +104,8 @@ const RouterSignupsDashboard: FC<RouterSignupsDashboardProps> = () => {
         })
 
         const summaryBoxJson: SignupSummaryBoxRequestDTO = {
-            signupMethodCategories: methodList.length > 0 ? methodList : ['Social Media', 'Physical Advertising', 'Friend Referral', 'Email Campaign'], // real value of select. also default values to fill graph onload.
-            accountType: userList.length > 0 ? userList : ['Student', 'Tutor', 'Parent'],
+            signupMethodCategories: methodList.length > 0 ? methodList : undefined,
+            accountType: userList.length > 0 ? userList : undefined,
             startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
             endDate: new Date().toISOString()
         }
